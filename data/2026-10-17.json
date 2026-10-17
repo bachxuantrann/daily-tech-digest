@@ -1,0 +1,158 @@
+{
+  "date": "2026-10-17",
+  "generated_at": "2026-10-17T01:30:00Z",
+  "summary": "npm 12 chặn install script mặc định, Kubernetes 1.37 cho HPA scale-to-zero, và prompt caching cho agent giảm 45-80% chi phí.",
+  "sections": [
+    {
+      "title": "Backend",
+      "items": [
+        {
+          "title": "Spring Boot 4.x: nhánh hiện hành và 4.1 sắp tới",
+          "summary": "Theo tổng hợp phiên bản giữa năm 2026, Spring Boot 4.0.x là nhánh ổn định mới nhất (4.0.6 ra ngày 23/04/2026), 4.1 đã ở giai đoạn milestone. Tuần này không tìm thấy bản phát hành backend lớn nào mới hơn.",
+          "apply": "Nếu còn chạy 3.x, lên lịch đánh giá nâng cấp lên 4.x trên một service nhỏ trước, kết hợp virtual threads để giảm số thread pool phải tune.",
+          "source": {
+            "title": "Spring Boot versions, EOL dates and latest releases",
+            "url": "https://www.herodevs.com/blog-posts/spring-boot-versions-eol-dates-and-latest-releases-april-2026"
+          }
+        }
+      ]
+    },
+    {
+      "title": "DevOps / Cloud",
+      "items": [
+        {
+          "title": "Kubernetes 1.37: HPA scale-to-zero lên Beta, kubelet rootless",
+          "summary": "HPA có thể kéo workload về 0 replica khi dùng metric kiểu object hoặc external (ví dụ độ dài queue), bật mặc định ở Beta, có thêm condition ScaledToZero. Kubelet chạy không cần root nhờ user namespace cũng được bật mặc định ở Beta.",
+          "apply": "Với worker tiêu thụ queue trên home lab, thử scale-to-zero theo độ dài queue để tiết kiệm tài nguyên; CPU/memory metric thì không dùng được cho trường hợp này.",
+          "source": {
+            "title": "Kubernetes v1.37: Scale Workloads to Zero with HorizontalPodAutoscaler",
+            "url": "https://kubernetes.io/blog/2026/09/02/kubernetes-v1-37-hpa-scale-to-zero-beta/"
+          }
+        }
+      ]
+    },
+    {
+      "title": "AI Engineering thực chiến",
+      "items": [
+        {
+          "title": "Prompt caching cho agent: giảm 45-80% chi phí",
+          "summary": "Bài nghiên cứu Don't Break the Cache đo trên OpenAI, Anthropic, Google: chi phí API giảm 45-80%, time-to-first-token cải thiện 13-31%. Cache toàn bộ một cách ngây thơ đôi khi làm chậm hơn; đặt nội dung động ở cuối system prompt và loại kết quả tool động ra khỏi phần cache cho kết quả ổn định hơn.",
+          "apply": "Giữ system prompt và định nghĩa tool ở đầu, cố định thứ tự; theo dõi cache hit rate như một metric riêng.",
+          "source": {
+            "title": "Don't Break the Cache: An Evaluation of Prompt Caching for Long-Horizon Agentic Tasks",
+            "url": "https://arxiv.org/abs/2601.06007"
+          }
+        }
+      ]
+    },
+    {
+      "title": "System Design & Architecture",
+      "items": [
+        {
+          "title": "Case study kinh điển nên đọc lại: TAO và memcache ở Meta",
+          "summary": "Các engineering blog lớn vẫn là nguồn tốt nhất cho trade-off thực tế về caching và đồ thị dữ liệu quy mô lớn; bài tổng hợp liệt kê TAO (graph store phân tán) và Scaling Memcache at Facebook. Đây là tài liệu nền, không phải tin mới trong tuần.",
+          "apply": "Đọc với câu hỏi: cache nằm ở tầng nào, invalidate thế nào, chấp nhận stale bao lâu.",
+          "source": {
+            "title": "List of popular blogs with system design case studies",
+            "url": "https://www.designgurus.io/answers/detail/list-of-popular-blogs-with-system-design-interview-case-studies"
+          }
+        }
+      ]
+    },
+    {
+      "title": "Security",
+      "items": [
+        {
+          "title": "npm 12 tắt install script của dependency theo mặc định",
+          "summary": "Sau hàng loạt vụ tấn công chuỗi cung ứng (Shai-Hulud, Mastra, Axios), npm 12 chặn preinstall/install/postinstall của dependency, git và remote dependency cũng cần cờ cho phép rõ ràng. pnpm, Yarn và Bun đã làm vậy từ trước.",
+          "apply": "Dùng npm 11.16+ để xem cảnh báo script trước, lập allowlist cho các package thật sự cần build native; CI có thể gãy nếu chưa duyệt.",
+          "source": {
+            "title": "npm 12 disables install scripts by default",
+            "url": "https://thehackernews.com/2026/07/npm-12-disables-install-scripts-by.html"
+          }
+        }
+      ]
+    },
+    {
+      "title": "Database",
+      "items": [
+        {
+          "title": "PostgreSQL 14 hết hỗ trợ 12/11/2026; PostgreSQL 19 beta 4",
+          "summary": "Bản vá tháng 8 (18.6, 17.11, 16.15, 15.19, 14.24) sửa 28 lỗ hổng bảo mật. PostgreSQL 14 ngừng nhận bản sửa vào 12/11/2026, và PostgreSQL 19 đã ra beta 4 ngày 24/09.",
+          "apply": "Còn cluster 14 thì lên kế hoạch pg_upgrade lên 17/18 ngay, thử trước trên bản sao.",
+          "source": {
+            "title": "PostgreSQL news archive",
+            "url": "https://www.postgresql.org/about/newsarchive/-/20261005/"
+          }
+        }
+      ]
+    },
+    {
+      "title": "Open Source & công cụ mới",
+      "items": [
+        {
+          "title": "Homelable và NetAlertX cho home lab",
+          "summary": "Homelable vẽ sơ đồ hạ tầng home lab, có quét mạng và MCP server; NetAlertX quét định kỳ, lập inventory thiết bị và báo khi có thiết bị lạ.",
+          "apply": "Chạy cả hai bằng Docker trong VLAN quản trị để có bản đồ mạng và cảnh báo thiết bị mới.",
+          "source": {
+            "title": "Homelable",
+            "url": "https://selfhostedworld.com/software/homelable"
+          }
+        }
+      ]
+    },
+    {
+      "title": "Career & kỹ năng mềm",
+      "items": [
+        {
+          "title": "ADR: đừng quyết định lại cùng một việc",
+          "summary": "Một hướng dẫn tháng 5/2026 lập luận ADR có giá trị vì đội thường ra lại cùng quyết định nhiều lần. Mẫu gọn: bối cảnh, yếu tố quyết định, các phương án, lựa chọn, hệ quả, kèm trạng thái Proposed/Accepted/Superseded.",
+          "apply": "Đặt guardrail (chuẩn code, ranh giới kiến trúc) rồi để đồng đội tự quyết trong đó để tech lead không thành nút thắt.",
+          "source": {
+            "title": "Architecture Decision Records guide",
+            "url": "https://rockstardeveloperuniversity.com/architecture-decision-records-guide/"
+          }
+        }
+      ]
+    }
+  ],
+  "knowledge": {
+    "title": "Idempotency key cho API ghi",
+    "body": "Client có thể retry khi timeout, nên server phải xử lý cùng một yêu cầu nhiều lần mà chỉ tác động một lần. Client gửi một Idempotency-Key duy nhất cho mỗi thao tác; server lưu key cùng kết quả, gặp lại thì trả đúng kết quả cũ.\n\nLưu key trong cùng transaction với thay đổi dữ liệu và đặt ràng buộc UNIQUE để hai request song song không cùng thắng. Cho key hết hạn sau vài ngày và so khớp hash payload để từ chối cùng key nhưng nội dung khác.",
+    "example": "INSERT INTO idempotency(key, request_hash, response) VALUES ($1,$2,$3) ON CONFLICT (key) DO NOTHING;\n-- 0 dòng bị ảnh hưởng => đã xử lý, trả response đã lưu"
+  },
+  "sources": [
+    {
+      "title": "Spring Boot versions, EOL dates and latest releases",
+      "url": "https://www.herodevs.com/blog-posts/spring-boot-versions-eol-dates-and-latest-releases-april-2026"
+    },
+    {
+      "title": "Kubernetes v1.37: Scale Workloads to Zero with HorizontalPodAutoscaler",
+      "url": "https://kubernetes.io/blog/2026/09/02/kubernetes-v1-37-hpa-scale-to-zero-beta/"
+    },
+    {
+      "title": "Don't Break the Cache: An Evaluation of Prompt Caching for Long-Horizon Agentic Tasks",
+      "url": "https://arxiv.org/abs/2601.06007"
+    },
+    {
+      "title": "List of popular blogs with system design case studies",
+      "url": "https://www.designgurus.io/answers/detail/list-of-popular-blogs-with-system-design-interview-case-studies"
+    },
+    {
+      "title": "npm 12 disables install scripts by default",
+      "url": "https://thehackernews.com/2026/07/npm-12-disables-install-scripts-by.html"
+    },
+    {
+      "title": "PostgreSQL news archive",
+      "url": "https://www.postgresql.org/about/newsarchive/-/20261005/"
+    },
+    {
+      "title": "Homelable",
+      "url": "https://selfhostedworld.com/software/homelable"
+    },
+    {
+      "title": "Architecture Decision Records guide",
+      "url": "https://rockstardeveloperuniversity.com/architecture-decision-records-guide/"
+    }
+  ]
+}
