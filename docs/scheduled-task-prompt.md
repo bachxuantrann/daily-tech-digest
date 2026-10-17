@@ -11,9 +11,13 @@ Sau khi đã gửi bản tin cho người dùng bằng SendUserMessage, hãy đ�
    - knowledge: {title, body, example (nếu có)} cho mục "Kiến thức nên nhớ hôm nay".
    - sources: toàn bộ nguồn đã dùng.
    - Mọi chuỗi là văn bản thuần: không HTML, không markdown, không đánh dấu **đậm**.
-2. Gắn repo bachxuantrann/daily-tech-digest bằng add_repo với access = "push", rồi clone theo lệnh trong kết quả trả về.
+2. Repo bachxuantrann/daily-tech-digest là nguồn đã được gắn sẵn cho task này. Nếu chưa có thư mục repo trong môi trường làm việc, clone bằng: git clone https://github.com/bachxuantrann/daily-tech-digest. Công cụ add_repo có thể không có trong phiên này, đừng phụ thuộc vào nó.
 3. Ghi JSON vào một tệp tạm nằm ngoài repo, ví dụ /tmp/day.json, rồi chạy trong repo: python3 scripts/publish.py /tmp/day.json
    Nếu script báo lỗi validation, sửa JSON theo thông báo rồi chạy lại.
 4. Trong repo: git add data && git commit -m "digest: YYYY-MM-DD" && git push origin main
-5. Nếu bất kỳ bước nào ở 2-4 thất bại, đừng dừng cả phiên: gửi thêm một SendUserMessage ngắn nói bước nào lỗi và thông báo lỗi.
+5. Nếu bất kỳ bước nào ở 2-4 thất bại, đừng dừng cả phiên: gửi thêm một SendUserMessage ngắn nói bước nào lỗi và thông báo lỗi nguyên văn.
 ```
+
+## Điều kiện để push được
+
+Phiên của scheduled task không tự xin được quyền ghi. Repo này phải được thêm vào **nguồn của scheduled task với quyền push** trong cài đặt task. Nếu thiếu, bước push trả về `403 ... is not in this session's authorized repository set` và dữ liệu không lên site (bản tin vẫn được gửi cho người dùng).
