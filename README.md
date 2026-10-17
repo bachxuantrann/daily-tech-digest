@@ -6,7 +6,7 @@ Website tĩnh hiển thị bản tin do scheduled task trong Claude tổng hợp
 
 ```
 index.html              trang web (HTML + CSS + JS trong một tệp)
-data/index.json         danh sách ngày có bản tin, mới nhất trước
+data/index.json         danh sách ngày có bản tin (mới nhất trước) kèm tóm tắt từng ngày
 data/YYYY-MM-DD.json    nội dung bản tin của từng ngày
 scripts/publish.py      kiểm tra một tệp JSON và ghi vào data/
 docs/                   prompt mẫu cho scheduled task
@@ -32,7 +32,7 @@ docs/                   prompt mẫu cho scheduled task
 {
   "date": "2026-10-18",
   "generated_at": "2026-10-18T01:22:00Z",
-  "summary": "Tuỳ chọn: một câu tóm tắt ngày hôm đó.",
+  "summary": "Bắt buộc: 1-2 câu nêu điểm đáng chú ý nhất ngày hôm đó (dưới 300 ký tự). Hiện ở đầu trang và trong trang lưu trữ.",
   "sections": [
     {
       "title": "Backend",
@@ -41,7 +41,9 @@ docs/                   prompt mẫu cho scheduled task
           "title": "Tiêu đề mục",
           "summary": "1-2 câu giải thích.",
           "apply": "Tuỳ chọn: gợi ý áp dụng.",
-          "source": { "title": "Tên bài", "url": "https://..." }
+          "source": { "title": "Tên bài", "url": "https://..." },
+          "published": "Tuỳ chọn: ngày đăng gốc, 2026-09-12 hoặc 2026-09",
+          "kind": "Tuỳ chọn: \"tin\" (tin mới) hoặc \"bài đọc\" (bài cũ nhưng đáng đọc, hiện nhãn riêng)"
         }
       ]
     }
@@ -58,6 +60,12 @@ docs/                   prompt mẫu cho scheduled task
 `generated_at` luôn do `publish.py` ghi lại theo đồng hồ hệ thống, giá trị trong tệp đầu vào bị bỏ qua (mô hình không có đồng hồ nên hay đoán sai giờ).
 
 Mọi chuỗi là văn bản thuần. Trang luôn hiển thị bằng `textContent` và chỉ mở link `http(s)`, nên nội dung lấy từ web không thể chèn script vào trang.
+
+## Lưu trữ theo ngày
+
+Mỗi ngày là một tệp `data/YYYY-MM-DD.json` và không bao giờ bị xoá. Trên site, cột trái liệt kê 10 ngày gần nhất, còn trang **Tất cả bản tin** (`#luu-tru`) liệt kê mọi ngày kèm tóm tắt và có ô tìm theo từ khoá. Mỗi ngày có địa chỉ riêng dạng `…/#2026-10-17`.
+
+Nếu `data/index.json` bị lệch so với các tệp ngày (ví dụ sau khi sửa tay), chạy `python3 scripts/publish.py --reindex` để dựng lại.
 
 ## Thử cục bộ
 

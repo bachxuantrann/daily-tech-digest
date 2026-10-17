@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Bản tin công nghệ hằng ngày</title>
-<meta name="description" content="Bản tin công nghệ tổng hợp mỗi sáng cho kỹ sư backend: backend, DevOps, AI engineering, kiến trúc, bảo mật, database.">
+<meta name="description" content="Bản tin công nghệ tổng hợp mỗi sáng cho kỹ sư backend: backend, DevOps, AI engineering, kiến trúc hệ thống, mã nguồn mở, kỹ năng nghề nghiệp.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap" rel="stylesheet">
@@ -19,6 +19,9 @@
   --note-bg: #f1e7cc;
   --note-ink: #3a2f12;
   --code-bg: #fbf8ee;
+  /* one muted hue per section, in the order the digest lists them */
+  --c0: #0b6a88; --c1: #3b7d3a; --c2: #7a4fb0; --c3: #b35c1e;
+  --c4: #b0407a; --c5: #8a6d0b; --c6: #5b6773;
   --sans: "Be Vietnam Pro", system-ui, -apple-system, "Segoe UI", sans-serif;
   --serif: "Source Serif 4", Georgia, "Times New Roman", serif;
   --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
@@ -34,8 +37,14 @@
     --note-bg: #2a2616;
     --note-ink: #efe6c8;
     --code-bg: #1d1a0f;
+    --c0: #5cc0de; --c1: #7fc47c; --c2: #b79aea; --c3: #e8995a;
+    --c4: #e47fb3; --c5: #d6b94a; --c6: #9aa8b5;
   }
 }
+.hue-0 { --hue: var(--c0); } .hue-1 { --hue: var(--c1); } .hue-2 { --hue: var(--c2); }
+.hue-3 { --hue: var(--c3); } .hue-4 { --hue: var(--c4); } .hue-5 { --hue: var(--c5); }
+.hue-6 { --hue: var(--c6); }
+
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; scroll-padding-top: 1.5rem; }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
@@ -49,7 +58,7 @@ body {
   -webkit-text-size-adjust: 100%;
 }
 a { color: var(--accent); text-underline-offset: 0.18em; }
-a:focus-visible, summary:focus-visible, button:focus-visible {
+a:focus-visible, summary:focus-visible, button:focus-visible, input:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 3px;
   border-radius: 2px;
@@ -104,6 +113,15 @@ a:focus-visible, summary:focus-visible, button:focus-visible {
   color: var(--ink);
   font-weight: 600;
 }
+.toc li a::before {
+  content: "";
+  display: inline-block;
+  width: 0.5rem;
+  height: 0.5rem;
+  margin-right: 0.55rem;
+  border-radius: 2px;
+  background: var(--hue, var(--rule));
+}
 .rail details > summary {
   cursor: pointer;
   font-size: 0.8125rem;
@@ -117,6 +135,7 @@ a:focus-visible, summary:focus-visible, button:focus-visible {
   color: var(--muted);
 }
 .rail .month:first-child { margin-top: 0; }
+.rail .all-days { display: inline-block; margin-top: 1rem; }
 
 /* Main */
 main { min-width: 0; max-width: 42rem; }
@@ -131,16 +150,23 @@ main { min-width: 0; max-width: 42rem; }
   text-wrap: balance;
 }
 .day-head .year { color: var(--muted); font-weight: 500; }
-.day-head p {
-  margin: 1rem 0 0;
+.day-head .lead {
+  margin: 1.4rem 0 0;
+  font-size: 1.28rem;
+  line-height: 1.5;
+  text-wrap: pretty;
+}
+.day-head .stamp {
+  margin: 0.9rem 0 0;
   color: var(--muted);
   font-family: var(--sans);
-  font-size: 0.9rem;
+  font-size: 0.8125rem;
 }
 .pager {
   display: flex;
-  gap: 1.5rem;
-  margin-top: 1.25rem;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.5rem;
+  margin-top: 1.5rem;
   font-family: var(--sans);
   font-size: 0.875rem;
 }
@@ -151,12 +177,23 @@ section.topic {
   border-top: 1px solid var(--rule);
 }
 section.topic > h2 {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
   margin: 0 0 1.5rem;
   font-family: var(--sans);
   font-weight: 600;
   font-size: 1.3rem;
   line-height: 1.25;
   letter-spacing: -0.01em;
+}
+section.topic > h2::before {
+  content: "";
+  flex: none;
+  width: 0.65rem;
+  height: 0.65rem;
+  border-radius: 2px;
+  background: var(--hue, var(--accent));
 }
 article.item + article.item { margin-top: 2rem; }
 article.item h3 {
@@ -170,20 +207,31 @@ article.item p { margin: 0 0 0.6rem; }
 .apply {
   margin: 0.8rem 0 0.6rem;
   padding-left: 1rem;
-  border-left: 2px solid var(--accent);
+  border-left: 2px solid var(--hue, var(--accent));
 }
 .apply strong {
   display: block;
   font-family: var(--sans);
   font-size: 0.8125rem;
   font-weight: 600;
-  color: var(--accent);
+  color: var(--hue, var(--accent));
 }
 .apply p { margin: 0; }
-.item-source {
+.item-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 1rem;
   font-family: var(--sans);
   font-size: 0.8125rem;
   color: var(--muted);
+}
+.item-meta .host { color: var(--muted); margin-left: 0.35rem; }
+.badge {
+  padding: 0 0.5rem;
+  border: 1px solid var(--rule);
+  border-radius: 99px;
+  color: var(--ink);
 }
 
 /* Knowledge */
@@ -236,6 +284,53 @@ section.sources ol {
 }
 section.sources li { margin-bottom: 0.4rem; overflow-wrap: anywhere; }
 
+/* Archive view */
+.archive-head h1 {
+  margin: 0 0 1.5rem;
+  font-family: var(--sans);
+  font-weight: 700;
+  font-size: clamp(2rem, 5.5vw, 3rem);
+  line-height: 1.08;
+  letter-spacing: -0.025em;
+}
+.search {
+  width: 100%;
+  padding: 0.65rem 0.85rem;
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  font-family: var(--sans);
+  font-size: 0.95rem;
+}
+.search::placeholder { color: var(--muted); }
+.archive-month {
+  margin: 2.5rem 0 0.5rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--rule);
+  font-family: var(--sans);
+  font-weight: 600;
+  font-size: 1.05rem;
+}
+.archive-list { list-style: none; margin: 0; padding: 0; }
+.archive-list a {
+  display: block;
+  padding: 0.85rem 0;
+  color: var(--ink);
+  text-decoration: none;
+}
+.archive-list li + li { border-top: 1px solid color-mix(in srgb, var(--rule) 55%, transparent); }
+.archive-list .d {
+  display: block;
+  font-family: var(--sans);
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--accent);
+}
+.archive-list a:hover .d { text-decoration: underline; text-underline-offset: 0.18em; }
+.archive-list .s { display: block; margin-top: 0.15rem; color: var(--muted); font-size: 1rem; line-height: 1.5; }
+
 .state {
   font-family: var(--sans);
   padding: 2rem 0;
@@ -260,6 +355,7 @@ footer {
   .rail .toc { display: none; }
   .rail details { margin-top: 0; }
   .day-head { margin-bottom: 2rem; }
+  .day-head .lead { font-size: 1.17rem; }
   section.knowledge { padding: 1.25rem 1.1rem 1.1rem; }
 }
 </style>
@@ -270,7 +366,7 @@ footer {
     <a class="site-name" href="#">Bản tin công nghệ hằng ngày</a>
     <nav class="toc" id="toc" aria-label="Các mảng trong bản tin" hidden></nav>
     <details id="archive-wrap" open>
-      <summary>Các ngày trước</summary>
+      <summary>Các ngày gần đây</summary>
       <nav id="archive" aria-label="Lưu trữ theo ngày"></nav>
     </details>
   </aside>
@@ -285,6 +381,8 @@ footer {
 
   var DATA_DIR = "data/";
   var DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+  var PUBLISHED_RE = /^(\d{4})-(\d{2})(?:-(\d{2}))?$/;
+  var RECENT = 10;
   var tz = "Asia/Bangkok";
 
   var main = document.getElementById("main");
@@ -292,9 +390,9 @@ footer {
   var archive = document.getElementById("archive");
   var archiveWrap = document.getElementById("archive-wrap");
   var dates = [];
+  var summaries = {};
   var spy = null;
 
-  // Collapse the archive by default on narrow screens.
   if (window.matchMedia && window.matchMedia("(max-width: 56rem)").matches) {
     archiveWrap.removeAttribute("open");
   }
@@ -314,18 +412,26 @@ footer {
   function safeUrl(u) {
     try {
       var url = new URL(String(u));
-      return (url.protocol === "https:" || url.protocol === "http:") ? url.href : null;
+      return (url.protocol === "https:" || url.protocol === "http:") ? url : null;
     } catch (e) { return null; }
   }
   function link(text, url) {
-    var href = safeUrl(url);
-    if (!href) return document.createTextNode(text);
-    return el("a", { href: href, target: "_blank", rel: "noopener noreferrer", text: text });
+    var u = safeUrl(url);
+    if (!u) return document.createTextNode(text);
+    return el("a", { href: u.href, target: "_blank", rel: "noopener noreferrer", text: text });
   }
   function str(v) { return typeof v === "string" ? v : ""; }
   function dateObj(d) { return new Date(d + "T12:00:00+07:00"); }
   function fmt(d, opts) { return new Intl.DateTimeFormat("vi-VN", Object.assign({ timeZone: tz }, opts)).format(dateObj(d)); }
   function clear(node) { while (node.firstChild) node.removeChild(node.firstChild); }
+  function plain(s) { return String(s).normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/đ/g, "d").toLowerCase(); }
+
+  function publishedLabel(p) {
+    var m = PUBLISHED_RE.exec(str(p));
+    if (!m) return "";
+    return m[3] ? "Đăng " + parseInt(m[3], 10) + "/" + parseInt(m[2], 10) + "/" + m[1]
+                : "Đăng tháng " + parseInt(m[2], 10) + "/" + m[1];
+  }
 
   function showState(title, text) {
     clear(main);
@@ -336,7 +442,6 @@ footer {
     toc.hidden = true;
   }
 
-  /* ---------- data ---------- */
   function getJSON(path) {
     return fetch(path, { cache: "no-cache" }).then(function (r) {
       if (!r.ok) throw new Error(path + " → " + r.status);
@@ -344,17 +449,14 @@ footer {
     });
   }
 
-  function currentDate() {
-    var h = decodeURIComponent(location.hash.replace(/^#/, ""));
-    return (DATE_RE.test(h) && dates.indexOf(h) !== -1) ? h : dates[0];
-  }
+  function currentHash() { return decodeURIComponent(location.hash.replace(/^#/, "")); }
 
-  /* ---------- rendering ---------- */
+  /* ---------- rail ---------- */
   function renderArchive(active) {
     clear(archive);
     var currentMonth = "";
     var list = null;
-    dates.forEach(function (d) {
+    dates.slice(0, RECENT).forEach(function (d) {
       var month = fmt(d, { month: "long", year: "numeric" });
       if (month !== currentMonth) {
         currentMonth = month;
@@ -366,6 +468,9 @@ footer {
       if (d === active) a.setAttribute("aria-current", "page");
       list.appendChild(el("li", null, [a]));
     });
+    var all = el("a", { "class": "all-days", href: "#luu-tru", text: "Tất cả " + dates.length + " bản tin" });
+    if (active === "luu-tru") all.setAttribute("aria-current", "page");
+    archive.appendChild(all);
   }
 
   function renderToc(sections, hasKnowledge) {
@@ -373,7 +478,7 @@ footer {
     toc.appendChild(el("h2", { text: "Trong bản tin" }));
     var ul = el("ul");
     sections.forEach(function (s, i) {
-      ul.appendChild(el("li", null, [el("a", { href: "#sec-" + i, text: s.title })]));
+      ul.appendChild(el("li", null, [el("a", { href: "#sec-" + i, "class": "hue-" + Math.min(i, 6), text: s.title })]));
     });
     if (hasKnowledge) ul.appendChild(el("li", null, [el("a", { href: "#kien-thuc", text: "Kiến thức nên nhớ" })]));
     ul.appendChild(el("li", null, [el("a", { href: "#nguon", text: "Nguồn" })]));
@@ -397,6 +502,7 @@ footer {
     main.querySelectorAll("[data-spy]").forEach(function (n) { spy.observe(n); });
   }
 
+  /* ---------- day view ---------- */
   function paragraphs(text) {
     return str(text).split(/\n{2,}/).map(function (p) { return p.trim(); }).filter(Boolean)
       .map(function (p) { return el("p", { text: p }); });
@@ -411,12 +517,19 @@ footer {
         el("p", { text: str(item.apply) })
       ]));
     }
-    if (item.source && safeUrl(item.source.url)) {
-      kids.push(el("div", { "class": "item-source" }, [
+    var meta = [];
+    if (item.kind === "bài đọc") meta.push(el("span", { "class": "badge", text: "Bài đáng đọc" }));
+    var u = item.source ? safeUrl(item.source.url) : null;
+    if (u) {
+      meta.push(el("span", null, [
         document.createTextNode("Nguồn: "),
-        link(str(item.source.title) || item.source.url, item.source.url)
+        link(str(item.source.title) || u.hostname, u.href),
+        el("span", { "class": "host", text: u.hostname.replace(/^www\./, "") })
       ]));
     }
+    var pl = publishedLabel(item.published);
+    if (pl) meta.push(el("span", { text: pl }));
+    if (meta.length) kids.push(el("div", { "class": "item-meta" }, meta));
     return el("article", { "class": "item" }, kids);
   }
 
@@ -433,27 +546,26 @@ footer {
         el("span", { "class": "year", text: fmt(date, { year: "numeric" }) })
       ])
     ]);
-    var meta = [];
+    if (str(day.summary)) head.appendChild(el("p", { "class": "lead", text: str(day.summary) }));
     if (day.generated_at) {
       var t = new Date(day.generated_at);
       if (!isNaN(t)) {
-        meta.push("Cập nhật lúc " + new Intl.DateTimeFormat("vi-VN", { timeZone: tz, hour: "2-digit", minute: "2-digit" }).format(t) + ".");
+        head.appendChild(el("p", { "class": "stamp", text: "Cập nhật lúc " + new Intl.DateTimeFormat("vi-VN", { timeZone: tz, hour: "2-digit", minute: "2-digit" }).format(t) }));
       }
     }
-    if (str(day.summary)) meta.unshift(str(day.summary));
-    if (meta.length) head.appendChild(el("p", { text: meta.join(" ") }));
 
     var pager = el("nav", { "class": "pager", "aria-label": "Chuyển ngày" });
-    if (older) pager.appendChild(el("a", { href: "#" + older, text: "Ngày trước: " + fmt(older, { day: "numeric", month: "numeric" }) }));
-    if (newer) pager.appendChild(el("a", { href: "#" + newer, text: "Ngày sau: " + fmt(newer, { day: "numeric", month: "numeric" }) }));
-    if (pager.firstChild) head.appendChild(pager);
+    if (older) pager.appendChild(el("a", { href: "#" + older, text: "← " + fmt(older, { weekday: "short", day: "numeric", month: "numeric" }) }));
+    if (newer) pager.appendChild(el("a", { href: "#" + newer, text: fmt(newer, { weekday: "short", day: "numeric", month: "numeric" }) + " →" }));
+    pager.appendChild(el("a", { href: "#luu-tru", text: "Tất cả bản tin" }));
+    head.appendChild(pager);
     main.appendChild(head);
 
     var sections = (Array.isArray(day.sections) ? day.sections : []).filter(function (s) {
       return s && str(s.title) && Array.isArray(s.items) && s.items.length;
     });
     sections.forEach(function (s, i) {
-      var sec = el("section", { "class": "topic", id: "sec-" + i, "data-spy": "1" }, [
+      var sec = el("section", { "class": "topic hue-" + Math.min(i, 6), id: "sec-" + i, "data-spy": "1" }, [
         el("h2", { text: s.title })
       ]);
       s.items.forEach(function (item) { if (item && str(item.title)) sec.appendChild(renderItem(item)); });
@@ -479,7 +591,7 @@ footer {
       srcs.forEach(function (s) { ol.appendChild(el("li", null, [link(str(s.title) || s.url, s.url)])); });
       ss.appendChild(ol);
     } else {
-      ss.appendChild(el("p", { "class": "item-source", text: "Bản tin này chưa kèm danh sách nguồn." }));
+      ss.appendChild(el("p", { "class": "item-meta", text: "Bản tin này chưa kèm danh sách nguồn." }));
     }
     main.appendChild(ss);
 
@@ -491,8 +603,54 @@ footer {
     startSpy();
   }
 
+  /* ---------- archive view ---------- */
+  function renderArchiveView() {
+    clear(main);
+    toc.hidden = true;
+    if (spy) spy.disconnect();
+
+    var input = el("input", { "class": "search", type: "search", placeholder: "Tìm theo từ khoá, ví dụ: Kubernetes", "aria-label": "Tìm trong các bản tin" });
+    main.appendChild(el("header", { "class": "archive-head" }, [
+      el("h1", { text: "Tất cả bản tin" }),
+      input
+    ]));
+    var results = el("div");
+    main.appendChild(results);
+
+    function draw(query) {
+      clear(results);
+      var q = plain(query.trim());
+      var shown = 0, month = "", list = null;
+      dates.forEach(function (d) {
+        var s = str(summaries[d]);
+        var hay = plain(d + " " + fmt(d, { weekday: "long", day: "numeric", month: "long" }) + " " + s);
+        if (q && hay.indexOf(q) === -1) return;
+        var m = fmt(d, { month: "long", year: "numeric" });
+        if (m !== month) {
+          month = m;
+          results.appendChild(el("h2", { "class": "archive-month", text: m }));
+          list = el("ul", { "class": "archive-list" });
+          results.appendChild(list);
+        }
+        list.appendChild(el("li", null, [el("a", { href: "#" + d }, [
+          el("span", { "class": "d", text: fmt(d, { weekday: "long", day: "numeric", month: "numeric", year: "numeric" }) }),
+          s ? el("span", { "class": "s", text: s }) : null
+        ])]));
+        shown++;
+      });
+      if (!shown) results.appendChild(el("div", { "class": "state", text: "Không có bản tin nào khớp với từ khoá này." }));
+    }
+    input.addEventListener("input", function () { draw(input.value); });
+    draw("");
+    renderArchive("luu-tru");
+    document.title = "Tất cả bản tin · Bản tin công nghệ hằng ngày";
+  }
+
+  /* ---------- routing ---------- */
   function show() {
-    var date = currentDate();
+    var h = currentHash();
+    if (h === "luu-tru") { renderArchiveView(); window.scrollTo(0, 0); return; }
+    var date = (DATE_RE.test(h) && dates.indexOf(h) !== -1) ? h : dates[0];
     if (!date) return;
     getJSON(DATA_DIR + date + ".json").then(function (day) {
       renderDay(day, date);
@@ -505,14 +663,15 @@ footer {
   getJSON(DATA_DIR + "index.json").then(function (idx) {
     dates = (Array.isArray(idx.dates) ? idx.dates : []).filter(function (d) { return DATE_RE.test(d); });
     dates.sort().reverse();
+    summaries = (idx.summaries && typeof idx.summaries === "object") ? idx.summaries : {};
     if (!dates.length) {
       showState("Chưa có bản tin nào", "Bản tin đầu tiên sẽ xuất hiện sau lần chạy tiếp theo của scheduled task.");
       archiveWrap.hidden = true;
       return;
     }
     window.addEventListener("hashchange", function () {
-      var h = decodeURIComponent(location.hash.replace(/^#/, ""));
-      if (h && !DATE_RE.test(h)) return; // only date hashes switch the day
+      var h = currentHash();
+      if (h && h !== "luu-tru" && !DATE_RE.test(h)) return; // section anchors never switch the view
       show();
     });
     toc.addEventListener("click", function (e) {

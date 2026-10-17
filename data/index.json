@@ -1,5 +1,8 @@
 {
   "dates": [
     "2026-10-17"
-  ]
+  ],
+  "summaries": {
+    "2026-10-17": "npm 12 chặn install script mặc định, Kubernetes 1.37 cho HPA scale-to-zero, và prompt caching cho agent giảm 45-80% chi phí."
+  }
 }
