@@ -331,6 +331,17 @@ section.sources li { margin-bottom: 0.4rem; overflow-wrap: anywhere; }
 .archive-list a:hover .d { text-decoration: underline; text-underline-offset: 0.18em; }
 .archive-list .s { display: block; margin-top: 0.15rem; color: var(--muted); font-size: 1rem; line-height: 1.5; }
 
+.notice {
+  margin: 0 0 2rem;
+  padding: 0.8rem 1rem;
+  border-left: 3px solid var(--c5);
+  background: color-mix(in srgb, var(--c5) 12%, transparent);
+  font-family: var(--sans);
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+.notice strong { display: block; margin-bottom: 0.15rem; }
+
 .state {
   font-family: var(--sans);
   padding: 2rem 0;
@@ -431,6 +442,21 @@ footer {
     if (!m) return "";
     return m[3] ? "Đăng " + parseInt(m[3], 10) + "/" + parseInt(m[2], 10) + "/" + m[1]
                 : "Đăng tháng " + parseInt(m[2], 10) + "/" + m[1];
+  }
+
+  // A day with no new digest is normal; two or more days in a row means the daily run has probably failed.
+  var STALE_AFTER_DAYS = 2;
+  function staleNotice() {
+    if (!dates.length) return null;
+    var today = new Intl.DateTimeFormat("en-CA", { timeZone: tz }).format(new Date());
+    if (!DATE_RE.test(today)) return null;
+    var gap = Math.round((dateObj(today) - dateObj(dates[0])) / 86400000);
+    if (!(gap >= STALE_AFTER_DAYS)) return null;
+    return el("div", { "class": "notice", role: "status" }, [
+      el("strong", { text: "Chưa có bản tin mới trong " + gap + " ngày" }),
+      document.createTextNode("Bản tin gần nhất là ngày " + fmt(dates[0], { day: "numeric", month: "numeric" }) +
+        ". Lần chạy hằng ngày có thể đang lỗi, hãy kiểm tra lịch sử chạy của routine trong Claude.")
+    ]);
   }
 
   function showState(title, text) {
@@ -540,6 +566,9 @@ footer {
     var newer = idx > 0 ? dates[idx - 1] : null;
     var older = idx < dates.length - 1 ? dates[idx + 1] : null;
 
+    var stale = staleNotice();
+    if (stale) main.appendChild(stale);
+
     var head = el("header", { "class": "day-head" }, [
       el("h1", null, [
         document.createTextNode(fmt(date, { weekday: "long", day: "numeric", month: "long" }) + " "),
@@ -608,6 +637,9 @@ footer {
     clear(main);
     toc.hidden = true;
     if (spy) spy.disconnect();
+
+    var stale = staleNotice();
+    if (stale) main.appendChild(stale);
 
     var input = el("input", { "class": "search", type: "search", placeholder: "Tìm theo từ khoá, ví dụ: Kubernetes", "aria-label": "Tìm trong các bản tin" });
     main.appendChild(el("header", { "class": "archive-head" }, [
