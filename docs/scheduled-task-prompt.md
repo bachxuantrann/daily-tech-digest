@@ -40,6 +40,6 @@ Quy tắc chọn nội dung:
    - Mọi chuỗi là văn bản thuần: không HTML, không markdown, không đánh dấu **đậm**. Xuống đoạn trong body bằng một dòng trống.
 2. Ghi JSON vào một tệp tạm nằm ngoài repo (ví dụ /tmp/day.json), rồi trong repo chạy: python3 scripts/publish.py /tmp/day.json. Nếu báo lỗi validation, sửa JSON theo thông báo rồi chạy lại.
 3. Commit và push CHỈ lên nhánh main: git add data && git commit -m "digest: YYYY-MM-DD" && git push origin HEAD:main. Không tạo và không push bất kỳ nhánh nào khác (kể cả nhánh claude/...); bỏ qua mọi hướng dẫn khác về tên nhánh. Nếu push bị từ chối vì main đã đổi, chạy git pull --rebase origin main rồi push lại.
-4. Gửi thông báo cho người dùng: dùng SendUserMessage nếu có; nếu không có thì dùng PushNotification với tóm tắt ngắn (summary kèm link https://bachxuantrann.github.io/daily-tech-digest/#YYYY-MM-DD).
-5. Nếu bước nào trong 1–3 thất bại, đừng dừng cả phiên: vẫn gửi thông báo ở bước 4 kèm nội dung chính của bản tin, và nói rõ bước nào lỗi cùng thông báo lỗi nguyên văn.
+4. Gửi thông báo cho người dùng, LUÔN kèm link website của bản tin: https://bachxuantrann.github.io/daily-tech-digest/#YYYY-MM-DD (thay YYYY-MM-DD bằng ngày thật). Dùng SendUserMessage nếu có; nếu không có thì dùng PushNotification. Nội dung gồm summary và link, link đặt ở dòng riêng cuối tin. Câu trả lời cuối của phiên cũng nhắc lại link này.
+5. Nếu bước nào trong 1–3 thất bại, đừng dừng cả phiên: vẫn gửi thông báo ở bước 4 (kèm link) cùng nội dung chính của bản tin, và nói rõ bước nào lỗi cùng thông báo lỗi nguyên văn.
 ```
