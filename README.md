@@ -55,6 +55,8 @@ docs/                   prompt mẫu cho scheduled task
 }
 ```
 
+`generated_at` luôn do `publish.py` ghi lại theo đồng hồ hệ thống, giá trị trong tệp đầu vào bị bỏ qua (mô hình không có đồng hồ nên hay đoán sai giờ).
+
 Mọi chuỗi là văn bản thuần. Trang luôn hiển thị bằng `textContent` và chỉ mở link `http(s)`, nên nội dung lấy từ web không thể chèn script vào trang.
 
 ## Thử cục bộ

@@ -6,7 +6,8 @@ Usage:
 
 What it does:
   1. Validates the JSON against the schema described in README.md.
-  2. Writes it to data/<date>.json (replacing any earlier run for that date).
+  2. Sets generated_at from the system clock (any value in the input is ignored)
+     and writes it to data/<date>.json (replacing any earlier run for that date).
   3. Adds the date to data/index.json (newest first, no duplicates).
 
 Exit code is 0 on success, 1 if validation fails (nothing is written then).
@@ -14,6 +15,7 @@ Exit code is 0 on success, 1 if validation fails (nothing is written then).
 import json
 import re
 import sys
+from datetime import datetime, timezone
 from pathlib import Path
 from urllib.parse import urlparse
 
@@ -114,6 +116,10 @@ def main(argv):
         for e in errors:
             print(f"  - {e}")
         return 1
+
+    # The model that writes the JSON has no clock and tends to guess the time,
+    # so the publish time always comes from the system clock instead.
+    day["generated_at"] = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
     DATA.mkdir(exist_ok=True)
     date = day["date"]
