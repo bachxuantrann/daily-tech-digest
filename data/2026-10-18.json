@@ -1,0 +1,198 @@
+{
+  "date": "2026-10-18",
+  "summary": "Anthropic tự viết hệ thống quản lý mã nguồn Scion thay git, Shopify chuyển giữ chỗ tồn kho từ Redis sang MySQL, và PostgreSQL 19 ra RC1 với REPACK CONCURRENTLY.",
+  "sections": [
+    {
+      "title": "Backend",
+      "items": [
+        {
+          "title": "Shopify thay Redis bằng MySQL cho giữ chỗ tồn kho",
+          "summary": "Shopify chuyển bước giữ chỗ hàng khi checkout từ Redis sang MySQL 8, dùng SKIP LOCKED với mỗi đơn vị tồn kho là một dòng thay vì một dòng chứa số lượng, để tránh tranh chấp khoá trên một hàng nóng. Nhờ đó giữ chỗ và sổ cái tồn kho nằm cùng một CSDL, hết lệch dữ liệu giữa hai nơi.",
+          "apply": "Nếu đang đồng bộ Redis với CSDL chính để chống bán vượt, thử đo xem một bảng có hàng theo từng đơn vị cùng SKIP LOCKED có đủ tải không trước khi giữ thêm một hệ thống.",
+          "source": {
+            "title": "Scaling inventory reservations - Shopify Engineering",
+            "url": "https://shopify.engineering/scaling-inventory-reservations"
+          },
+          "published": "2026-10-01",
+          "kind": "tin"
+        },
+        {
+          "title": "Go 1.27: generic methods, encoding/json/v2, cấp phát bộ nhớ nhanh hơn",
+          "summary": "Go 1.27 cho phép method tự khai báo type parameter, đưa encoding/json/v2 và gói uuid vào thư viện chuẩn, đồng thời cấp phát các đối tượng nhỏ (dưới 80 byte) rẻ hơn tới 30%. Bản vá mới nhất hiện là 1.27.2 (8/10).",
+          "apply": "Đọc kỹ phần thay đổi của json/v2 trước khi nâng cấp vì hành vi mặc định khác json cũ; thử trên một service nhỏ trước.",
+          "source": {
+            "title": "Go 1.27 is released - The Go Programming Language",
+            "url": "https://go.dev/blog/go1.27"
+          },
+          "published": "2026-08-19",
+          "kind": "bài đọc"
+        }
+      ]
+    },
+    {
+      "title": "DevOps / Cloud",
+      "items": [
+        {
+          "title": "GitHub dựng lại hạ tầng Git cho tải do agent tạo ra",
+          "summary": "GitHub kể lại việc xây lại tầng Git bên dưới khi nền tảng vẫn đang chạy, để chịu được lượng thao tác lớn từ các agent lập trình, vốn khác hẳn kiểu dùng của con người.",
+          "apply": "Nếu CI hoặc bot của bạn sinh nhiều clone và fetch, hãy xem chúng có làm nghẽn Git server nội bộ không và cân nhắc cache hoặc shallow/partial clone.",
+          "source": {
+            "title": "Building Git infrastructure for agent-scale development - The GitHub Blog",
+            "url": "https://github.blog/engineering/architecture-optimization/building-git-infrastructure-for-agent-scale-development/"
+          },
+          "published": "2026-10-06",
+          "kind": "tin"
+        },
+        {
+          "title": "OpenTofu 1.13.1 vá lỗi dùng CPU quá mức khi tofu init",
+          "summary": "Bản 1.13.1 (1/10) kèm một security advisory về việc tofu init ngốn CPU quá mức, và 1.12.8 ra ngày 14/10 cho nhánh cũ. Nhánh 1.13 được nhắc là sắp hết hỗ trợ.",
+          "apply": "Pin phiên bản OpenTofu trong CI và nâng lên bản vá mới nhất của nhánh đang dùng.",
+          "source": {
+            "title": "Releases - opentofu/opentofu",
+            "url": "https://github.com/opentofu/opentofu/releases"
+          },
+          "published": "2026-10-14",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "AI Engineering thực chiến",
+      "items": [
+        {
+          "title": "Claude Haiku 5.5: mô hình nhỏ rẻ hơn khoảng 75%",
+          "summary": "Theo Reuters, Haiku 5.5 giá 0,10 USD đầu vào và 0,50 USD đầu ra cho mỗi triệu token với prompt dưới 100k, thấp hơn Haiku 4.5 khoảng 75%. Nhắm vào phân loại, tóm tắt, trích xuất cho hỗ trợ khách hàng, voice agent và trợ lý trong ứng dụng. Số liệu lấy từ báo chí, chưa đối chiếu với trang công bố gốc.",
+          "apply": "Dùng mô hình nhỏ cho các bước phân loại và trích xuất trong pipeline RAG hay agent, giữ mô hình lớn cho bước suy luận; chạy eval trước khi đổi.",
+          "source": {
+            "title": "Anthropic launches third Claude 5.5 model - Reuters via The Star",
+            "url": "https://www.thestar.com.my/tech/tech-news/2026/10/08/anthropic-launches-third-claude-55-model-expanding-ai-lineup-before-planned-ipo"
+          },
+          "published": "2026-10-07",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "System Design & Architecture",
+      "items": [
+        {
+          "title": "Scion: Anthropic thay git bằng hệ thống quản lý mã nguồn tự xây",
+          "summary": "Monorepo của Anthropic tăng từ khoảng 2.500 lên hơn 30.000 merge mỗi ngày, git với mirror không theo kịp. Họ xây Scion: changeset nằm trong write-ahead log, ref cập nhật bằng compare-and-swap trên một hàng Spanner, client lấy cây và blob theo yêu cầu thay vì packfile, phía server chia tầng cache. Kết quả theo bài: tốn ít CPU và bộ nhớ hơn khoảng 200 lần, checkout CI từ phút xuống giây.",
+          "apply": "Điểm đáng lấy là nguyên tắc thiết kế: client mỏng, server làm việc nặng, mọi truy vấn qua API, mỗi tầng cache tách miền lỗi.",
+          "source": {
+            "title": "Redesigning source control at Anthropic",
+            "url": "https://www.anthropic.com/engineering/redesigning-source-control"
+          },
+          "published": "2026-10-13",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "Open Source & công cụ mới",
+      "items": [
+        {
+          "title": "context-mode: giảm token cho agent lập trình bằng cách đưa output công cụ vào sandbox",
+          "summary": "Repo đang lên trên GitHub Trending tuần này: đặt output của tool vào sandbox và lưu bộ nhớ phiên để ngữ cảnh của agent không phình ra. Chưa kiểm chứng hiệu quả.",
+          "apply": "Thử trên một repo nhỏ ở home lab và so số token trước sau với cùng tác vụ.",
+          "source": {
+            "title": "mksglu/context-mode",
+            "url": "https://github.com/mksglu/context-mode"
+          },
+          "published": "2026-10",
+          "kind": "tin"
+        },
+        {
+          "title": "mattpocock/skills: bộ skill kỹ thuật cho agent",
+          "summary": "Bộ sưu tập skill lấy từ thư mục agent của tác giả, tăng nhanh trên Trending tuần này. Đáng đọc để lấy cách viết hướng dẫn cho agent.",
+          "source": {
+            "title": "mattpocock/skills",
+            "url": "https://github.com/mattpocock/skills"
+          },
+          "published": "2026-10",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "Career & kỹ năng mềm",
+      "items": [
+        {
+          "title": "The Engineer/Manager Pendulum của Charity Majors",
+          "summary": "Bài cho rằng luân phiên giữa vai trò kỹ sư và quản lý giúp bạn giỏi hơn ở cả hai. Hữu ích cho ai đang cân nhắc giữa tech lead và engineering manager.",
+          "apply": "Coi chuyển vai là thử nghiệm có thời hạn, thoả thuận trước với quản lý cách quay lại.",
+          "source": {
+            "title": "The Engineer/Manager Pendulum - charity.wtf",
+            "url": "https://charity.wtf/2017/05/11/the-engineermanager-pendulum/"
+          },
+          "published": "2017-05",
+          "kind": "bài đọc"
+        }
+      ]
+    },
+    {
+      "title": "Đáng chú ý khác",
+      "items": [
+        {
+          "title": "PostgreSQL 19 RC1: REPACK CONCURRENTLY và pg_plan_advice",
+          "summary": "RC1 ra ngày 15/10; RC2 dự kiến 12/11, bản chính thức 19/11. REPACK thay VACUUM FULL và CLUSTER, có chế độ CONCURRENTLY không chặn đọc ghi. pg_plan_advice cho phép kiểm soát lựa chọn của planner, và autovacuum có thể dùng worker song song. Nâng cấp từ bản cũ cần pg_upgrade hoặc dump/restore.",
+          "apply": "Dựng một bản sao staging chạy RC1, thử REPACK (CONCURRENTLY) trên bảng bloat lớn trước khi GA.",
+          "source": {
+            "title": "PostgreSQL 19 RC 1 Released!",
+            "url": "https://www.postgresql.org/about/news/postgresql-19-rc-1-released-3409/"
+          },
+          "published": "2026-10-15",
+          "kind": "tin"
+        }
+      ]
+    }
+  ],
+  "knowledge": {
+    "title": "Transactional outbox: ghi sự kiện cùng giao dịch với dữ liệu",
+    "body": "Khi một service vừa ghi CSDL vừa phát sự kiện lên Kafka hay queue, hai thao tác này không nằm chung một giao dịch: ghi xong mà publish lỗi thì mất sự kiện, publish xong mà commit lỗi thì có sự kiện ma.\n\nOutbox giải quyết bằng cách ghi sự kiện vào bảng outbox ngay trong cùng giao dịch với dữ liệu nghiệp vụ. Một tiến trình riêng (poller hoặc CDC như Debezium) đọc bảng này rồi publish, đánh dấu đã gửi sau khi broker xác nhận.\n\nĐổi lại bạn nhận ngữ nghĩa at-least-once, nên consumer phải idempotent (dedupe theo id sự kiện). Nên có index trên cột chưa gửi và dọn dẹp định kỳ.",
+    "example": "BEGIN;\nUPDATE orders SET status = 'PAID' WHERE id = 42;\nINSERT INTO outbox(id, aggregate, type, payload)\nVALUES (gen_random_uuid(), 'order-42', 'OrderPaid', '{\"orderId\":42}');\nCOMMIT;\n\n-- poller\nSELECT * FROM outbox WHERE sent_at IS NULL\nORDER BY created_at LIMIT 100 FOR UPDATE SKIP LOCKED;"
+  },
+  "sources": [
+    {
+      "title": "Scaling inventory reservations - Shopify Engineering",
+      "url": "https://shopify.engineering/scaling-inventory-reservations"
+    },
+    {
+      "title": "Go 1.27 is released",
+      "url": "https://go.dev/blog/go1.27"
+    },
+    {
+      "title": "Building Git infrastructure for agent-scale development - The GitHub Blog",
+      "url": "https://github.blog/engineering/architecture-optimization/building-git-infrastructure-for-agent-scale-development/"
+    },
+    {
+      "title": "Releases - opentofu/opentofu",
+      "url": "https://github.com/opentofu/opentofu/releases"
+    },
+    {
+      "title": "Anthropic launches third Claude 5.5 model - Reuters via The Star",
+      "url": "https://www.thestar.com.my/tech/tech-news/2026/10/08/anthropic-launches-third-claude-55-model-expanding-ai-lineup-before-planned-ipo"
+    },
+    {
+      "title": "Redesigning source control at Anthropic",
+      "url": "https://www.anthropic.com/engineering/redesigning-source-control"
+    },
+    {
+      "title": "mksglu/context-mode",
+      "url": "https://github.com/mksglu/context-mode"
+    },
+    {
+      "title": "mattpocock/skills",
+      "url": "https://github.com/mattpocock/skills"
+    },
+    {
+      "title": "The Engineer/Manager Pendulum",
+      "url": "https://charity.wtf/2017/05/11/the-engineermanager-pendulum/"
+    },
+    {
+      "title": "PostgreSQL 19 RC 1 Released!",
+      "url": "https://www.postgresql.org/about/news/postgresql-19-rc-1-released-3409/"
+    }
+  ],
+  "generated_at": "2026-10-18T01:22:49Z"
+}
