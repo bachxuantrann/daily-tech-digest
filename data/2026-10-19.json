@@ -1,0 +1,174 @@
+{
+  "date": "2026-10-19",
+  "summary": "Anthropic thêm OpenTelemetry export cho Claude API, Grab đổi storage Counter Service sang Aerospike bằng shadow traffic, và worm Shai-Hulud lại xuất hiện trên npm qua gói Tensorlake.",
+  "sections": [
+    {
+      "title": "Backend",
+      "items": [
+        {
+          "title": "GitHub viết lại runtime Copilot từ TypeScript sang Rust trong 14,5 tuần",
+          "summary": "Hơn 800.000 dòng được thay dần từng thành phần, dùng N-API làm cầu nối tạm, qua 128 PR trong khi vẫn phát hành đều. GitHub báo thời gian khởi động và tạo phiên giảm từ 5,25 giây xuống 292 ms khi nhúng Rust trong tiến trình. Đây là số liệu do chính GitHub công bố.",
+          "apply": "Muốn đổi ngôn ngữ cho một dịch vụ lớn, hãy thay từng module sau một lớp interop thay vì viết lại song song.",
+          "source": {
+            "title": "Migrating the GitHub Copilot runtime to Rust, using Copilot",
+            "url": "https://github.blog/2026-09-17-migrating-the-github-copilot-runtime-to-rust-using-copilot/"
+          },
+          "published": "2026-09-17",
+          "kind": "bài đọc"
+        }
+      ]
+    },
+    {
+      "title": "DevOps / Cloud",
+      "items": [
+        {
+          "title": "Google Cloud Managed Kafka đổi định dạng bootstrap address cho cluster mới",
+          "summary": "Từ 9/10, cluster Managed Service for Apache Kafka tạo mới dùng định dạng bootstrap address và broker URL khác. Cùng thời gian, connector Cloud Storage Sink bản v1.16.11 giảm lỗi hết bộ nhớ và tăng throughput tối đa.",
+          "apply": "Nếu config client hoặc IaC đang hard-code định dạng địa chỉ cũ, kiểm tra lại trước khi tạo cluster mới.",
+          "source": {
+            "title": "Google Cloud release notes",
+            "url": "https://docs.cloud.google.com/release-notes"
+          },
+          "published": "2026-10-09",
+          "kind": "tin"
+        },
+        {
+          "title": "Cloud SQL for PostgreSQL: Private Service Connect thành mặc định cho dự án mới",
+          "summary": "Từ 13/10, instance Cloud SQL for PostgreSQL trong dự án Google Cloud mới dùng Private Service Connect làm cách kết nối IP riêng mặc định, thay cho private services access.",
+          "apply": "Khi dựng môi trường mới bằng Terraform, đừng giả định cơ chế VPC peering cũ; xem lại module mạng.",
+          "source": {
+            "title": "Google Cloud release notes",
+            "url": "https://docs.cloud.google.com/release-notes"
+          },
+          "published": "2026-10-13",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "AI Engineering thực chiến",
+      "items": [
+        {
+          "title": "Claude API xuất trace qua OpenTelemetry (beta)",
+          "summary": "Từ 14/10 có thể theo dõi request Messages API và phiên Managed Agents trong backend observability sẵn có. SDK phát span cho Python, TypeScript, C#, Go, Java, PHP, Ruby; phía API thì thêm OpenTelemetry destination trong Console.",
+          "apply": "Gắn trace LLM vào cùng hệ thống với trace dịch vụ để thấy độ trễ và số token của từng lần gọi nằm ở đâu trong request.",
+          "source": {
+            "title": "Claude Platform release notes",
+            "url": "https://platform.claude.com/docs/en/release-notes/overview"
+          },
+          "published": "2026-10-14",
+          "kind": "tin"
+        },
+        {
+          "title": "Giá đọc prompt cache của Sonnet 5.5 giảm một nửa",
+          "summary": "Từ 7/10, đọc cache trên Claude Sonnet 5.5 giảm từ 0,20 xuống 0,10 USD mỗi triệu token, nên các prompt hệ thống dài và lặp lại càng rẻ.",
+          "apply": "Tính lại chi phí agent: đặt phần cố định (system prompt, tool schema) lên đầu để trúng cache.",
+          "source": {
+            "title": "Claude Platform release notes",
+            "url": "https://platform.claude.com/docs/en/release-notes/overview"
+          },
+          "published": "2026-10-07",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "System Design & Architecture",
+      "items": [
+        {
+          "title": "Grab chuyển storage của Counter Service sang Aerospike bằng shadow traffic",
+          "summary": "Grab tách lớp truy cập storage thành facade với chế độ một backend, shadow và chia traffic. Shadow read tăng dần 5%, 20%, 50%, 100% và so khớp qua metric trước khi chuyển traffic thật. Kết quả theo Grab: p99 đọc giảm khoảng 50%, dữ liệu từ 3 TB còn 1 TB, chi phí mỗi node giảm 45-50%.",
+          "apply": "Trước khi đổi database, đặt interface storage riêng và chạy shadow read để đo độ lệch dữ liệu bằng số liệu thật.",
+          "source": {
+            "title": "Migrating Counter Service storage: Design choices and learnings",
+            "url": "https://engineering.grab.com/counter-service-storage-migration"
+          },
+          "published": "2026-07",
+          "kind": "bài đọc"
+        }
+      ]
+    },
+    {
+      "title": "Open Source & công cụ mới",
+      "items": [
+        {
+          "title": "khuedoan/homelab: dựng home lab Kubernetes từ ổ đĩa trống bằng một lệnh",
+          "summary": "Dự án GitOps tự động hoá toàn bộ từ cài máy đến chạy dịch vụ. Tác giả ghi rõ vẫn ở giai đoạn alpha, có thể phải triển khai lại hoàn toàn.",
+          "apply": "Đọc cấu trúc repo để lấy ý tưởng bootstrap cluster và quản lý secret cho home lab, không nhất thiết chạy nguyên bản.",
+          "source": {
+            "title": "khuedoan/homelab",
+            "url": "https://code.khuedoan.com/khuedoan/homelab"
+          },
+          "kind": "bài đọc"
+        }
+      ]
+    },
+    {
+      "title": "Career & kỹ năng mềm",
+      "items": [
+        {
+          "title": "Tech lead: đừng tự review mọi PR",
+          "summary": "LeadDev chỉ ra lỗi phổ biến của lead mới là cố tự duyệt mọi code review của team, thành nút cổ chai. Cách tốt hơn là chia sẻ trách nhiệm review và dành sự chú ý cho các thay đổi về thiết kế.",
+          "apply": "Đặt quy tắc: PR nhỏ do đồng đội duyệt, bạn chỉ vào những thay đổi chạm kiến trúc hoặc ranh giới module.",
+          "source": {
+            "title": "Empowering engineering teams to perform code reviews (LeadDev)",
+            "url": "https://leaddev.com/software-quality/empowering-engineering-teams-perform-code-reviews"
+          },
+          "kind": "bài đọc"
+        }
+      ]
+    },
+    {
+      "title": "Đáng chú ý khác",
+      "items": [
+        {
+          "title": "Biến thể Shai-Hulud lại xuất hiện trên npm qua gói Tensorlake",
+          "summary": "Theo báo cáo, bản 0.5.144 của Tensorlake phát hành ngày 8/10 mang biến thể mới của worm Shai-Hulud, đánh cắp thông tin xác thực trong môi trường developer và CI. Điểm xâm nhập ban đầu là các commit trên repo của dự án dưới danh nghĩa maintainer. Nguồn là báo cáo thứ cấp, nên hãy đối chiếu với advisory gốc.",
+          "apply": "Pin phiên bản kèm lockfile, tắt install script mặc định và xoay vòng token CI nếu từng cài bản này.",
+          "source": {
+            "title": "Hackers Hijack Tensorlake Package to Spread Shai-Hulud Supply Chain Malware",
+            "url": "https://gbhackers.com/tensorlake-package-hijacked/"
+          },
+          "published": "2026-10-08",
+          "kind": "tin"
+        }
+      ]
+    }
+  ],
+  "knowledge": {
+    "title": "Ngân sách timeout và truyền deadline qua các tầng dịch vụ",
+    "body": "Khi một request đi qua nhiều dịch vụ, nếu mỗi tầng tự đặt timeout riêng thì tầng trong có thể vẫn làm việc cho một request mà client đã bỏ từ lâu. Cách chuẩn là đặt một deadline tuyệt đối ở rìa hệ thống rồi truyền xuống mọi lời gọi phía sau.\n\nMỗi tầng chỉ dùng phần thời gian còn lại, trừ một khoảng dự phòng cho việc xử lý của chính nó. Khi deadline hết, huỷ ngay công việc thay vì xếp hàng tiếp, nhờ đó tải không bị khuếch đại khi hệ thống đang chậm.\n\nGhi chú: gRPC truyền deadline sẵn qua metadata; với HTTP thì tự quy ước header, và đừng dùng retry nếu thời gian còn lại nhỏ hơn thời gian một lần gọi.",
+    "example": "// Go\nctx, cancel := context.WithTimeout(r.Context(), 800*time.Millisecond)\ndefer cancel()\nres, err := client.GetUser(ctx, req) // ctx mang deadline xuống tầng dưới\n\nif dl, ok := ctx.Deadline(); ok && time.Until(dl) < 50*time.Millisecond {\n    return errDeadlineTooClose // không retry nữa\n}"
+  },
+  "sources": [
+    {
+      "title": "Migrating the GitHub Copilot runtime to Rust, using Copilot",
+      "url": "https://github.blog/2026-09-17-migrating-the-github-copilot-runtime-to-rust-using-copilot/"
+    },
+    {
+      "title": "Google Cloud release notes",
+      "url": "https://docs.cloud.google.com/release-notes"
+    },
+    {
+      "title": "Claude Platform release notes",
+      "url": "https://platform.claude.com/docs/en/release-notes/overview"
+    },
+    {
+      "title": "Migrating Counter Service storage: Design choices and learnings",
+      "url": "https://engineering.grab.com/counter-service-storage-migration"
+    },
+    {
+      "title": "khuedoan/homelab",
+      "url": "https://code.khuedoan.com/khuedoan/homelab"
+    },
+    {
+      "title": "Empowering engineering teams to perform code reviews (LeadDev)",
+      "url": "https://leaddev.com/software-quality/empowering-engineering-teams-perform-code-reviews"
+    },
+    {
+      "title": "Hackers Hijack Tensorlake Package to Spread Shai-Hulud Supply Chain Malware",
+      "url": "https://gbhackers.com/tensorlake-package-hijacked/"
+    }
+  ],
+  "generated_at": "2026-10-19T01:23:44Z"
+}
