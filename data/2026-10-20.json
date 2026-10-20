@@ -1,0 +1,118 @@
+{
+  "date": "2026-10-20",
+  "summary": "Cloudflare mua lại Deno để gộp celld vào workerd, GitLab 19.4 thêm /goal và kiểm soát chi phí agent, còn OpenAI Evals sắp chuyển sang chỉ đọc ngày 31/10.",
+  "sections": [
+    {
+      "title": "Backend",
+      "items": [
+        {
+          "title": "Cloudflare mua lại Deno, Workers thành hướng đi chính của Dahl",
+          "summary": "Cloudflare công bố mua Deno ngày 9/10, cả đội chuyển sang Cloudflare để gộp celld (bản chạy Workers trên hạ tầng tự quản) vào workerd. Theo các báo cáo thứ cấp, runtime Deno độc lập chỉ còn bản vá lỗi và bảo mật khoảng một năm, Deno Deploy dừng sau khoảng sáu tháng; chi tiết lộ trình cần đối chiếu với thông báo chính thức.",
+          "apply": "Nếu đang dùng Deno hoặc Deno Deploy cho dịch vụ thật, lên kế hoạch chuyển sang Node/Workers sớm thay vì đợi hết hạn.",
+          "source": {
+            "title": "Cloudflare acquires Deno (The New Stack)",
+            "url": "https://thenewstack.io/cloudflare-acquires-deno-ryan-dahl/"
+          },
+          "published": "2026-10-09",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "DevOps / Cloud",
+      "items": [
+        {
+          "title": "GitLab 19.4: /goal cho agent và báo cáo chi phí theo người dùng",
+          "summary": "Lệnh /goal trong Duo CLI (public beta) cho agent chạy lặp đến khi đạt mục tiêu hoặc hết số vòng, với một mô hình khác kiểm tra tiến độ. GitLab Credits có thể xem mức dùng theo từng tài khoản (GA), và có thêm ba mô hình open-weight rẻ hơn.",
+          "apply": "Kiểm tra bước kiểm tra của /goal không phải chứng minh đúng đắn của code; vẫn cần tiêu chí nghiệm thu rõ ràng và giới hạn số vòng.",
+          "source": {
+            "title": "GitLab 19.4 Adds Goal-Driven Agents and Tighter Cost Controls (InfoQ)",
+            "url": "https://infoq.com/news/2026/10/gitlab-19-4-goal-driven-agents"
+          },
+          "published": "2026-10",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "AI Engineering thực chiến",
+      "items": [
+        {
+          "title": "OpenAI Evals chuyển chỉ đọc ngày 31/10, tắt hẳn 30/11",
+          "summary": "OpenAI thông báo từ 3/6 rằng các eval lưu trên nền tảng sẽ chỉ đọc từ 31/10/2026, dashboard và API ngừng 30/11/2026. Cookbook của OpenAI hướng dẫn chuyển sang Promptfoo; có người dùng báo nút export khó tìm trong giao diện.",
+          "apply": "Xuất cấu hình, dataset và lịch sử chạy trước 31/10, rồi chuyển eval sang chạy trong CI bằng công cụ chạy cục bộ.",
+          "source": {
+            "title": "Deprecation notice: Evals will be shut down on November 30th, 2026",
+            "url": "https://community.openai.com/t/deprecation-notice-evals-will-be-shut-down-on-november-30th-2026/1385537"
+          },
+          "published": "2026-06-03",
+          "kind": "bài đọc"
+        }
+      ]
+    },
+    {
+      "title": "System Design & Architecture",
+      "items": [
+        {
+          "title": "EventBridge bus dùng chung đa tài khoản thay cho chuỗi forwarding",
+          "summary": "AWS công bố custom event bus mới (24/9): một bus chia sẻ qua RAM cho nhiều tài khoản, có ordered delivery, replay, dedup theo nội dung, tài nguyên Subscriber gộp filter, target, retry và DLQ, tới 10.000 subscriber mặc định. Bus cũ đổi tên thành classic, API không đổi.",
+          "apply": "Nếu đang nối bus qua cross-account rule, đánh giá lại để bỏ các tầng forward, giảm chi phí và dễ quản trị hơn.",
+          "source": {
+            "title": "AWS Reworks EventBridge Custom Buses for Enterprise-Scale Event-Driven Architectures (InfoQ)",
+            "url": "https://infoq.com/news/2026/10/aws-eventbridge-scaling"
+          },
+          "published": "2026-10-13",
+          "kind": "bài đọc"
+        }
+      ]
+    },
+    {
+      "title": "Open Source & công cụ mới",
+      "items": [
+        {
+          "title": "promptfoo: eval và red-team LLM bằng CLI, chạy được trong CI",
+          "summary": "CLI/thư viện MIT để chạy bộ test cho prompt, so sánh nhiều nhà cung cấp (OpenAI, Anthropic, Bedrock, Ollama) và quét lỗ hổng. Dự án gia nhập OpenAI từ 3/2026 nhưng vẫn mã nguồn mở.",
+          "apply": "Thử trên home lab: npx promptfoo@latest init, rồi promptfoo eval; có GitHub Action để chạy khi file prompt đổi.",
+          "source": {
+            "title": "promptfoo/promptfoo",
+            "url": "https://github.com/promptfoo/promptfoo"
+          },
+          "published": "2026-03",
+          "kind": "bài đọc"
+        }
+      ]
+    }
+  ],
+  "knowledge": {
+    "title": "Retry với exponential backoff và jitter",
+    "body": "Khi một dịch vụ quá tải, mọi client thử lại cùng lúc sẽ tạo thêm tải và đẩy sự cố lan rộng (cascading failure). Backoff luỹ thừa giãn khoảng cách giữa các lần thử, còn jitter thêm ngẫu nhiên để các client không đồng bộ nhau.\n\nQuy tắc thực tế: giới hạn số lần thử và tổng thời gian, chỉ retry lỗi tạm thời (5xx, timeout, 429), chỉ retry thao tác idempotent, và tôn trọng header Retry-After. Kết hợp với ngân sách timeout để retry không vượt deadline của request gốc.",
+    "example": "import random, time\n\ndef call_with_retry(fn, attempts=5, base=0.2, cap=5.0):\n    for i in range(attempts):\n        try:\n            return fn()\n        except TransientError:\n            if i == attempts - 1:\n                raise\n            # full jitter\n            time.sleep(random.uniform(0, min(cap, base * 2 ** i)))"
+  },
+  "sources": [
+    {
+      "title": "Cloudflare acquires Deno (The New Stack)",
+      "url": "https://thenewstack.io/cloudflare-acquires-deno-ryan-dahl/"
+    },
+    {
+      "title": "GitLab 19.4 Adds Goal-Driven Agents and Tighter Cost Controls (InfoQ)",
+      "url": "https://infoq.com/news/2026/10/gitlab-19-4-goal-driven-agents"
+    },
+    {
+      "title": "Deprecation notice: Evals will be shut down on November 30th, 2026",
+      "url": "https://community.openai.com/t/deprecation-notice-evals-will-be-shut-down-on-november-30th-2026/1385537"
+    },
+    {
+      "title": "AWS Reworks EventBridge Custom Buses (InfoQ)",
+      "url": "https://infoq.com/news/2026/10/aws-eventbridge-scaling"
+    },
+    {
+      "title": "promptfoo/promptfoo",
+      "url": "https://github.com/promptfoo/promptfoo"
+    },
+    {
+      "title": "Google SRE book: Addressing Cascading Failures",
+      "url": "https://sre.google/sre-book/addressing-cascading-failures/"
+    }
+  ],
+  "generated_at": "2026-10-20T01:22:42Z"
+}
