@@ -1,0 +1,152 @@
+{
+  "date": "2026-10-21",
+  "summary": "Python 3.15 ra mắt với lazy import, frozendict và UTF-8 mặc định; Node.js vá lỗi mức HIGH cho 22/24/26 hôm nay; Spotify siết kiểm soát chất lượng khi AI làm số thay đổi tăng gấp đôi.",
+  "sections": [
+    {
+      "title": "Backend",
+      "items": [
+        {
+          "title": "Python 3.15: lazy import, frozendict, sentinel và UTF-8 mặc định",
+          "summary": "Bản 3.15 phát hành ngày 9/10 sau khi thêm một release candidate vì lỗi chặn liên quan lazy import. Điểm đáng chú ý: từ khoá lazy (PEP 810) để hoãn import đến lúc dùng, kiểu dựng sẵn frozendict, sentinel, UTF-8 là encoding mặc định, bộ profiler lấy mẫu Tachyon và ABI ổn định cho bản free-threaded.",
+          "apply": "Thử lazy import trên CLI hoặc service khởi động chậm vì import nặng; kiểm tra code phụ thuộc encoding mặc định của hệ thống trước khi nâng cấp.",
+          "source": {
+            "title": "What's new in Python 3.15",
+            "url": "https://docs.python.org/3/whatsnew/3.15.html"
+          },
+          "published": "2026-10-09",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "DevOps / Cloud",
+      "items": [
+        {
+          "title": "Spotify chỉnh lại kiểm soát chất lượng khi AI làm số thay đổi gấp đôi",
+          "summary": "Số thay đổi được merge mỗi tháng tăng từ khoảng 8.100 lên 17.000 theo năm, và Spotify phản ứng bằng cách sửa giám sát, kiểm thử, rào chắn khi rollout, năng lực rollback và ưu tiên workload. Một sự cố trễ pipeline hồi tháng 6 được dùng làm ví dụ: thêm giám sát đầu cuối, hạ ưu tiên batch job, tăng dung lượng.",
+          "apply": "Khi tốc độ merge tăng, đo lại năng lực rollback và canary của mình trước, vì đó là chỗ nghẽn đầu tiên.",
+          "source": {
+            "title": "InfoQ: Spotify điều chỉnh kiểm soát chất lượng cho phát triển có AI hỗ trợ",
+            "url": "https://infoq.com/news/2026/10/spotify-ai-quality-controls"
+          },
+          "published": "2026-10",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "AI Engineering thực chiến",
+      "items": [
+        {
+          "title": "MCP spec 2026-07-28: giao thức chuyển sang stateless",
+          "summary": "Bản đặc tả bỏ session và bước initialize: mỗi request tự mang phiên bản giao thức, danh tính và capability. Server không còn gửi request ngược cho client, cần trạng thái thì truyền định danh qua tham số tool. Roots, Sampling, Logging bị deprecate nhưng giữ ít nhất 12 tháng. Kết quả list có thể cache và có định tuyến theo header.",
+          "apply": "MCP server stateless dễ scale ngang sau load balancer; rà lại server nào đang giữ state trong session để chuyển sang truyền ID qua tool arguments.",
+          "source": {
+            "title": "Blog chính thức của MCP: bản đặc tả 2026-07-28",
+            "url": "https://blog.modelcontextprotocol.io/posts/2026-07-28/"
+          },
+          "published": "2026-07-28",
+          "kind": "bài đọc"
+        }
+      ]
+    },
+    {
+      "title": "System Design & Architecture",
+      "items": [
+        {
+          "title": "Addressing Cascading Failures trong sách Google SRE",
+          "summary": "Chương kinh điển về cách một node quá tải kéo theo cả hệ thống: quá tải, retry khuếch đại, hết tài nguyên. Nêu các biện pháp như load shedding, giảm cấp dịch vụ có kiểm soát và tránh retry chồng tầng.",
+          "apply": "Đọc cùng ngân sách timeout và backoff có jitter đã nhắc những ngày trước để có bộ phòng thủ trọn vẹn.",
+          "source": {
+            "title": "Addressing Cascading Failures - Google SRE Book",
+            "url": "https://sre.google/sre-book/addressing-cascading-failures/"
+          },
+          "published": "2016-03",
+          "kind": "bài đọc"
+        }
+      ]
+    },
+    {
+      "title": "Open Source & công cụ mới",
+      "items": [
+        {
+          "title": "homebutler: CLI một file để quản lý home lab",
+          "summary": "Công cụ dạng single binary, không cần daemon hay database, xuất JSON và thân thiện với MCP; cài qua Homebrew hoặc Go. Chưa kiểm chứng ngày phát hành gốc, nên coi như công cụ để thử chứ không phải tin mới.",
+          "apply": "Cài thử trên một máy trong home lab, dùng đầu ra JSON để nối vào script giám sát hoặc agent.",
+          "source": {
+            "title": "Higangssh/homebutler trên GitHub",
+            "url": "https://github.com/Higangssh/homebutler"
+          }
+        }
+      ]
+    },
+    {
+      "title": "Career & kỹ năng mềm",
+      "items": [
+        {
+          "title": "Viết design doc như công cụ tạo ảnh hưởng",
+          "summary": "Ghi chú sách Staff Engineer của Tanya Reilly: bắt đầu từ phát biểu vấn đề, giữ template đơn giản, chọn đủ tốt hơn hoàn hảo, và dùng tài liệu chiến lược khi cùng một quyết định gây tranh cãi lặp lại ở nhiều thiết kế.",
+          "apply": "Lần tới trước khi viết giải pháp, hãy viết trước một đoạn phát biểu vấn đề và gửi cho người liên quan xác nhận.",
+          "source": {
+            "title": "Book notes: Staff Engineering: Leadership beyond the management track",
+            "url": "https://danlebrero.com/2022/02/23/staff-engineering-leadership-beyond-the-management-track-book-summary/"
+          },
+          "published": "2022-02",
+          "kind": "bài đọc"
+        }
+      ]
+    },
+    {
+      "title": "Đáng chú ý khác",
+      "items": [
+        {
+          "title": "Node.js phát hành bản vá bảo mật mức HIGH cho 22.x, 24.x và 26.x",
+          "summary": "Dự án thông báo trước đợt vá ngày 21/10 cho ba nhánh còn hỗ trợ, mức nghiêm trọng cao nhất là HIGH. Chi tiết CVE chưa có trong thông báo trước; các nhánh hết vòng đời sẽ không nhận bản vá.",
+          "apply": "Chuẩn bị nâng image Node trong CI và production hôm nay, nhánh đã EOL cần chuyển sang bản được hỗ trợ.",
+          "source": {
+            "title": "Node.js: Wednesday, October 21, 2026 Security Releases",
+            "url": "https://nodejs.org/en/blog/vulnerability/october-2026-security-releases"
+          },
+          "published": "2026-10-14",
+          "kind": "tin"
+        }
+      ]
+    }
+  ],
+  "knowledge": {
+    "title": "Circuit breaker: ngắt sớm khi dependency đang hỏng",
+    "body": "Khi một dependency chậm hoặc lỗi, tiếp tục gọi nó chỉ làm tụ thread, tăng độ trễ và kéo cả service xuống. Circuit breaker theo dõi tỉ lệ lỗi và có ba trạng thái: closed (gọi bình thường), open (từ chối ngay, trả fallback), half-open (sau một khoảng nghỉ cho vài request thử để xem đã hồi phục chưa).\n\nNó bổ sung cho retry và timeout chứ không thay thế: retry xử lý lỗi thoáng qua, circuit breaker chặn retry khi lỗi kéo dài. Đặt ngưỡng theo tỉ lệ lỗi trên một cửa sổ thời gian, không theo số lỗi tuyệt đối, và luôn có fallback hoặc lỗi rõ ràng cho người gọi.",
+    "example": "class Breaker:\n    def __init__(self, threshold=0.5, window=20, cooldown=30):\n        self.state, self.opened_at = 'closed', 0\n        self.results = []  # True = lỗi\n        self.threshold, self.window, self.cooldown = threshold, window, cooldown\n\n    def call(self, fn, fallback):\n        now = time.monotonic()\n        if self.state == 'open':\n            if now - self.opened_at < self.cooldown:\n                return fallback()\n            self.state = 'half-open'\n        try:\n            r = fn()\n            self._record(False)\n            if self.state == 'half-open': self.state = 'closed'\n            return r\n        except Exception:\n            self._record(True)\n            if self.state == 'half-open' or self._fail_rate() >= self.threshold:\n                self.state, self.opened_at = 'open', now\n            return fallback()\n\n    def _record(self, failed):\n        self.results = (self.results + [failed])[-self.window:]\n\n    def _fail_rate(self):\n        return sum(self.results) / len(self.results) if len(self.results) >= self.window else 0"
+  },
+  "sources": [
+    {
+      "title": "What's new in Python 3.15",
+      "url": "https://docs.python.org/3/whatsnew/3.15.html"
+    },
+    {
+      "title": "InfoQ: Spotify AI quality controls",
+      "url": "https://infoq.com/news/2026/10/spotify-ai-quality-controls"
+    },
+    {
+      "title": "Blog MCP: bản đặc tả 2026-07-28",
+      "url": "https://blog.modelcontextprotocol.io/posts/2026-07-28/"
+    },
+    {
+      "title": "Addressing Cascading Failures - Google SRE Book",
+      "url": "https://sre.google/sre-book/addressing-cascading-failures/"
+    },
+    {
+      "title": "Higangssh/homebutler",
+      "url": "https://github.com/Higangssh/homebutler"
+    },
+    {
+      "title": "Book notes: Staff Engineering",
+      "url": "https://danlebrero.com/2022/02/23/staff-engineering-leadership-beyond-the-management-track-book-summary/"
+    },
+    {
+      "title": "Node.js October 2026 Security Releases",
+      "url": "https://nodejs.org/en/blog/vulnerability/october-2026-security-releases"
+    }
+  ],
+  "generated_at": "2026-10-21T01:23:18Z"
+}

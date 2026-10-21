@@ -1,11 +1,13 @@
 {
   "dates": [
+    "2026-10-21",
     "2026-10-20",
     "2026-10-19",
     "2026-10-18",
     "2026-10-17"
   ],
   "summaries": {
+    "2026-10-21": "Python 3.15 ra mắt với lazy import, frozendict và UTF-8 mặc định; Node.js vá lỗi mức HIGH cho 22/24/26 hôm nay; Spotify siết kiểm soát chất lượng khi AI làm số thay đổi tăng gấp đôi.",
     "2026-10-20": "Cloudflare mua lại Deno để gộp celld vào workerd, GitLab 19.4 thêm /goal và kiểm soát chi phí agent, còn OpenAI Evals sắp chuyển sang chỉ đọc ngày 31/10.",
     "2026-10-19": "Anthropic thêm OpenTelemetry export cho Claude API, Grab đổi storage Counter Service sang Aerospike bằng shadow traffic, và worm Shai-Hulud lại xuất hiện trên npm qua gói Tensorlake.",
     "2026-10-18": "Anthropic tự viết hệ thống quản lý mã nguồn Scion thay git, Shopify chuyển giữ chỗ tồn kho từ Redis sang MySQL, và PostgreSQL 19 ra RC1 với REPACK CONCURRENTLY.",
