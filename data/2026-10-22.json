@@ -1,0 +1,153 @@
+{
+  "date": "2026-10-22",
+  "summary": "Prometheus 3.13.5 vá lỗi lộ URL exporter trong log, Cloudflare K2 đưa event streaming lên R2, Java 27 đặt G1 làm GC mặc định; kiến thức hôm nay: bulkhead.",
+  "sections": [
+    {
+      "title": "Backend",
+      "items": [
+        {
+          "title": "Java 27: G1 mặc định ở mọi môi trường, compact object headers bật sẵn, TLS hậu lượng tử",
+          "summary": "Java 27 GA ngày 15/09 với 9 JEP: JEP 523 đặt G1 làm GC mặc định ở mọi môi trường, JEP 534 bật compact object headers theo mặc định, JEP 527 thêm trao đổi khóa lai hậu lượng tử cho TLS 1.3. Structured Concurrency vẫn ở bản preview thứ bảy.",
+          "apply": "Đo lại heap và độ trễ GC của dịch vụ Java trên JDK 27 trước khi nâng; nếu trước đây chạy Serial trong container nhỏ thì hành vi sẽ đổi.",
+          "source": {
+            "title": "Java 27 released (InfoQ)",
+            "url": "https://infoq.com/news/2026/09/java27-released"
+          },
+          "published": "2026-09-15",
+          "kind": "bài đọc"
+        }
+      ]
+    },
+    {
+      "title": "DevOps / Cloud",
+      "items": [
+        {
+          "title": "Prometheus 3.13.5: bản cập nhật bảo mật nâng OpenTelemetry lên 1.45.0",
+          "summary": "Bản phát hành ngày 21/10 nâng thư viện OpenTelemetry để sửa lỗi URL endpoint của exporter bị ghi vào log mức info.",
+          "apply": "Nếu URL endpoint có chứa token hay thông tin nhạy cảm, nâng bản và rà lại log đã lưu.",
+          "source": {
+            "title": "Releases - prometheus/prometheus",
+            "url": "https://github.com/prometheus/prometheus/releases"
+          },
+          "published": "2026-10-21",
+          "kind": "tin"
+        },
+        {
+          "title": "Envoy v1.40.0 cùng loạt bản vá cho các nhánh 1.36-1.39",
+          "summary": "Envoy ra v1.40.0 ngày 13/10 với thay đổi ở access log formatter và đơn vị histogram; một ngày trước đó có các bản vá 1.39.4, 1.38.7, 1.37.9 và 1.36.13.",
+          "apply": "Nếu đang dùng Envoy trong service mesh hay gateway, đọc changelog phần thay đổi histogram trước khi nâng để dashboard không lệch đơn vị.",
+          "source": {
+            "title": "Releases - envoyproxy/envoy",
+            "url": "https://github.com/envoyproxy/envoy/releases"
+          },
+          "published": "2026-10-13",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "AI Engineering thực chiến",
+      "items": [
+        {
+          "title": "Claude Opus 5.5: mô hình hàng đầu cho agent lập trình, chạy rẻ hơn Opus 5 khoảng 40%",
+          "summary": "Anthropic giới thiệu Opus 5.5 ngày 22/09, nhắm vào coding dạng agent và công việc tri thức, với chi phí chạy trên tải điển hình thấp hơn Opus 5 khoảng 40%.",
+          "apply": "Dùng mô hình lớn cho bước lập kế hoạch, giao các bước lặp khối lượng lớn cho Sonnet hay Haiku 5.5 để giữ chi phí trong tầm kiểm soát.",
+          "source": {
+            "title": "Introducing Claude Opus 5.5",
+            "url": "https://www.anthropic.com/claude-opus-5-5"
+          },
+          "published": "2026-09-22",
+          "kind": "bài đọc"
+        }
+      ]
+    },
+    {
+      "title": "System Design & Architecture",
+      "items": [
+        {
+          "title": "Cloudflare K2: event streaming serverless dựng trên object storage R2",
+          "summary": "K2 là log phân vùng, bền vững trên R2: producer ghi, consumer đọc theo nhịp riêng, TTL cấu hình được tới một tháng. Đổi lại độ trễ đuôi cao hơn Kafka; InfoQ ghi nhận người dùng beta đo p99 giao nhận khoảng 7,5 giây.",
+          "apply": "Phù hợp luồng sự kiện chịu được trễ vài giây và không muốn vận hành broker; không hợp cho đường đi cần độ trễ thấp.",
+          "source": {
+            "title": "Announcing Cloudflare K2: serverless event streams",
+            "url": "https://blog.cloudflare.com/cloudflare-k2-streams/"
+          },
+          "published": "2026-10-01",
+          "kind": "bài đọc"
+        }
+      ]
+    },
+    {
+      "title": "Open Source & công cụ mới",
+      "items": [
+        {
+          "title": "ja của Netflix: toolchain dòng lệnh cho Java lấy module-info.java làm hợp đồng dự án",
+          "summary": "Danny Thomas (Netflix) phát hành bản preview của ja, đặt phiên bản dependency cạnh các khai báo requires trong module descriptor và dùng chung một nguồn cho build, test, đóng gói. Lý do nêu ra là coding agent cần công cụ terminal nhỏ gọn.",
+          "apply": "Thử trên một project Java nhỏ ở home lab để xem agent chạy build và test gọn hơn Maven hay Gradle không.",
+          "source": {
+            "title": "Netflix's ja preview makes Java's module descriptor the project contract",
+            "url": "https://runtimewire.com/article/netflix-ja-java-toolchain-coding-agents"
+          },
+          "published": "2026-10",
+          "kind": "bài đọc"
+        }
+      ]
+    },
+    {
+      "title": "Career & kỹ năng mềm",
+      "items": [
+        {
+          "title": "Quản lý kỹ thuật viết code nhiều hơn: ranh giới review của tech lead thay đổi",
+          "summary": "Khảo sát LeadDev tháng 8 ghi nhận tỷ lệ engineering manager tự viết code tăng từ 20% (2025) lên 35% (2026), kéo theo câu hỏi ai review ai và review để làm gì.",
+          "apply": "Thống nhất trong team: tech lead review để nâng chuẩn chung và quyết định thiết kế, không phải chặn từng PR.",
+          "source": {
+            "title": "LeadDev",
+            "url": "https://leaddev.com/?p=34841"
+          },
+          "published": "2026-08",
+          "kind": "bài đọc"
+        }
+      ]
+    }
+  ],
+  "knowledge": {
+    "title": "Bulkhead: cô lập tài nguyên để một dependency chậm không kéo sập cả dịch vụ",
+    "body": "Bulkhead lấy ý tưởng từ vách ngăn khoang tàu: chia tài nguyên dùng chung (thread, connection, semaphore) thành các ngăn riêng cho từng dependency hoặc từng loại request. Khi một dependency chậm, chỉ ngăn của nó cạn, các đường khác vẫn chạy.\n\nKhông có bulkhead, một API ngoài chậm sẽ chiếm hết worker, và cả endpoint không liên quan cũng treo theo. Bulkhead bổ sung cho timeout và circuit breaker: timeout giới hạn thời gian chờ, bulkhead giới hạn số request đang chờ cùng lúc.\n\nChọn kích thước ngăn từ lưu lượng thực và độ trễ p99 của dependency (theo luật Little: số request đồng thời xấp xỉ tốc độ đến nhân thời gian xử lý), và khi ngăn đầy thì từ chối nhanh thay vì xếp hàng vô hạn.",
+    "example": "import asyncio\n\n# mỗi dependency một ngăn riêng\npayments_sem = asyncio.Semaphore(20)\nsearch_sem = asyncio.Semaphore(50)\n\nasync def call_payments(req):\n    if payments_sem.locked():\n        raise RuntimeError('payments bulkhead full')  # từ chối nhanh\n    async with payments_sem:\n        return await payments_client.charge(req)"
+  },
+  "sources": [
+    {
+      "title": "Java 27 released (InfoQ)",
+      "url": "https://infoq.com/news/2026/09/java27-released"
+    },
+    {
+      "title": "Releases - prometheus/prometheus",
+      "url": "https://github.com/prometheus/prometheus/releases"
+    },
+    {
+      "title": "Releases - envoyproxy/envoy",
+      "url": "https://github.com/envoyproxy/envoy/releases"
+    },
+    {
+      "title": "Introducing Claude Opus 5.5",
+      "url": "https://www.anthropic.com/claude-opus-5-5"
+    },
+    {
+      "title": "Announcing Cloudflare K2: serverless event streams",
+      "url": "https://blog.cloudflare.com/cloudflare-k2-streams/"
+    },
+    {
+      "title": "Cloudflare K2 serverless streams (InfoQ)",
+      "url": "https://infoq.com/news/2026/10/cloudflare-k2-serverless-streams"
+    },
+    {
+      "title": "Netflix's ja preview makes Java's module descriptor the project contract",
+      "url": "https://runtimewire.com/article/netflix-ja-java-toolchain-coding-agents"
+    },
+    {
+      "title": "LeadDev",
+      "url": "https://leaddev.com/?p=34841"
+    }
+  ],
+  "generated_at": "2026-10-22T01:23:31Z"
+}
