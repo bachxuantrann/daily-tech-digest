@@ -1,5 +1,6 @@
 {
   "dates": [
+    "2026-10-23",
     "2026-10-22",
     "2026-10-21",
     "2026-10-20",
@@ -8,6 +9,7 @@
     "2026-10-17"
   ],
   "summaries": {
+    "2026-10-23": "Rust 1.99 cho viết hàm variadic kiểu C ngay trong Rust, llm-d 1.0 đưa suy luận LLM lên Kubernetes với định tuyến theo prefix cache, và SIG Instrumentation nhận kubernetes-mixin.",
     "2026-10-22": "Prometheus 3.13.5 vá lỗi lộ URL exporter trong log, Cloudflare K2 đưa event streaming lên R2, Java 27 đặt G1 làm GC mặc định; kiến thức hôm nay: bulkhead.",
     "2026-10-21": "Python 3.15 ra mắt với lazy import, frozendict và UTF-8 mặc định; Node.js vá lỗi mức HIGH cho 22/24/26 hôm nay; Spotify siết kiểm soát chất lượng khi AI làm số thay đổi tăng gấp đôi.",
     "2026-10-20": "Cloudflare mua lại Deno để gộp celld vào workerd, GitLab 19.4 thêm /goal và kiểm soát chi phí agent, còn OpenAI Evals sắp chuyển sang chỉ đọc ngày 31/10.",

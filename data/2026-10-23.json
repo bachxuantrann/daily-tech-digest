@@ -1,0 +1,134 @@
+{
+  "date": "2026-10-23",
+  "summary": "Rust 1.99 cho viết hàm variadic kiểu C ngay trong Rust, llm-d 1.0 đưa suy luận LLM lên Kubernetes với định tuyến theo prefix cache, và SIG Instrumentation nhận kubernetes-mixin.",
+  "sections": [
+    {
+      "title": "Backend",
+      "items": [
+        {
+          "title": "Rust 1.99: định nghĩa được hàm variadic extern \"C\" ngay trong Rust",
+          "summary": "Bản 1.99.0 (1/10) ổn định hoá việc viết hàm variadic với ABI C và C-unwind, truy cập đối số qua VaList. Thêm API lấy size và alignment từ raw pointer, kể cả kiểu không biết kích thước. Bản 1.99.1 ra ngày 15/10 sửa ba lỗi hồi quy, trong đó có lỗi biên dịch sai bool qua FFI trên x86_64 và lỗi linker trên macOS.",
+          "apply": "Nếu bạn viết thư viện Rust cho FFI hoặc nhúng vào dịch vụ cũ viết bằng C, nên nâng thẳng lên 1.99.1 thay vì 1.99.0.",
+          "source": {
+            "title": "Announcing Rust 1.99.0",
+            "url": "https://blog.rust-lang.org/2026/10/01/Rust-1.99.0/"
+          },
+          "published": "2026-10-01",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "DevOps / Cloud",
+      "items": [
+        {
+          "title": "Splunk Observability: cấu hình OpenTelemetry Collector từ xa cho Kubernetes",
+          "summary": "Ngày 12/10, Fleet Management của Splunk Observability Cloud cho cấu hình Collector trên Kubernetes từ xa bằng template dùng lại được và nhóm theo thuộc tính. Bản phát hành cũng đổi cách lọc tag APM: các truy vấn dùng != có thể trả ít kết quả hơn trước.",
+          "apply": "Nếu đang quản lý hàng chục Collector bằng Helm values rải rác, đây là mô hình đáng tham khảo cho việc gom cấu hình theo nhóm, kể cả khi bạn không dùng Splunk.",
+          "source": {
+            "title": "Splunk Observability Cloud release notes, October 2026",
+            "url": "https://help.splunk.com/en/splunk-observability-cloud/release-notes/october-2026"
+          },
+          "published": "2026-10-12",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "AI Engineering thực chiến",
+      "items": [
+        {
+          "title": "llm-d 1.0: suy luận LLM trên Kubernetes với định tuyến theo prefix cache",
+          "summary": "Dự án mã nguồn mở llm-d công bố bản 1.0 ngày 20/10, tập trung giảm chi phí phục vụ cho workload agent có ngữ cảnh dài. Hai kỹ thuật chính là định tuyến biết prefix cache và đẩy KV-cache sang bộ nhớ host. Số liệu nhà phát hành nêu (giảm 85% độ trễ token đầu trên một workload coding agent, chi phí giảm 5-10 lần) là số của vendor, chưa nên coi là kết quả chung.",
+          "apply": "Nếu tự host mô hình, hãy đo tỉ lệ trúng prefix cache của agent mình trước, vì lợi ích phụ thuộc nhiều vào việc prompt có chung phần đầu hay không.",
+          "source": {
+            "title": "llm-d 1.0 Advances Open, Cost-Efficient AI Inference for Production Scale",
+            "url": "https://prnewswire.com/news-releases/llm-d-1-0-advances-open-cost-efficient-ai-inference-for-production-scale-302913429.html"
+          },
+          "published": "2026-10-20",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "System Design & Architecture",
+      "items": [
+        {
+          "title": "Dynamo của Amazon: đánh đổi nhất quán lấy khả dụng",
+          "summary": "Bài mô tả kho key-value có tính sẵn sàng cao của Amazon: consistent hashing, quorum đọc/ghi có thể chỉnh (N, R, W), vector clock và hinted handoff. Vẫn là tài liệu nền để hiểu các hệ eventually consistent như Cassandra hay DynamoDB.",
+          "apply": "Khi chọn mức nhất quán cho một dịch vụ, thử đặt câu hỏi R+W có lớn hơn N không và chấp nhận xung đột ghi ở mức nào.",
+          "source": {
+            "title": "Amazon's Dynamo",
+            "url": "https://www.allthingsdistributed.com/2007/10/amazons_dynamo.html"
+          },
+          "published": "2007-10-02",
+          "kind": "bài đọc"
+        }
+      ]
+    },
+    {
+      "title": "Open Source & công cụ mới",
+      "items": [
+        {
+          "title": "kubernetes-mixin được SIG Instrumentation tiếp nhận",
+          "summary": "Dự án kubernetes-mixin, bộ dashboard và rule cảnh báo Prometheus cho Kubernetes với hơn 8 năm lịch sử commit, nay thuộc SIG Instrumentation (thông báo 12/10). Việc này giúp nó có người duy trì chính thức thay vì phụ thuộc vài cá nhân.",
+          "apply": "Trên home lab k8s có Prometheus, thử import mixin để có sẵn bộ alert chuẩn thay vì tự viết từng rule.",
+          "source": {
+            "title": "Kubernetes Contributor Blog",
+            "url": "https://www.kubernetes.dev/blog/"
+          },
+          "published": "2026-10-12",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "Career & kỹ năng mềm",
+      "items": [
+        {
+          "title": "Kỹ sư vẫn chịu trách nhiệm cho code AI viết: kinh nghiệm 6 tuần của một staff engineer",
+          "summary": "Một staff engineer ở Sanity kể lại sáu tuần dùng Claude Code, với kết luận rằng lần thử đầu thường kém và người ký tên vào commit vẫn là chủ sở hữu code. Bài hữu ích để xây thói quen lặp, kiểm chứng và đặt ranh giới review cho cả team.",
+          "apply": "Đưa quy tắc 'ai merge thì người đó chịu trách nhiệm' vào tài liệu quy ước của team, kể cả với code do agent sinh ra.",
+          "source": {
+            "title": "First attempt will be 95% garbage: A staff engineer's 6-week journey with Claude Code",
+            "url": "https://www.sanity.io/blog/first-attempt-will-be-95-garbage"
+          },
+          "published": "2025-08",
+          "kind": "bài đọc"
+        }
+      ]
+    }
+  ],
+  "knowledge": {
+    "title": "Request coalescing (singleflight) chống cache stampede",
+    "body": "Khi một key nóng hết hạn, hàng trăm request cùng lúc thấy cache miss và cùng đổ về database để tính lại. Đó là cache stampede, nguyên nhân phổ biến của sự cố dây chuyền sau khi deploy hoặc khi cache bị flush.\n\nRequest coalescing cho phép chỉ một request thực sự đi tính lại, các request khác cùng key chờ kết quả đó. Có thể làm trong tiến trình (singleflight của Go) hoặc phân tán bằng khoá ngắn hạn trong Redis.\n\nKết hợp thêm TTL có jitter để các key không hết hạn cùng lúc, và có thể trả bản cũ trong lúc làm mới (stale-while-revalidate). Lưu ý singleflight chỉ gộp trong một instance, nên với nhiều pod vẫn cần giới hạn tải lên nguồn dữ liệu.",
+    "example": "import \"golang.org/x/sync/singleflight\"\n\nvar g singleflight.Group\n\nfunc GetUser(id string) (any, error) {\n    v, err, _ := g.Do(\"user:\"+id, func() (any, error) {\n        return loadFromDB(id) // chỉ chạy một lần cho mọi caller cùng key\n    })\n    return v, err\n}"
+  },
+  "sources": [
+    {
+      "title": "Announcing Rust 1.99.0",
+      "url": "https://blog.rust-lang.org/2026/10/01/Rust-1.99.0/"
+    },
+    {
+      "title": "Splunk Observability Cloud release notes, October 2026",
+      "url": "https://help.splunk.com/en/splunk-observability-cloud/release-notes/october-2026"
+    },
+    {
+      "title": "llm-d 1.0 Advances Open, Cost-Efficient AI Inference for Production Scale",
+      "url": "https://prnewswire.com/news-releases/llm-d-1-0-advances-open-cost-efficient-ai-inference-for-production-scale-302913429.html"
+    },
+    {
+      "title": "Amazon's Dynamo",
+      "url": "https://www.allthingsdistributed.com/2007/10/amazons_dynamo.html"
+    },
+    {
+      "title": "Kubernetes Contributor Blog",
+      "url": "https://www.kubernetes.dev/blog/"
+    },
+    {
+      "title": "First attempt will be 95% garbage",
+      "url": "https://www.sanity.io/blog/first-attempt-will-be-95-garbage"
+    }
+  ],
+  "generated_at": "2026-10-23T01:23:18Z"
+}
