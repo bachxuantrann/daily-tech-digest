@@ -1,0 +1,169 @@
+{
+  "date": "2026-10-24",
+  "summary": "LiteLLM trên PyPI bị cài mã đánh cắp thông tin xác thực; Cloudflare cắt 68% chi phí suy luận nhờ prompt caching và routing, kể thêm kiến trúc control plane của D1; Quarkus ra bản vá CVE.",
+  "sections": [
+    {
+      "title": "Backend",
+      "items": [
+        {
+          "title": "Quarkus ra bản vá khẩn cho ba nhánh LTS, Quarkus 4 đã có Beta",
+          "summary": "Ngày 19/10 Quarkus phát hành 3.27.6.1, 3.33.4.1 và 3.40.1.1 để sửa CVE trên ba nhánh LTS. Quarkus 4 Beta 1 đã ra từ 01/10, một số bài dự báo GA vào tháng 11 nhưng chưa có xác nhận chính thức.",
+          "apply": "Nếu đang chạy Quarkus, kiểm tra nhánh đang dùng và nâng lên bản .1 tương ứng; chưa cần động vào Quarkus 4 ở production.",
+          "source": {
+            "title": "Quarkus blog - release",
+            "url": "https://quarkus.io/blog/tag/release/"
+          },
+          "published": "2026-10-19",
+          "kind": "tin"
+        },
+        {
+          "title": "Cloudflare Hyperdrive: lỗi giao thức cache khi thêm hỗ trợ MySQL",
+          "summary": "Đội Hyperdrive kể lại việc lần ra một lỗi tinh vi trong cache ở tầng giao thức MySQL, ảnh hưởng một tỷ lệ rất nhỏ truy vấn nhưng vẫn trả kết quả sai. Bài đáng đọc như case study về việc cache ở tầng giao thức phải hiểu trạng thái phiên.",
+          "apply": "Khi tự viết proxy hoặc cache cho DB, hãy đưa trạng thái phiên (prepared statement, session variable) vào khoá cache.",
+          "source": {
+            "title": "Cloudflare Blog",
+            "url": "https://blog.cloudflare.com/"
+          },
+          "published": "2026-10-14",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "DevOps / Cloud",
+      "items": [
+        {
+          "title": "Argo CD Helm chart 10.11.x",
+          "summary": "Chart argo-cd 10.11.0 (23/10) thêm hỗ trợ volumeMounts tuỳ chỉnh cho các entry extensionList, và 10.11.1 ra ngay trong ngày. Có nguồn khác cảnh báo thay đổi phá vỡ liên quan redis-ha mà tôi chưa xác minh được trong ghi chú phát hành.",
+          "apply": "Trước khi nâng chart, chạy helm diff trên môi trường staging, đặc biệt nếu bật redis-ha.",
+          "source": {
+            "title": "argoproj/argo-helm releases",
+            "url": "https://github.com/argoproj/argo-helm/releases"
+          },
+          "published": "2026-10-23",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "AI Engineering thực chiến",
+      "items": [
+        {
+          "title": "Cloudflare giảm 68% chi phí suy luận của bộ review code AI",
+          "summary": "Cloudflare mô tả cách prompt caching và routing mô hình giúp cắt 68% hóa đơn suy luận của reviewer AI nội bộ, đồng thời review nhanh hơn. Con số do chính Cloudflare công bố cho workload của họ.",
+          "apply": "Đặt phần prompt tĩnh (hướng dẫn, quy ước) lên đầu để cache, và route các tác vụ đơn giản sang mô hình nhỏ.",
+          "source": {
+            "title": "Cutting our inference bill by 68%",
+            "url": "https://blog.cloudflare.com/obsessive-inference-optimization"
+          },
+          "published": "2026-10-19",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "System Design & Architecture",
+      "items": [
+        {
+          "title": "D1 tách control plane khỏi đường truy vấn để scale tới hàng triệu database",
+          "summary": "Cloudflare giải thích cách D1 giữ truy vấn ở edge còn việc quản lý (tạo, xoá, di chuyển database) nằm ở control plane tách biệt, khi số database sống tăng 15 lần trong một năm. Ý chính: việc quản trị không được nằm trên hot path.",
+          "apply": "Khi thiết kế hệ thống multi-tenant, tách rõ data plane và control plane để lỗi hay chậm ở quản trị không kéo theo truy vấn.",
+          "source": {
+            "title": "How D1 scales to millions of databases",
+            "url": "https://blog.cloudflare.com/d1-control-plane/"
+          },
+          "published": "2026-10-13",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "Open Source & công cụ mới",
+      "items": [
+        {
+          "title": "tsrs: bản port TypeScript sang Rust của Cloudflare và VoidZero",
+          "summary": "tsrs được ấp ủ trong hệ Oxc, theo Cloudflare kiểm tra kiểu nhanh hơn tới 8 lần và dùng ít hơn khoảng 70% bộ nhớ so với TypeScript 7.0 (benchmark ban đầu của họ). Còn ở mức thử nghiệm và có vài khác biệt nhỏ so với bản gốc.",
+          "apply": "Có thể thử trên một repo TypeScript lớn ở home lab để so thời gian type-check trong CI, chưa nên thay thế tsc chính thức.",
+          "source": {
+            "title": "Introducing tsrs: a Port of TypeScript to Rust",
+            "url": "https://blog.cloudflare.com/typescript-rust-port/"
+          },
+          "published": "2026-10-20",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "Career & kỹ năng mềm",
+      "items": [
+        {
+          "title": "Migrations: cách duy nhất để trả nợ kỹ thuật ở quy mô lớn (Will Larson)",
+          "summary": "Larson lập luận rằng nợ kỹ thuật ở quy mô tổ chức chỉ giảm được bằng các migration có chủ đích, có chủ sở hữu và lộ trình rõ, chứ không bằng việc dọn dẹp rải rác. Bài viết 2018 nhưng vẫn rất thực tế với tech lead.",
+          "apply": "Với khoản nợ lớn, viết kế hoạch migration có owner, mốc và cách đo tiến độ thay vì để nó trôi trong backlog.",
+          "source": {
+            "title": "Migrations (lethain.com)",
+            "url": "https://lethain.com/migrations/"
+          },
+          "published": "2018-01",
+          "kind": "bài đọc"
+        }
+      ]
+    },
+    {
+      "title": "Đáng chú ý khác",
+      "items": [
+        {
+          "title": "LiteLLM 1.107.0 trên PyPI bị cài mã đánh cắp thông tin xác thực",
+          "summary": "Theo báo cáo ngày 21/10, bản LiteLLM 1.107.0 (wheel và image Docker) chạy trình đánh cắp thông tin xác thực khi Python khởi động và có thể tải thêm mã. PyPI đã cách ly gói, image độc đã bị gỡ; Socket cho rằng kẻ tấn công vào được tổ chức GitHub từ lâu trước đó.",
+          "apply": "Kiểm tra lockfile và image đã build xem có LiteLLM 1.107.0 không; nếu có, coi mọi secret trong môi trường đó là đã lộ và xoay khoá.",
+          "source": {
+            "title": "LiteLLM Compromised in Supply Chain Attack",
+            "url": "https://thehackernews.com/2026/10/litellm-compromised-in-supply-chain.html"
+          },
+          "published": "2026-10-21",
+          "kind": "tin"
+        }
+      ]
+    }
+  ],
+  "knowledge": {
+    "title": "Khoá phiên bản bằng hash để chống supply chain attack",
+    "body": "Ghim phiên bản (==1.2.3) chưa đủ: nếu bản đó bị thay hoặc phát hành độc, bạn vẫn cài nó. Ghim thêm hash của từng tệp cho phép pip từ chối mọi artifact không khớp với thứ bạn đã duyệt.\n\nChế độ --require-hashes buộc mọi dependency (kể cả bắc cầu) phải có hash trong tệp requirements, nên không có gói nào lọt vào mà chưa được ghim. Kết hợp thêm với việc chỉ cập nhật phụ thuộc qua PR có người xem và thời gian chờ vài ngày trước khi nhận bản mới, bạn giảm đáng kể cửa sổ bị ảnh hưởng. Với image Docker, ghim theo digest (@sha256:...) thay vì tag.",
+    "example": "# sinh file có hash\npip-compile --generate-hashes requirements.in -o requirements.txt\n\n# cài và từ chối gói không có hash khớp\npip install --require-hashes -r requirements.txt\n\n# Dockerfile: ghim theo digest\nFROM python:3.13-slim@sha256:<digest>"
+  },
+  "sources": [
+    {
+      "title": "Quarkus blog - release",
+      "url": "https://quarkus.io/blog/tag/release/"
+    },
+    {
+      "title": "Cloudflare Blog",
+      "url": "https://blog.cloudflare.com/"
+    },
+    {
+      "title": "argoproj/argo-helm releases",
+      "url": "https://github.com/argoproj/argo-helm/releases"
+    },
+    {
+      "title": "Cutting our inference bill by 68%",
+      "url": "https://blog.cloudflare.com/obsessive-inference-optimization"
+    },
+    {
+      "title": "How D1 scales to millions of databases",
+      "url": "https://blog.cloudflare.com/d1-control-plane/"
+    },
+    {
+      "title": "Introducing tsrs: a Port of TypeScript to Rust",
+      "url": "https://blog.cloudflare.com/typescript-rust-port/"
+    },
+    {
+      "title": "Migrations (lethain.com)",
+      "url": "https://lethain.com/migrations/"
+    },
+    {
+      "title": "LiteLLM Compromised in Supply Chain Attack",
+      "url": "https://thehackernews.com/2026/10/litellm-compromised-in-supply-chain.html"
+    }
+  ],
+  "generated_at": "2026-10-24T01:23:03Z"
+}
