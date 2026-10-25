@@ -1,0 +1,179 @@
+{
+  "date": "2026-10-25",
+  "summary": "Gemini 4 Argon mở GA trên API với giá giới thiệu 2/10 USD, OpenAI đưa Agents API vào public beta; Spring Boot vá 4.1.2 và .NET 8/9 sắp hết hỗ trợ.",
+  "sections": [
+    {
+      "title": "Backend",
+      "items": [
+        {
+          "title": "Spring Boot 4.1.2 và 4.0.9 ra cùng ngày, nhánh 4.0 hết hỗ trợ OSS miễn phí cuối năm",
+          "summary": "Trang theo dõi vòng đời endoflife.date ghi nhận hai bản vá 4.1.2 và 4.0.9 ngày 22/10. Nhánh 4.0 sẽ hết hỗ trợ OSS miễn phí vào 31/12/2026.",
+          "apply": "Nếu còn chạy 4.0, lên kế hoạch nâng lên 4.1 trong quý này thay vì đợi sát hạn.",
+          "source": {
+            "title": "Spring Boot - endoflife.date",
+            "url": "https://endoflife.date/spring-boot"
+          },
+          "published": "2026-10-22",
+          "kind": "tin"
+        },
+        {
+          "title": ".NET 8 và .NET 9 cùng hết hỗ trợ ngày 10/11/2026",
+          "summary": "Theo các bảng vòng đời, cả hai bản sẽ ngừng nhận bản vá bảo mật chỉ còn khoảng hai tuần nữa. .NET 10 (LTS) là đích nâng cấp.",
+          "apply": "Kiểm tra image base và pipeline CI còn ghim 8.0 hoặc 9.0 để nâng lên 10 trước hạn.",
+          "source": {
+            "title": ".NET - endoflife.date",
+            "url": "https://endoflife.date/dotnet"
+          },
+          "published": "2026-10",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "DevOps / Cloud",
+      "items": [
+        {
+          "title": "Kubernetes 1.37: nftables thành backend mặc định của kube-proxy (alpha)",
+          "summary": "Bài mổ xẻ của Palark về các tính năng alpha của 1.37, trong đó có việc nftables trở thành backend kube-proxy mặc định. Bản đọc để biết trước thay đổi mạng khi nâng cấp cluster.",
+          "apply": "Thử trên cluster home lab để kiểm tra các NetworkPolicy và công cụ phụ thuộc iptables.",
+          "source": {
+            "title": "Palark blog - Kubernetes 1.37",
+            "url": "https://palark.com/blog/"
+          },
+          "published": "2026-07-30",
+          "kind": "bài đọc"
+        }
+      ]
+    },
+    {
+      "title": "AI Engineering thực chiến",
+      "items": [
+        {
+          "title": "Gemini 4 Argon GA trên Gemini API, giá giới thiệu 2/10 USD mỗi triệu token",
+          "summary": "Google mở rộng Argon sang tầng trả phí của API ngày 13/10 với context 1.048.576 token dùng chung cho input, thinking và output. Mô hình bỏ qua temperature, top_p, top_k; giá giới thiệu dự kiến tăng gấp đôi từ 1/12 (các nguồn thứ cấp chưa thống nhất).",
+          "apply": "Khi port code từ Gemini 3.x, xoá các tham số sampling và ghi lại mốc giá tăng vào ước tính chi phí.",
+          "source": {
+            "title": "Gemini 4 Argon is out (DEV Community)",
+            "url": "https://dev.to/hassann/gemini-4-argon-is-out-5cpp"
+          },
+          "published": "2026-10-13",
+          "kind": "tin"
+        },
+        {
+          "title": "OpenAI Agents API vào public beta: chạy agent trên hạ tầng do OpenAI quản lý",
+          "summary": "API cho phép OpenAI chạy phiên agent, nén context và khôi phục sau lỗi; không thu phí riêng ngoài token và công cụ. Một bài thứ cấp nêu giới hạn chỉ có data residency tại Mỹ và không có Zero Data Retention.",
+          "apply": "Trước khi dùng cho dữ liệu khách hàng, đối chiếu yêu cầu residency và retention với tài liệu chính thức.",
+          "source": {
+            "title": "Introducing the Agents API",
+            "url": "https://openai.com/index/introducing-the-agents-api/"
+          },
+          "published": "2026-10",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "System Design & Architecture",
+      "items": [
+        {
+          "title": "Figma tách database theo chiều ngang mà không dừng dịch vụ",
+          "summary": "Case study về việc đội database của Figma chia dữ liệu Postgres sang nhiều instance: chọn sharding logic ở tầng proxy, di chuyển từng bảng và chấp nhận đánh đổi về truy vấn chéo shard.",
+          "apply": "Dùng làm mẫu khi phải quyết định giữa tách vertical theo bảng trước hay sharding ngay.",
+          "source": {
+            "title": "How Figma's databases team lived to tell the scale",
+            "url": "https://www.figma.com/blog/how-figma-scaled-to-multiple-databases/"
+          },
+          "published": "2024-03-14",
+          "kind": "bài đọc"
+        }
+      ]
+    },
+    {
+      "title": "Open Source & công cụ mới",
+      "items": [
+        {
+          "title": "Yantr: catalog ứng dụng self-hosted chạy trên Podman rootless",
+          "summary": "Công cụ có giao diện web để chọn và triển khai ứng dụng self-hosted bằng Podman không cần root, xuất hiện trong bản tổng hợp dự án home lab đầu tháng.",
+          "apply": "Hợp để thử trên home lab khi muốn bỏ Docker daemon chạy root.",
+          "source": {
+            "title": "6 Home Lab Projects to Try This Weekend: October 9, 2026",
+            "url": "https://www.virtualizationhowto.com/2026/10/6-home-lab-projects-to-try-this-weekend-october-9-2026/"
+          },
+          "published": "2026-10-09",
+          "kind": "tin"
+        },
+        {
+          "title": "Homelable: sơ đồ và giám sát home lab, có quét mạng và tích hợp Home Assistant",
+          "summary": "Nền tảng self-hosted quét mạng, vẽ bản đồ thiết bị và theo dõi trạng thái, được điểm trong bản Self-Host Weekly ngày 16/10.",
+          "apply": "Chạy thử để có sơ đồ mạng tự cập nhật thay cho bản vẽ tay.",
+          "source": {
+            "title": "Self-Host Weekly (16 October 2026)",
+            "url": "https://daily.dev/posts/self-host-weekly-16-october-2026--ujbltyc1g"
+          },
+          "published": "2026-10-16",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "Career & kỹ năng mềm",
+      "items": [
+        {
+          "title": "Code Review ở Google: chương sách Software Engineering at Google",
+          "summary": "Chương mô tả vì sao review nhằm giữ chất lượng và chia sẻ kiến thức, quy trình ba loại người duyệt và nguyên tắc giữ PR nhỏ.",
+          "apply": "Mượn quy tắc PR nhỏ và phân vai người duyệt cho quy trình review của team.",
+          "source": {
+            "title": "Software Engineering at Google - Code Review",
+            "url": "https://abseil.io/resources/swe-book/html/ch09.html"
+          },
+          "published": "2020-03",
+          "kind": "bài đọc"
+        }
+      ]
+    }
+  ],
+  "knowledge": {
+    "title": "Idempotency key: cho phép client retry POST an toàn",
+    "body": "POST thường không idempotent, nên client retry sau timeout có thể tạo hai đơn hàng hoặc trừ tiền hai lần. Giải pháp: client gửi một Idempotency-Key duy nhất cho mỗi thao tác logic; server lưu key cùng kết quả đầu tiên và trả lại đúng kết quả đó nếu key lặp lại.\n\nChi tiết cần làm đúng: ghi key và thao tác trong cùng một giao dịch, đặt unique constraint trên key, lưu hash của request để từ chối cùng key nhưng body khác, và đặt TTL (thường 24 giờ). Cặp này đi cùng retry có backoff ở phía client.",
+    "example": "CREATE TABLE idempotency_keys (\n  key text PRIMARY KEY,\n  request_hash text NOT NULL,\n  response jsonb,\n  created_at timestamptz DEFAULT now()\n);\n\n-- trong cùng giao dịch với thao tác\nINSERT INTO idempotency_keys(key, request_hash) VALUES ($1, $2)\n  ON CONFLICT (key) DO NOTHING;"
+  },
+  "sources": [
+    {
+      "title": "Spring Boot - endoflife.date",
+      "url": "https://endoflife.date/spring-boot"
+    },
+    {
+      "title": ".NET - endoflife.date",
+      "url": "https://endoflife.date/dotnet"
+    },
+    {
+      "title": "Palark blog",
+      "url": "https://palark.com/blog/"
+    },
+    {
+      "title": "Gemini 4 Argon is out (DEV Community)",
+      "url": "https://dev.to/hassann/gemini-4-argon-is-out-5cpp"
+    },
+    {
+      "title": "Introducing the Agents API",
+      "url": "https://openai.com/index/introducing-the-agents-api/"
+    },
+    {
+      "title": "How Figma's databases team lived to tell the scale",
+      "url": "https://www.figma.com/blog/how-figma-scaled-to-multiple-databases/"
+    },
+    {
+      "title": "6 Home Lab Projects to Try This Weekend: October 9, 2026",
+      "url": "https://www.virtualizationhowto.com/2026/10/6-home-lab-projects-to-try-this-weekend-october-9-2026/"
+    },
+    {
+      "title": "Self-Host Weekly (16 October 2026)",
+      "url": "https://daily.dev/posts/self-host-weekly-16-october-2026--ujbltyc1g"
+    },
+    {
+      "title": "Software Engineering at Google - Code Review",
+      "url": "https://abseil.io/resources/swe-book/html/ch09.html"
+    }
+  ],
+  "generated_at": "2026-10-25T01:23:08Z"
+}
