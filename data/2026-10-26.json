@@ -1,0 +1,183 @@
+{
+  "date": "2026-10-26",
+  "summary": "GitLab vá lỗi RCE CVSS 10.0 không cần xác thực, Claude Platform GA trên Google Cloud và OpenAI Decisions API GA; đọc thêm Habitat của OpenAI và cách Anthropic scale test impact analysis.",
+  "sections": [
+    {
+      "title": "Backend",
+      "items": [
+        {
+          "title": "Habitat của OpenAI: lớp lưu trữ online từ thư viện Python thành hệ thống phân tán hơn 70 triệu req/s",
+          "summary": "OpenAI kể Habitat khởi đầu là một client library Python nối vào một database, nay phục vụ hơn 500 PB dữ liệu qua gần 40 region. Phần một của loạt bài mô tả vì sao phải tách lớp truy cập dữ liệu khỏi ứng dụng khi lượng người dùng tăng theo cấp số nhân.",
+          "apply": "Khi nhiều dịch vụ cùng gọi thẳng database, cân nhắc gom truy cập vào một thư viện hoặc lớp dữ liệu chung sớm để sau này đổi sharding, routing mà không sửa từng dịch vụ.",
+          "source": {
+            "title": "Scaling online storage to serve over 1 billion users (Part 1) - OpenAI",
+            "url": "https://openai.com/index/scaling-storage-one-billion-users-part-one/"
+          },
+          "published": "2026-09-11",
+          "kind": "bài đọc"
+        }
+      ]
+    },
+    {
+      "title": "DevOps / Cloud",
+      "items": [
+        {
+          "title": "Kubernetes: dò vết quyết định admission của Kueue bằng Headlamp",
+          "summary": "Blog Kubernetes hướng dẫn cách xem vì sao một Job batch cứ ở trạng thái suspended: dùng Headlamp để theo dõi quá trình Kueue xét admission theo quota và hàng đợi. Cùng đợt blog có hai bài về chuyển sang cgroup v2 và dùng node swap cho workload AI.",
+          "apply": "Nếu đang chạy job batch hoặc training trên cluster dùng chung, thử Kueue cùng Headlamp trên cluster thử nghiệm để hiểu hàng đợi và quota trước khi đưa vào production.",
+          "source": {
+            "title": "Kubernetes Blog",
+            "url": "https://kubernetes.io/blog/"
+          },
+          "published": "2026-10-14",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "AI Engineering thực chiến",
+      "items": [
+        {
+          "title": "Claude Platform GA trên Google Cloud, gọi qua project GCP",
+          "summary": "Từ 22/10, khách hàng Google Cloud dùng được Claude API do chính Anthropic vận hành ngay trong project Google Cloud, với kiểm soát truy cập và audit log của Google. Managed Agents vẫn ở dạng beta trên kênh này.",
+          "apply": "Nếu hạ tầng đã nằm trên GCP, đây là cách gom thanh toán và IAM về một chỗ mà không cần tự dựng gateway; vẫn nên kiểm tra tính năng nào lệch so với API trực tiếp.",
+          "source": {
+            "title": "Claude Developer Platform Updates - October 2026 (Releasebot)",
+            "url": "https://releasebot.io/updates/anthropic/claude-developer-platform"
+          },
+          "published": "2026-10-22",
+          "kind": "tin"
+        },
+        {
+          "title": "OpenAI Decisions API đã GA cho routing và phân loại nhanh",
+          "summary": "OpenAI đưa Decisions API ra GA cho các app và agent cần quyết định nhanh như định tuyến hoặc phân loại. Cùng đợt, Responses API được thêm prompt caching 12 giờ theo bản tổng hợp release notes.",
+          "apply": "Tầng router trước agent (chọn công cụ, chọn model rẻ hay đắt) là chỗ hợp để thử dịch vụ phân loại chuyên dụng thay vì gọi một LLM lớn.",
+          "source": {
+            "title": "OpenAI Release Notes - October 2026 (Releasebot)",
+            "url": "https://releasebot.io/updates/openai"
+          },
+          "published": "2026-10",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "System Design & Architecture",
+      "items": [
+        {
+          "title": "Anthropic scale test impact analysis khi CI tăng 25 lần",
+          "summary": "Khi agent sinh nhiều PR, số job CI tăng khoảng 25 lần trong sáu tháng còn số test tăng 10 lần. Hệ thống chọn test gồm listener ghi kết quả và selector chọn test; sau ba lần vá tạm, nhóm thiết kế lại để worker không giữ trạng thái và scale ngang.",
+          "apply": "Nếu pipeline CI đang chậm dần theo lượng PR, đo xem bước ghi nhận kết quả hay bước chọn test là nút cổ chai trước khi mua thêm máy.",
+          "source": {
+            "title": "Agentic coding is straining CI. Here's how we scaled test impact analysis at Anthropic",
+            "url": "https://claude.com/blog/agentic-coding-is-straining-ci-heres-how-we-scaled-test-impact-analysis-at-anthropic"
+          },
+          "published": "2026-09-14",
+          "kind": "bài đọc"
+        }
+      ]
+    },
+    {
+      "title": "Open Source & công cụ mới",
+      "items": [
+        {
+          "title": "Headplane: giao diện web quản lý Headscale",
+          "summary": "Headplane là dashboard cho Headscale (bản tự host của Tailscale control server), quản lý subnet, ACL, DNS và SSO. Được nhắc trong bản tin Self-Host Weekly.",
+          "apply": "Hợp để thử trên home lab nếu đã dùng Headscale và ngại sửa ACL bằng tay trong tệp cấu hình.",
+          "source": {
+            "title": "Self-Host Weekly (9 October 2026)",
+            "url": "https://selfh.st/weekly/2026-10-09/"
+          },
+          "published": "2026-10-09",
+          "kind": "tin"
+        },
+        {
+          "title": "PatchMon: theo dõi cập nhật vá lỗi cho máy Linux",
+          "summary": "PatchMon là nền tảng tự host có dashboard để xem máy Linux nào còn gói chờ cập nhật, triển khai bằng Docker. Xuất hiện trong Self-Host Weekly 23/10.",
+          "apply": "Chạy thử trên vài VM của home lab để có một chỗ nhìn nhanh mức độ cập nhật bảo mật thay vì SSH vào từng máy.",
+          "source": {
+            "title": "Self-Host Weekly (23 October 2026)",
+            "url": "https://selfh.st/weekly/2026-10-23/"
+          },
+          "published": "2026-10-23",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "Career & kỹ năng mềm",
+      "items": [
+        {
+          "title": "Bốn kiểu staff engineer của Will Larson: tech lead, architect, solver, right hand",
+          "summary": "Larson chia vai trò staff thành bốn kiểu, mỗi kiểu có tỷ lệ code, họp và cầu nối với quản lý khác nhau. Bài của Swizec Teller tóm lại riêng kiểu tech lead: ít thời gian code hơn, nhiều thời gian họp hơn.",
+          "apply": "Tự hỏi việc mình đang làm thuộc kiểu nào, rồi nói rõ với quản lý để kỳ vọng và cách đánh giá khớp với thực tế.",
+          "source": {
+            "title": "On becoming tech lead - Swizec Teller",
+            "url": "https://swizec.com/blog/on-becoming-tech-lead/"
+          },
+          "kind": "bài đọc"
+        }
+      ]
+    },
+    {
+      "title": "Đáng chú ý khác",
+      "items": [
+        {
+          "title": "GitLab vá lỗi RCE CVSS 10.0 không cần xác thực (CVE-2026-110264)",
+          "summary": "Lỗi tràn số nguyên khi biên dịch regex được tạo sẵn cho phép thực thi mã từ xa mà không cần đăng nhập. Bản vá có ở 19.5.1, 19.4.3, 19.3.6, 19.2.9, 19.1.9, 19.0.10 và 18.11.13; chỉ bản self-managed cần xử lý, chưa thấy dấu hiệu bị khai thác.",
+          "apply": "Nếu tự host GitLab, nâng lên bản vá ngay vì không có workaround; lưu ý một số bản backport cũ vẫn chưa vá lỗi LDAP đi kèm.",
+          "source": {
+            "title": "GitLab patches critical vulnerability that allows code execution - Techzine",
+            "url": "https://www.techzine.eu/news/security/145247/gitlab-patches-critical-vulnerability-that-allows-code-execution/"
+          },
+          "published": "2026-10-22",
+          "kind": "tin"
+        }
+      ]
+    }
+  ],
+  "knowledge": {
+    "title": "Token bucket: giới hạn tốc độ nhưng vẫn cho phép burst",
+    "body": "Token bucket là thuật toán rate limiting phổ biến nhất. Có một cái xô chứa tối đa N token; mỗi giây nạp thêm R token cho tới khi đầy; mỗi request lấy một token, hết token thì bị từ chối hoặc phải chờ. Nhờ vậy tốc độ trung bình bị giới hạn ở R request mỗi giây, nhưng client vẫn được burst tối đa N request sau một lúc rảnh.\n\nCách làm gọn là không chạy timer: lưu số token và thời điểm cập nhật cuối, rồi khi có request thì tính số token vừa được nạp thêm theo thời gian đã trôi qua. Khi chạy nhiều instance, trạng thái phải nằm ở nơi dùng chung như Redis và việc đọc rồi ghi phải nguyên tử, ví dụ dùng Lua script. Nên trả về header Retry-After hoặc 429 để client biết khi nào thử lại.",
+    "example": "# Redis + Lua, key = rate:{user}\n-- ARGV: now_ms, rate_per_sec, capacity\nlocal t = redis.call('HMGET', KEYS[1], 'tokens', 'ts')\nlocal tokens = tonumber(t[1]) or tonumber(ARGV[3])\nlocal ts = tonumber(t[2]) or tonumber(ARGV[1])\ntokens = math.min(tonumber(ARGV[3]), tokens + (tonumber(ARGV[1]) - ts) / 1000 * tonumber(ARGV[2]))\nlocal ok = tokens >= 1\nif ok then tokens = tokens - 1 end\nredis.call('HSET', KEYS[1], 'tokens', tokens, 'ts', ARGV[1])\nredis.call('EXPIRE', KEYS[1], 3600)\nreturn ok and 1 or 0"
+  },
+  "sources": [
+    {
+      "title": "Scaling online storage to serve over 1 billion users (Part 1) - OpenAI",
+      "url": "https://openai.com/index/scaling-storage-one-billion-users-part-one/"
+    },
+    {
+      "title": "Kubernetes Blog",
+      "url": "https://kubernetes.io/blog/"
+    },
+    {
+      "title": "Claude Developer Platform Updates - October 2026 (Releasebot)",
+      "url": "https://releasebot.io/updates/anthropic/claude-developer-platform"
+    },
+    {
+      "title": "OpenAI Release Notes - October 2026 (Releasebot)",
+      "url": "https://releasebot.io/updates/openai"
+    },
+    {
+      "title": "Agentic coding is straining CI. Here's how we scaled test impact analysis at Anthropic",
+      "url": "https://claude.com/blog/agentic-coding-is-straining-ci-heres-how-we-scaled-test-impact-analysis-at-anthropic"
+    },
+    {
+      "title": "Self-Host Weekly (9 October 2026)",
+      "url": "https://selfh.st/weekly/2026-10-09/"
+    },
+    {
+      "title": "Self-Host Weekly (23 October 2026)",
+      "url": "https://selfh.st/weekly/2026-10-23/"
+    },
+    {
+      "title": "On becoming tech lead - Swizec Teller",
+      "url": "https://swizec.com/blog/on-becoming-tech-lead/"
+    },
+    {
+      "title": "GitLab patches critical vulnerability that allows code execution - Techzine",
+      "url": "https://www.techzine.eu/news/security/145247/gitlab-patches-critical-vulnerability-that-allows-code-execution/"
+    }
+  ],
+  "generated_at": "2026-10-26T01:23:23Z"
+}

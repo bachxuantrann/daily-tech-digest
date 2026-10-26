@@ -1,5 +1,6 @@
 {
   "dates": [
+    "2026-10-26",
     "2026-10-25",
     "2026-10-24",
     "2026-10-23",
@@ -11,6 +12,7 @@
     "2026-10-17"
   ],
   "summaries": {
+    "2026-10-26": "GitLab vá lỗi RCE CVSS 10.0 không cần xác thực, Claude Platform GA trên Google Cloud và OpenAI Decisions API GA; đọc thêm Habitat của OpenAI và cách Anthropic scale test impact analysis.",
     "2026-10-25": "Gemini 4 Argon mở GA trên API với giá giới thiệu 2/10 USD, OpenAI đưa Agents API vào public beta; Spring Boot vá 4.1.2 và .NET 8/9 sắp hết hỗ trợ.",
     "2026-10-24": "LiteLLM trên PyPI bị cài mã đánh cắp thông tin xác thực; Cloudflare cắt 68% chi phí suy luận nhờ prompt caching và routing, kể thêm kiến trúc control plane của D1; Quarkus ra bản vá CVE.",
     "2026-10-23": "Rust 1.99 cho viết hàm variadic kiểu C ngay trong Rust, llm-d 1.0 đưa suy luận LLM lên Kubernetes với định tuyến theo prefix cache, và SIG Instrumentation nhận kubernetes-mixin.",
