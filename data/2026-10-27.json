@@ -1,0 +1,163 @@
+{
+  "date": "2026-10-27",
+  "summary": "PostgreSQL 19 RC1 chốt hướng tới GA 19/11 với REPACK CONCURRENTLY và parallel autovacuum; Go 1.26.10 vá crypto/x509; Linux Foundation nhận thêm 4 dự án agent mã nguồn mở.",
+  "sections": [
+    {
+      "title": "Backend",
+      "items": [
+        {
+          "title": "PostgreSQL 19 RC1: REPACK CONCURRENTLY, parallel autovacuum, JIT tắt mặc định",
+          "summary": "Theo bài tổng hợp từ bên thứ ba, bản release candidate đầu tiên của PostgreSQL 19 ra ngày 15/10, nhắm GA 19/11. Có lệnh REPACK CONCURRENTLY gốc, autovacuum chạy song song, lệnh WAIT để đọc-sau-ghi trên standby. Cần lưu ý JIT tắt mặc định, nén TOAST mặc định đổi sang LZ4 và RADIUS bị gỡ.",
+          "apply": "Dựng một bản RC trong môi trường thử, chạy thử bộ truy vấn nặng và kiểm tra cấu hình auth trước khi lên kế hoạch nâng cấp sau GA.",
+          "source": {
+            "title": "PostgreSQL 19 RC1 Released: Native REPACK, Parallel Autovacuum, and Upgrades to Watch",
+            "url": "https://www.linuxcompatible.org/story/postgresql-19-rc1-released-native-repack-parallel-autovacuum-and-upgrades-to-watch/"
+          },
+          "published": "2026-10-15",
+          "kind": "tin"
+        },
+        {
+          "title": "Go 1.26.10 vá lỗi bảo mật trong crypto/x509",
+          "summary": "Bản vá nhỏ ngày 19/10 của nhánh Go 1.26 có sửa lỗi bảo mật ở gói crypto/x509, gói xử lý chứng chỉ TLS.",
+          "apply": "Cập nhật toolchain và build lại image; dịch vụ Go gọi TLS tới bên ngoài nên ưu tiên.",
+          "source": {
+            "title": "Release History - The Go Programming Language",
+            "url": "https://go.dev/doc/devel/release"
+          },
+          "published": "2026-10-19",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "DevOps / Cloud",
+      "items": [
+        {
+          "title": "Nâng cấp Kubernetes 1.37: ba điểm dễ gây vỡ",
+          "summary": "Kubernetes 1.37 ra ngày 26/8, Metrics API lên stable. Các bài phân tích chỉ ra rủi ro khi nâng: IPVS bị deprecate, node dùng cgroup v1 khiến kubelet không khởi động theo mặc định, static pod mất quyền đọc Secret và ConfigMap.",
+          "apply": "Quét cụm xem node nào còn cgroup v1 và kube-proxy nào còn mode IPVS trước khi lên 1.37.",
+          "source": {
+            "title": "Kubernetes 1.37 Released: Stable Metrics API and Rootless Kubelet in Beta - InfoQ",
+            "url": "https://www.infoq.com/news/2026/09/kubernetes-1-37/"
+          },
+          "published": "2026-09",
+          "kind": "bài đọc"
+        }
+      ]
+    },
+    {
+      "title": "AI Engineering thực chiến",
+      "items": [
+        {
+          "title": "Agentic AI Foundation nhận thêm bốn dự án agent mã nguồn mở",
+          "summary": "Ngày 22/10, Anthropic, OpenAI, Hugging Face và Alibaba đóng góp bốn dự án cho quỹ của Linux Foundation, gồm skills tái sử dụng, giao diện mô hình thống nhất, môi trường huấn luyện lặp lại được và sandbox chạy agent. Chi tiết từng dự án mình chưa kiểm chứng được từ nguồn gốc.",
+          "apply": "Theo dõi repo của quỹ để chọn lớp sandbox và interface chung thay vì tự viết.",
+          "source": {
+            "title": "Agentic AI Foundation Adds Four Open-Source Agent Projects",
+            "url": "https://byteiota.com/agentic-ai-foundation-four-open-source-projects/"
+          },
+          "published": "2026-10-22",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "System Design & Architecture",
+      "items": [
+        {
+          "title": "Databricks: rate limiting hiệu năng cao, bỏ Envoy + Redis",
+          "summary": "Databricks kể cách chuyển từ rate limiter dựa trên Envoy và Redis sang token bucket trong bộ nhớ có sharding, để giảm độ trễ và phụ thuộc vào kho ngoài.",
+          "apply": "Nếu rate limit nằm trên đường đi nóng, cân nhắc xấp xỉ cục bộ thay vì gọi Redis mỗi request.",
+          "source": {
+            "title": "High-performance rate limiting at Databricks",
+            "url": "https://databricks.com/blog/high-performance-ratelimiting-databricks"
+          },
+          "published": "2025-09-11",
+          "kind": "bài đọc"
+        },
+        {
+          "title": "Lobsters chạy Rails trên một VPS với SQLite",
+          "summary": "Lobsters rời MariaDB sau nhiều năm lên kế hoạch; file SQLite chính khoảng 3,8GB, toàn bộ ứng dụng nằm trên một VPS. Ví dụ tốt về việc chọn kiến trúc đơn giản khi tải cho phép.",
+          "source": {
+            "title": "Simon Willison's Weblog: migrations",
+            "url": "https://feeds.simonwillison.net/tags/migrations/"
+          },
+          "published": "2026-07-14",
+          "kind": "bài đọc"
+        }
+      ]
+    },
+    {
+      "title": "Open Source & công cụ mới",
+      "items": [
+        {
+          "title": "Tailcat: netcat và SOCKS5 trên Tailscale, không cần control plane của Tailscale",
+          "summary": "CLI giấy phép BSD-3-Clause cho kết nối kiểu netcat, port forwarding và tunnel SOCKS5 qua mạng Tailscale.",
+          "apply": "Hợp để thử trên home lab khi cần chuyển tiếp cổng nhanh giữa các máy.",
+          "source": {
+            "title": "Selfhosted World weekly recap 2026-09-04",
+            "url": "https://selfhostedworld.com/recap/weekly-recap-2026-09-04"
+          },
+          "published": "2026-09",
+          "kind": "bài đọc"
+        }
+      ]
+    },
+    {
+      "title": "Career & kỹ năng mềm",
+      "items": [
+        {
+          "title": "Architecture Decision Record: ngắn, và thay thế thay vì sửa",
+          "summary": "Martin Fowler nhấn mạnh ADR nên ngắn, ghi quyết định, bối cảnh và hệ quả quan trọng. Khi quyết định đổi, tạo ADR mới thay thế và liên kết tới ADR cũ, không sửa bản cũ. Viết ADR còn giúp nhóm lộ ra các quan điểm khác nhau.",
+          "apply": "Mở thư mục docs/adr trong repo, bắt đầu bằng quyết định gần nhất bạn đã chốt miệng.",
+          "source": {
+            "title": "Architecture Decision Record - Martin Fowler",
+            "url": "https://www.martinfowler.com/bliki"
+          },
+          "published": "2026-03",
+          "kind": "bài đọc"
+        }
+      ]
+    }
+  ],
+  "knowledge": {
+    "title": "Transactional outbox: ghi DB và phát event mà không dual-write",
+    "body": "Ghi vào database rồi publish lên message broker là hai thao tác không nguyên tử; nếu crash giữa chừng, bạn mất event hoặc phát event cho dữ liệu chưa commit.\n\nOutbox giải quyết bằng cách ghi event vào bảng outbox trong cùng transaction với dữ liệu nghiệp vụ. Một tiến trình riêng (poller hoặc CDC như Debezium) đọc bảng này và publish lên broker, rồi đánh dấu đã gửi.\n\nHệ quả: giao hàng at-least-once, nên consumer phải idempotent. Cần dọn bảng outbox định kỳ và giữ thứ tự theo khoá aggregate.",
+    "example": "BEGIN;\nINSERT INTO orders(id, status) VALUES (42, 'PAID');\nINSERT INTO outbox(aggregate_id, type, payload) VALUES (42, 'OrderPaid', '{\"id\":42}');\nCOMMIT;\n\n-- relay:\nSELECT * FROM outbox WHERE sent_at IS NULL ORDER BY id LIMIT 100 FOR UPDATE SKIP LOCKED;"
+  },
+  "sources": [
+    {
+      "title": "PostgreSQL 19 RC1 Released",
+      "url": "https://www.linuxcompatible.org/story/postgresql-19-rc1-released-native-repack-parallel-autovacuum-and-upgrades-to-watch/"
+    },
+    {
+      "title": "Go release history",
+      "url": "https://go.dev/doc/devel/release"
+    },
+    {
+      "title": "Kubernetes 1.37 - InfoQ",
+      "url": "https://www.infoq.com/news/2026/09/kubernetes-1-37/"
+    },
+    {
+      "title": "Agentic AI Foundation Adds Four Open-Source Agent Projects",
+      "url": "https://byteiota.com/agentic-ai-foundation-four-open-source-projects/"
+    },
+    {
+      "title": "High-performance rate limiting at Databricks",
+      "url": "https://databricks.com/blog/high-performance-ratelimiting-databricks"
+    },
+    {
+      "title": "Simon Willison's Weblog: migrations",
+      "url": "https://feeds.simonwillison.net/tags/migrations/"
+    },
+    {
+      "title": "Selfhosted World weekly recap 2026-09-04",
+      "url": "https://selfhostedworld.com/recap/weekly-recap-2026-09-04"
+    },
+    {
+      "title": "Architecture Decision Record - Martin Fowler",
+      "url": "https://www.martinfowler.com/bliki"
+    }
+  ],
+  "generated_at": "2026-10-27T01:23:31Z"
+}
