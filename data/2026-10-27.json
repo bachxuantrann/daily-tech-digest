@@ -121,9 +121,9 @@
     }
   ],
   "knowledge": {
-    "title": "Transactional outbox: ghi DB và phát event mà không dual-write",
-    "body": "Ghi vào database rồi publish lên message broker là hai thao tác không nguyên tử; nếu crash giữa chừng, bạn mất event hoặc phát event cho dữ liệu chưa commit.\n\nOutbox giải quyết bằng cách ghi event vào bảng outbox trong cùng transaction với dữ liệu nghiệp vụ. Một tiến trình riêng (poller hoặc CDC như Debezium) đọc bảng này và publish lên broker, rồi đánh dấu đã gửi.\n\nHệ quả: giao hàng at-least-once, nên consumer phải idempotent. Cần dọn bảng outbox định kỳ và giữ thứ tự theo khoá aggregate.",
-    "example": "BEGIN;\nINSERT INTO orders(id, status) VALUES (42, 'PAID');\nINSERT INTO outbox(aggregate_id, type, payload) VALUES (42, 'OrderPaid', '{\"id\":42}');\nCOMMIT;\n\n-- relay:\nSELECT * FROM outbox WHERE sent_at IS NULL ORDER BY id LIMIT 100 FOR UPDATE SKIP LOCKED;"
+    "title": "Read-your-writes: tránh đọc dữ liệu cũ từ replica sau khi vừa ghi",
+    "body": "Khi tách đọc sang replica, người dùng vừa ghi xong có thể đọc lại bản cũ vì replica còn trễ so với primary. Đây là lỗi nhất quán hay gặp nhưng khó tái hiện.\n\nCó ba cách thường dùng: sau khi ghi, đọc từ primary trong vài giây cho chính người dùng đó; gắn LSN hoặc version của lần ghi vào session và chỉ đọc từ replica đã đuổi kịp; hoặc dùng cơ chế chờ có sẵn của DB.\n\nChọn theo mức quan trọng của luồng: màn hình sau thanh toán cần đúng tuyệt đối, danh sách tin thì chấp nhận trễ.",
+    "example": "-- Postgres: lấy vị trí WAL sau khi ghi\nSELECT pg_current_wal_lsn();\n-- trên replica, kiểm tra đã replay tới đó chưa\nSELECT pg_last_wal_replay_lsn() >= '0/3000148'::pg_lsn;"
   },
   "sources": [
     {
@@ -159,5 +159,5 @@
       "url": "https://www.martinfowler.com/bliki"
     }
   ],
-  "generated_at": "2026-10-27T01:23:31Z"
+  "generated_at": "2026-10-27T01:23:42Z"
 }
