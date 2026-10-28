@@ -1,0 +1,144 @@
+{
+  "date": "2026-10-28",
+  "summary": "GitHub Actions có lockfile để khoá phụ thuộc workflow, Vault bỏ cap_ipc_lock khỏi bản build; đọc thêm cách GitHub tách lưu trữ khỏi compute cho Git và MCP Gateway của Uber.",
+  "sections": [
+    {
+      "title": "Backend",
+      "items": [
+        {
+          "title": "FastAPI 0.156.x: loạt bản vá về alias và form rỗng",
+          "summary": "Từ 18 đến 21/10, FastAPI ra liên tiếp các bản vá; 0.156.4 sửa cách xử lý alias cho tham số JSON body và form, các bản trước chỉnh cách kiểm tra input form rỗng và upload file từ trình duyệt.",
+          "apply": "Nếu API dùng alias hoặc nhận form, nâng lên bản mới nhất ở môi trường test và chạy lại contract test trước khi lên production.",
+          "source": {
+            "title": "FastAPI Release Notes",
+            "url": "https://fastapi.tiangolo.com/release-notes/"
+          },
+          "published": "2026-10-21",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "DevOps / Cloud",
+      "items": [
+        {
+          "title": "GitHub Actions workflow lockfiles vào public preview",
+          "summary": "Công cụ gh-actions-lock ghi commit chính xác của từng action (kể cả phụ thuộc gián tiếp) vào tệp .github/workflows/actions.lock, và workflow chỉ chạy đúng commit đã được review. Có chính sách Require lockfile để ép toàn tổ chức; phạm vi gói dịch vụ còn khác nhau giữa các nguồn, cần xem changelog chính thức.",
+          "apply": "Thử trên một repo nội bộ: tạo lockfile, commit, rồi bật Dependabot để cập nhật; đây là cách chặn kiểu tấn công đổi tag action như các vụ supply chain gần đây.",
+          "source": {
+            "title": "GitHub Actions workflow lockfiles in public preview",
+            "url": "https://github.blog/changelog/2026-10-14-github-actions-workflow-lockfiles-in-public-preview/"
+          },
+          "published": "2026-10-14",
+          "kind": "tin"
+        },
+        {
+          "title": "Vault bỏ cap_ipc_lock khi build: container không còn gọi được mlock()",
+          "summary": "Theo release notes ngày 15/10, Vault không còn cấp capability cap_ipc_lock lúc build, nên Vault chạy trong container không thể khoá bộ nhớ bằng mlock().",
+          "apply": "Trước khi nâng cấp, đặt disable_mlock = true trong cấu hình Vault trên container (và tắt swap trên node) để tránh lỗi khởi động.",
+          "source": {
+            "title": "HashiCorp Release Notes - Releasebot",
+            "url": "https://releasebot.io/updates/hashicorp"
+          },
+          "published": "2026-10-15",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "AI Engineering thực chiến",
+      "items": [
+        {
+          "title": "Anthropic ra API version 2026-10-21 kèm SDK và CLI mới",
+          "summary": "Ngày 21/10 Anthropic phát hành phiên bản API mới; các SDK và CLI mới dùng nó làm mặc định. Thông tin lấy từ trang tổng hợp release, chưa có chi tiết thay đổi cụ thể.",
+          "apply": "Đọc changelog chính thức trước khi nâng SDK; nếu client ghim header phiên bản thì bạn vẫn kiểm soát được thời điểm chuyển.",
+          "source": {
+            "title": "Claude Developer Platform Updates - Releasebot",
+            "url": "https://releasebot.io/updates/anthropic/claude-developer-platform"
+          },
+          "published": "2026-10-21",
+          "kind": "tin"
+        },
+        {
+          "title": "Uber thiết kế MCP Gateway: hơn 800 server, hơn 5000 tool sau một lớp điều khiển",
+          "summary": "Gateway gồm MCP Registry làm control plane và Proxy Gateway làm data plane; một workflow quét registry IDL để tự phát hiện service mới, và chính sách truy cập áp theo loại caller (người, service, agent).",
+          "apply": "Khi số MCP server trong công ty bắt đầu nhiều, gom về registry có review định nghĩa và kiểm soát quyền tập trung thay vì để từng nhóm tự dựng.",
+          "source": {
+            "title": "Designing MCP Gateway - Uber Engineering",
+            "url": "https://www.uber.com/blog/designing-mcp-gateway/"
+          },
+          "published": "2026-10-01",
+          "kind": "bài đọc"
+        }
+      ]
+    },
+    {
+      "title": "System Design & Architecture",
+      "items": [
+        {
+          "title": "GitHub dựng lại hạ tầng Git cho tải do agent sinh ra",
+          "summary": "Agent commit với tốc độ máy, trong khi kiến trúc cũ giả định một người push một thay đổi hoàn chỉnh. GitHub tách lưu trữ (blob storage) khỏi compute worker độc lập; con số 35 lần thông lượng ghi là benchmark nội bộ theo các bài đưa tin lại, chưa kiểm với bài gốc.",
+          "apply": "Khi workload ghi tăng đột biến do automation, xem xét tách lưu trữ và compute để mỗi bên scale riêng.",
+          "source": {
+            "title": "Building Git infrastructure for agent-scale development",
+            "url": "https://github.blog/engineering/architecture-optimization/building-git-infrastructure-for-agent-scale-development/"
+          },
+          "published": "2026-10-06",
+          "kind": "bài đọc"
+        }
+      ]
+    },
+    {
+      "title": "Career & kỹ năng mềm",
+      "items": [
+        {
+          "title": "Brag document: ghi lại thành quả để được ghi nhận đúng",
+          "summary": "Julia Evans đề xuất giữ một tài liệu liệt kê việc đã làm, tác động và kỹ năng mới, cập nhật đều. Nó giúp chuẩn bị đánh giá hiệu suất, xin thăng cấp, và cũng giúp bạn nhìn lại mình đã đóng góp gì.",
+          "apply": "Đặt lịch 15 phút mỗi tuần thứ Sáu để thêm vài dòng; tới kỳ review chỉ việc rút gọn.",
+          "source": {
+            "title": "Get your work recognized: write a brag document",
+            "url": "https://jvns.ca/blog/brag-documents/"
+          },
+          "published": "2019-02",
+          "kind": "bài đọc"
+        }
+      ]
+    }
+  ],
+  "knowledge": {
+    "title": "Transactional outbox: ghi DB và phát event mà không mất đồng bộ",
+    "body": "Vấn đề: dịch vụ vừa cập nhật database vừa publish event lên message broker. Hai việc này không nằm trong cùng một transaction, nên crash giữa chừng sẽ khiến DB đã đổi nhưng event không bao giờ phát (hoặc ngược lại).\n\nCách giải: ghi event vào bảng outbox cùng transaction với dữ liệu nghiệp vụ. Một tiến trình riêng (poller hoặc CDC như Debezium) đọc bảng outbox rồi publish lên broker và đánh dấu đã gửi. Đảm bảo là at-least-once, nên consumer phải idempotent (dedupe theo event id).\n\nĐánh đổi: thêm một bảng và một tiến trình relay cần vận hành, độ trễ tăng chút, nhưng đổi lại không còn dual write.",
+    "example": "BEGIN;\nUPDATE orders SET status = 'PAID' WHERE id = 42;\nINSERT INTO outbox (id, aggregate_id, type, payload, created_at)\nVALUES (gen_random_uuid(), 42, 'OrderPaid', '{\"order_id\":42}', now());\nCOMMIT;\n-- relay: SELECT ... FROM outbox WHERE sent_at IS NULL ORDER BY created_at FOR UPDATE SKIP LOCKED;"
+  },
+  "sources": [
+    {
+      "title": "FastAPI Release Notes",
+      "url": "https://fastapi.tiangolo.com/release-notes/"
+    },
+    {
+      "title": "GitHub Actions workflow lockfiles in public preview",
+      "url": "https://github.blog/changelog/2026-10-14-github-actions-workflow-lockfiles-in-public-preview/"
+    },
+    {
+      "title": "HashiCorp Release Notes - Releasebot",
+      "url": "https://releasebot.io/updates/hashicorp"
+    },
+    {
+      "title": "Claude Developer Platform Updates - Releasebot",
+      "url": "https://releasebot.io/updates/anthropic/claude-developer-platform"
+    },
+    {
+      "title": "Designing MCP Gateway - Uber Engineering",
+      "url": "https://www.uber.com/blog/designing-mcp-gateway/"
+    },
+    {
+      "title": "Building Git infrastructure for agent-scale development",
+      "url": "https://github.blog/engineering/architecture-optimization/building-git-infrastructure-for-agent-scale-development/"
+    },
+    {
+      "title": "Get your work recognized: write a brag document",
+      "url": "https://jvns.ca/blog/brag-documents/"
+    }
+  ],
+  "generated_at": "2026-10-28T01:22:55Z"
+}

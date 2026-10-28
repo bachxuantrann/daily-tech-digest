@@ -1,5 +1,6 @@
 {
   "dates": [
+    "2026-10-28",
     "2026-10-27",
     "2026-10-26",
     "2026-10-25",
@@ -13,6 +14,7 @@
     "2026-10-17"
   ],
   "summaries": {
+    "2026-10-28": "GitHub Actions có lockfile để khoá phụ thuộc workflow, Vault bỏ cap_ipc_lock khỏi bản build; đọc thêm cách GitHub tách lưu trữ khỏi compute cho Git và MCP Gateway của Uber.",
     "2026-10-27": "PostgreSQL 19 RC1 chốt hướng tới GA 19/11 với REPACK CONCURRENTLY và parallel autovacuum; Go 1.26.10 vá crypto/x509; Linux Foundation nhận thêm 4 dự án agent mã nguồn mở.",
     "2026-10-26": "GitLab vá lỗi RCE CVSS 10.0 không cần xác thực, Claude Platform GA trên Google Cloud và OpenAI Decisions API GA; đọc thêm Habitat của OpenAI và cách Anthropic scale test impact analysis.",
     "2026-10-25": "Gemini 4 Argon mở GA trên API với giá giới thiệu 2/10 USD, OpenAI đưa Agents API vào public beta; Spring Boot vá 4.1.2 và .NET 8/9 sắp hết hỗ trợ.",
