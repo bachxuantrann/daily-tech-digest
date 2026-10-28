@@ -106,9 +106,9 @@
     }
   ],
   "knowledge": {
-    "title": "Transactional outbox: ghi DB và phát event mà không mất đồng bộ",
-    "body": "Vấn đề: dịch vụ vừa cập nhật database vừa publish event lên message broker. Hai việc này không nằm trong cùng một transaction, nên crash giữa chừng sẽ khiến DB đã đổi nhưng event không bao giờ phát (hoặc ngược lại).\n\nCách giải: ghi event vào bảng outbox cùng transaction với dữ liệu nghiệp vụ. Một tiến trình riêng (poller hoặc CDC như Debezium) đọc bảng outbox rồi publish lên broker và đánh dấu đã gửi. Đảm bảo là at-least-once, nên consumer phải idempotent (dedupe theo event id).\n\nĐánh đổi: thêm một bảng và một tiến trình relay cần vận hành, độ trễ tăng chút, nhưng đổi lại không còn dual write.",
-    "example": "BEGIN;\nUPDATE orders SET status = 'PAID' WHERE id = 42;\nINSERT INTO outbox (id, aggregate_id, type, payload, created_at)\nVALUES (gen_random_uuid(), 42, 'OrderPaid', '{\"order_id\":42}', now());\nCOMMIT;\n-- relay: SELECT ... FROM outbox WHERE sent_at IS NULL ORDER BY created_at FOR UPDATE SKIP LOCKED;"
+    "title": "Exponential backoff có jitter: retry mà không gây bão",
+    "body": "Khi dependency lỗi, nếu mọi client retry sau cùng một khoảng cố định, các request dồn lại thành đợt và đè sập dịch vụ vừa hồi phục (retry storm). Backoff luỹ thừa giãn khoảng chờ sau mỗi lần thất bại, còn jitter thêm ngẫu nhiên để các client không đồng bộ nhau.\n\nQuy tắc thực tế: đặt giới hạn trên cho độ trễ và số lần thử, chỉ retry lỗi tạm thời (5xx, timeout, 429) và chỉ với thao tác idempotent. Với 429 hoặc Retry-After, ưu tiên giá trị server trả về.\n\nBiến thể full jitter (chọn ngẫu nhiên từ 0 đến mức trần) thường giảm tải đỉnh tốt hơn cộng thêm jitter nhỏ.",
+    "example": "import random, time\n\ndef call_with_retry(fn, tries=5, base=0.2, cap=10):\n    for i in range(tries):\n        try:\n            return fn()\n        except TransientError:\n            if i == tries - 1:\n                raise\n            time.sleep(random.uniform(0, min(cap, base * 2 ** i)))"
   },
   "sources": [
     {
@@ -140,5 +140,5 @@
       "url": "https://jvns.ca/blog/brag-documents/"
     }
   ],
-  "generated_at": "2026-10-28T01:22:55Z"
+  "generated_at": "2026-10-28T01:23:06Z"
 }
