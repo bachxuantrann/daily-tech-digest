@@ -1,0 +1,149 @@
+{
+  "date": "2026-10-29",
+  "summary": "Node.js 26 chuyển sang LTS, Kubernetes nhắc lộ trình bỏ cgroup v1 và hướng dẫn dùng swap cho workload agent; Haiku 5.5 rẻ nhưng có ngưỡng giá ở 100K token.",
+  "sections": [
+    {
+      "title": "Backend",
+      "items": [
+        {
+          "title": "Node.js 26.13.0 'Lithium' chính thức vào LTS",
+          "summary": "Dòng 26.x chuyển sang Long Term Support, được cập nhật đến cuối tháng 4/2029. Bản này giống hệt 26.12.1 về chức năng, chỉ đổi metadata như process.release. Binary Linux chính thức liên kết libatomic, nên khi nâng từ 24 hoặc 22 có thể phải cài thêm gói này.",
+          "apply": "Nếu đang chạy Node 22/24 trong Docker, thử build image trên 26 ở CI và kiểm tra libatomic trong base image trước khi lên kế hoạch nâng cấp.",
+          "source": {
+            "title": "Node.js 26.13.0 (LTS)",
+            "url": "https://nodejs.org/en/blog/release/v26.13.0"
+          },
+          "published": "2026-10-28",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "DevOps / Cloud",
+      "items": [
+        {
+          "title": "Kubernetes nhắc lộ trình chuyển hẳn sang cgroup v2",
+          "summary": "Bài trên blog Kubernetes nói cgroup v2 đã ổn định từ 1.25, tuỳ chọn dự phòng cgroup v1 còn ở 1.36 và dự kiến bị gỡ ở 1.38. Cần kernel từ 5.8 trở lên. Công cụ giám sát hoặc chính sách đoán trước giá trị cpu.weight có thể phải cập nhật.",
+          "apply": "Chạy 'stat -fc %T /sys/fs/cgroup' trên từng node; kết quả cgroup2fs là đã dùng v2. Node nào còn v1 thì đưa vào kế hoạch nâng OS trước khi lên 1.38.",
+          "source": {
+            "title": "The Shift to cgroup v2 in Kubernetes: What You Need to Know",
+            "url": "https://kubernetes.io/blog/2026/10/06/kubernetes-cgroups-v2-shift/"
+          },
+          "published": "2026-10-06",
+          "kind": "tin"
+        },
+        {
+          "title": "Node swap cho workload Kubernetes, nhất là agent AI",
+          "summary": "Bài viết lập luận rằng bộ nhớ thường là giới hạn đầu tiên của cluster, và pod agent hay giữ nhiều RAM nhàn rỗi. Swap trên SSD cục bộ giúp tăng mật độ pod. Cần kubelet failSwapOn: false, swapBehavior: LimitedSwap, node dùng cgroup v2, và pod thuộc QoS Burstable.",
+          "apply": "Thử bật trên một node pool riêng cho workload ít nhạy độ trễ, theo dõi áp lực bộ nhớ trước khi mở rộng; lưu ý scheduler chưa tính swap khi xếp pod.",
+          "source": {
+            "title": "Scaling Kubernetes Workloads with Node Swap",
+            "url": "https://kubernetes.io/blog/2026/10/05/scaling-kubernetes-workloads-with-node-swap/"
+          },
+          "published": "2026-10-05",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "AI Engineering thực chiến",
+      "items": [
+        {
+          "title": "Claude Haiku 5.5: rẻ cho agent khối lượng lớn nhưng có ngưỡng giá ở 100K token",
+          "summary": "Theo các bài tổng hợp giá (chưa đối chiếu với trang giá chính thức), Haiku 5.5 tính 0,10 USD đầu vào và 0,50 USD đầu ra mỗi triệu token cho prompt đến 100K, cache read khoảng một phần mười giá đầu vào. Qua 100K token, giá nhảy lên 0,50 và 2,50 USD.",
+          "apply": "Với agent hay nhồi ngữ cảnh dài, cắt hoặc tóm tắt lịch sử để giữ prompt dưới 100K, rồi kiểm tra lại bảng giá chính thức trước khi tính ngân sách.",
+          "source": {
+            "title": "Claude Haiku 5.5 launches with $0.10 input pricing for shorter prompts",
+            "url": "https://techenclave.com/news/items/claude-haiku-5-5-launches-with-0-10-input-pricing-for-shorter-prompts"
+          },
+          "published": "2026-10",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "System Design & Architecture",
+      "items": [
+        {
+          "title": "Spanner: cơ sở dữ liệu phân tán toàn cầu của Google",
+          "summary": "Bài báo OSDI mô tả cách Spanner dùng TrueTime để có giao dịch nhất quán ngoại (external consistency) giữa các datacenter. Đây là đối trọng với Dynamo đã đọc trước đó: chọn nhất quán mạnh và trả giá bằng độ trễ chờ đồng hồ.",
+          "apply": "Khi cân nhắc DB phân tán nhiều vùng, tự hỏi nghiệp vụ có thật sự cần nhất quán ngoại hay read-your-writes là đủ.",
+          "source": {
+            "title": "Spanner: Google's Globally Distributed Database",
+            "url": "https://research.google/pubs/spanner-googles-globally-distributed-database-2/"
+          },
+          "published": "2012-10",
+          "kind": "bài đọc"
+        }
+      ]
+    },
+    {
+      "title": "Open Source & công cụ mới",
+      "items": [
+        {
+          "title": "OpenCode: agent lập trình mã nguồn mở chạy trong terminal",
+          "summary": "Công cụ giữ nhịp phát hành đều trong tháng 10 (v1.19.3 ngày 16/10), giấy phép MIT, cho phép chọn nhiều nhà cung cấp mô hình.",
+          "apply": "Cài trên home lab và trỏ vào mô hình chạy cục bộ để thử luồng làm việc không phụ thuộc một nhà cung cấp.",
+          "source": {
+            "title": "OpenCode — October 2026 Releases",
+            "url": "https://www.havoptic.com/releases/opencode/2026/10"
+          },
+          "published": "2026-10-16",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "Career & kỹ năng mềm",
+      "items": [
+        {
+          "title": "Design Docs at Google",
+          "summary": "Malte Ubl giải thích design doc dùng để làm gì: chốt trade-off, tìm vấn đề sớm, và tạo tài liệu có thể review. Bài còn nêu khi nào không cần viết.",
+          "apply": "Mẫu mỗi design doc có mục 'Alternatives considered' và 'Non-goals' để người review tranh luận đúng chỗ.",
+          "source": {
+            "title": "Design Docs at Google",
+            "url": "https://www.industrialempathy.com/posts/design-docs-at-google/"
+          },
+          "published": "2020-05",
+          "kind": "bài đọc"
+        }
+      ]
+    }
+  ],
+  "knowledge": {
+    "title": "Hedged request: giảm độ trễ đuôi bằng cách gửi bản sao có kiểm soát",
+    "body": "Độ trễ p99 thường do một vài replica chậm chứ không phải do toàn hệ thống. Hedged request gửi yêu cầu tới một replica, nếu quá ngưỡng (thường quanh p95 của độ trễ) chưa có phản hồi thì gửi thêm bản sao tới replica khác, dùng kết quả đến trước và huỷ phần còn lại.\n\nCách này chỉ tăng khoảng 5% tải nhưng cắt mạnh độ trễ đuôi. Điều kiện bắt buộc là yêu cầu phải idempotent (đọc, hoặc ghi có idempotency key), và cần giới hạn tỷ lệ hedge để không tự gây quá tải khi hệ thống đã chậm.",
+    "example": "// Go, rút gọn\nfunc hedged(ctx context.Context, delay time.Duration, call func(context.Context) (R, error)) (R, error) {\n  ctx, cancel := context.WithCancel(ctx)\n  defer cancel()\n  ch := make(chan result, 2)\n  go func() { r, e := call(ctx); ch <- result{r, e} }()\n  select {\n  case res := <-ch:\n    return res.r, res.e\n  case <-time.After(delay):\n    go func() { r, e := call(ctx); ch <- result{r, e} }()\n  }\n  res := <-ch\n  return res.r, res.e\n}"
+  },
+  "sources": [
+    {
+      "title": "Node.js 26.13.0 (LTS)",
+      "url": "https://nodejs.org/en/blog/release/v26.13.0"
+    },
+    {
+      "title": "The Shift to cgroup v2 in Kubernetes",
+      "url": "https://kubernetes.io/blog/2026/10/06/kubernetes-cgroups-v2-shift/"
+    },
+    {
+      "title": "Scaling Kubernetes Workloads with Node Swap",
+      "url": "https://kubernetes.io/blog/2026/10/05/scaling-kubernetes-workloads-with-node-swap/"
+    },
+    {
+      "title": "Claude Haiku 5.5 launches with $0.10 input pricing",
+      "url": "https://techenclave.com/news/items/claude-haiku-5-5-launches-with-0-10-input-pricing-for-shorter-prompts"
+    },
+    {
+      "title": "Spanner: Google's Globally Distributed Database",
+      "url": "https://research.google/pubs/spanner-googles-globally-distributed-database-2/"
+    },
+    {
+      "title": "OpenCode — October 2026 Releases",
+      "url": "https://www.havoptic.com/releases/opencode/2026/10"
+    },
+    {
+      "title": "Design Docs at Google",
+      "url": "https://www.industrialempathy.com/posts/design-docs-at-google/"
+    }
+  ],
+  "generated_at": "2026-10-29T01:23:42Z"
+}
