@@ -93,9 +93,9 @@
     }
   ],
   "knowledge": {
-    "title": "Circuit breaker: ngắt gọi tới dependency đang hỏng",
-    "body": "Khi một dịch vụ phụ thuộc chậm hoặc lỗi liên tục, tiếp tục gọi chỉ làm cạn thread và connection của bạn, rồi lỗi lan ngược lên cả chuỗi. Circuit breaker theo dõi tỉ lệ lỗi và có ba trạng thái: closed (gọi bình thường), open (vượt ngưỡng lỗi thì từ chối ngay, trả fallback hoặc lỗi nhanh) và half-open (sau một khoảng nghỉ cho vài request thử, thành công thì đóng lại).\n\nĐiểm cần chỉnh là ngưỡng lỗi, cửa sổ đo và thời gian nghỉ. Nó bổ trợ cho retry có backoff chứ không thay thế: retry xử lý lỗi thoáng qua, breaker bảo vệ khi lỗi kéo dài. Luôn kèm timeout và metric về trạng thái breaker để biết khi nào nó mở.",
-    "example": "// Go, thư viện sony/gobreaker\ncb := gobreaker.NewCircuitBreaker(gobreaker.Settings{\n  Name: \"payments\",\n  Timeout: 30 * time.Second, // open -> half-open\n  ReadyToTrip: func(c gobreaker.Counts) bool {\n    return c.Requests >= 20 && float64(c.TotalFailures)/float64(c.Requests) > 0.5\n  },\n})\nres, err := cb.Execute(func() (any, error) { return callPayments() })"
+    "title": "Backpressure: để consumer chậm báo ngược cho producer",
+    "body": "Khi producer sinh việc nhanh hơn consumer xử lý, hàng đợi không giới hạn sẽ phình dần cho đến khi hết bộ nhớ hoặc độ trễ vượt tầm kiểm soát. Backpressure là cơ chế để phía chậm làm chậm phía nhanh: dùng hàng đợi có giới hạn (đầy thì block hoặc từ chối), cấp phát credit/window theo kiểu consumer kéo thay vì producer đẩy, hoặc trả 429/503 cho client.\n\nQuy tắc thực tế: mọi buffer trong hệ thống đều phải có giới hạn và có quyết định rõ ràng khi đầy (chờ, bỏ bản cũ nhất, hay báo lỗi). Theo dõi độ dài hàng đợi và thời gian chờ trong hàng đợi, vì chúng báo quá tải sớm hơn CPU.",
+    "example": "// Go: channel có đệm là hàng đợi giới hạn\njobs := make(chan Job, 100)\n\nfunc submit(j Job) error {\n  select {\n  case jobs <- j:\n    return nil\n  default:\n    return ErrOverloaded // trả 503 + Retry-After thay vì chất thêm\n  }\n}"
   },
   "sources": [
     {
@@ -123,5 +123,5 @@
       "url": "https://leaddev.com/management/engineering-managers-are-back-in-the-codebase"
     }
   ],
-  "generated_at": "2026-10-30T01:23:04Z"
+  "generated_at": "2026-10-30T01:23:19Z"
 }
