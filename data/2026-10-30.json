@@ -1,0 +1,127 @@
+{
+  "date": "2026-10-30",
+  "summary": "Python 3.15 chính thức ra mắt với lazy import tường minh, Volcano 1.16 thêm hàng đợi theo namespace cho batch/AI trên Kubernetes; đọc thêm về chi phí thật của agent LLM và cách Baselime rời AWS bằng strangler fig.",
+  "sections": [
+    {
+      "title": "Backend",
+      "items": [
+        {
+          "title": "Python 3.15.0 ra mắt: lazy import tường minh (PEP 810), frozendict",
+          "summary": "Bản ổn định được báo là phát hành ngày 9/10/2026, trễ một tuần so với kế hoạch do phải thêm RC3 để sửa các lỗi chặn liên quan đến lazy import. Từ khoá lazy cho phép hoãn nạp module đến lần dùng đầu tiên; cũng có thể bật toàn cục bằng -X lazy_imports hoặc PYTHON_LAZY_IMPORTS.",
+          "apply": "Thử với CLI hoặc worker khởi động chậm vì import nặng; một phép đo trên rc2 từ nguồn thứ cấp cho thấy lệnh --version giảm từ khoảng 73 ms xuống khoảng 10 ms, chỉ mang tính tham khảo, hãy tự đo trên app của bạn.",
+          "source": {
+            "title": "Real Python: Python news October 2026",
+            "url": "https://realpython.com/python-news-october-2026/"
+          },
+          "published": "2026-10-09",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "DevOps / Cloud",
+      "items": [
+        {
+          "title": "Volcano v1.16: hàng đợi theo namespace và plugin fairshare",
+          "summary": "Volcano 1.16.0 thêm NamespaceQueue và plugin fairshare, tính lượng dùng tích luỹ của từng namespace trong một queue với suy giảm theo chu kỳ bán rã để chia công bằng dài hạn. Bản đầu mới hỗ trợ plugin capacity (bật enableHierarchy: true, không bật chung với proportion), và namespace phải được admin cho phép qua spec.allowedNamespaces của Queue.",
+          "apply": "Nếu nhiều team dùng chung cụm batch/GPU, đây là cách chia tài nguyên theo namespace mà không phải tạo Queue riêng cho từng team.",
+          "source": {
+            "title": "volcano-sh/volcano v1.16.0 release notes",
+            "url": "https://newreleases.io/project/github/volcano-sh/volcano/release/v1.16.0"
+          },
+          "published": "2026-10-28",
+          "kind": "tin"
+        },
+        {
+          "title": "Workload AI đang buộc autoscaling của Kubernetes phải đổi cách nghĩ",
+          "summary": "Bài của kỹ sư AWS trên blog CNCF lập luận scheduler và cluster autoscaler cần cùng hiểu về phần cứng, nhất là GPU và gang scheduling, nếu không pod sẽ pending dù autoscaler tưởng đã đủ node.",
+          "apply": "Khi pod GPU pending, kiểm tra xem scheduler và autoscaler có cùng định nghĩa một node dùng được hay không trước khi tăng giới hạn node.",
+          "source": {
+            "title": "How AI workloads are reshaping Kubernetes autoscaling (CNCF)",
+            "url": "https://www.cncf.io/blog/2026/10/19/how-ai-workloads-are-reshaping-kubernetes-autoscaling/"
+          },
+          "published": "2026-10-19",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "AI Engineering thực chiến",
+      "items": [
+        {
+          "title": "Model rẻ token hơn chưa chắc rẻ hơn cho agent",
+          "summary": "Một case study kể về đội chuyển agent sang model có giá token thấp hơn 5-6 lần nhưng chi phí mỗi người dùng chỉ giảm 52%, trong khi thời gian phản hồi tăng 88% (64 giây lên 120 giây) vì model mới gọi tool kém hiệu quả hơn. Ngày đăng không rõ nên đây là bài đọc, số liệu là của chính bài viết.",
+          "apply": "Đo chi phí và độ trễ theo mỗi tác vụ hoàn thành, không theo giá mỗi triệu token, trước khi đổi model.",
+          "source": {
+            "title": "The Latency and Cost Your AI Agent Pays for Nothing (Lyzr)",
+            "url": "https://www.lyzr.ai/blog/ai-agent-latency-and-cost"
+          },
+          "kind": "bài đọc"
+        }
+      ]
+    },
+    {
+      "title": "System Design & Architecture",
+      "items": [
+        {
+          "title": "Baselime chuyển từ AWS sang Cloudflare theo strangler fig, giảm hơn 80% chi phí cloud",
+          "summary": "Case study kể lại việc di chuyển dần từng phần hệ thống theo pattern strangler fig thay vì viết lại một lần, kết quả là kiến trúc đơn giản hơn, hiệu năng tốt hơn và chi phí cloud thấp hơn hơn 80%. Ngày đăng gốc chưa xác nhận được.",
+          "apply": "Khi di chuyển nền tảng, đặt lớp định tuyến phía trước để chuyển lưu lượng từng route một và có đường lui.",
+          "source": {
+            "title": "Moving Baselime from AWS to Cloudflare (Cloudflare Blog)",
+            "url": "https://blog.cloudflare.com/80-percent-lower-cloud-cost-how-baselime-moved-from-aws-to-cloudflare/"
+          },
+          "kind": "bài đọc"
+        }
+      ]
+    },
+    {
+      "title": "Career & kỹ năng mềm",
+      "items": [
+        {
+          "title": "Engineering manager quay lại làm việc với code",
+          "summary": "LeadDev dẫn Engineering Leadership Report 2026: 37% lãnh đạo kỹ thuật làm việc kỹ thuật trực tiếp nhiều hơn năm 2025, làm mờ ranh giới giữa tech lead và EM.",
+          "apply": "Nếu bạn là tech lead, làm rõ với quản lý phần nào là quyết định kỹ thuật của bạn và phần nào của EM để khỏi dẫm chân nhau.",
+          "source": {
+            "title": "Engineering managers are back in the codebase (LeadDev)",
+            "url": "https://leaddev.com/management/engineering-managers-are-back-in-the-codebase"
+          },
+          "published": "2026-08",
+          "kind": "bài đọc"
+        }
+      ]
+    }
+  ],
+  "knowledge": {
+    "title": "Circuit breaker: ngắt gọi tới dependency đang hỏng",
+    "body": "Khi một dịch vụ phụ thuộc chậm hoặc lỗi liên tục, tiếp tục gọi chỉ làm cạn thread và connection của bạn, rồi lỗi lan ngược lên cả chuỗi. Circuit breaker theo dõi tỉ lệ lỗi và có ba trạng thái: closed (gọi bình thường), open (vượt ngưỡng lỗi thì từ chối ngay, trả fallback hoặc lỗi nhanh) và half-open (sau một khoảng nghỉ cho vài request thử, thành công thì đóng lại).\n\nĐiểm cần chỉnh là ngưỡng lỗi, cửa sổ đo và thời gian nghỉ. Nó bổ trợ cho retry có backoff chứ không thay thế: retry xử lý lỗi thoáng qua, breaker bảo vệ khi lỗi kéo dài. Luôn kèm timeout và metric về trạng thái breaker để biết khi nào nó mở.",
+    "example": "// Go, thư viện sony/gobreaker\ncb := gobreaker.NewCircuitBreaker(gobreaker.Settings{\n  Name: \"payments\",\n  Timeout: 30 * time.Second, // open -> half-open\n  ReadyToTrip: func(c gobreaker.Counts) bool {\n    return c.Requests >= 20 && float64(c.TotalFailures)/float64(c.Requests) > 0.5\n  },\n})\nres, err := cb.Execute(func() (any, error) { return callPayments() })"
+  },
+  "sources": [
+    {
+      "title": "Real Python: Python news October 2026",
+      "url": "https://realpython.com/python-news-october-2026/"
+    },
+    {
+      "title": "volcano-sh/volcano v1.16.0 release notes",
+      "url": "https://newreleases.io/project/github/volcano-sh/volcano/release/v1.16.0"
+    },
+    {
+      "title": "How AI workloads are reshaping Kubernetes autoscaling (CNCF)",
+      "url": "https://www.cncf.io/blog/2026/10/19/how-ai-workloads-are-reshaping-kubernetes-autoscaling/"
+    },
+    {
+      "title": "The Latency and Cost Your AI Agent Pays for Nothing (Lyzr)",
+      "url": "https://www.lyzr.ai/blog/ai-agent-latency-and-cost"
+    },
+    {
+      "title": "Moving Baselime from AWS to Cloudflare (Cloudflare Blog)",
+      "url": "https://blog.cloudflare.com/80-percent-lower-cloud-cost-how-baselime-moved-from-aws-to-cloudflare/"
+    },
+    {
+      "title": "Engineering managers are back in the codebase (LeadDev)",
+      "url": "https://leaddev.com/management/engineering-managers-are-back-in-the-codebase"
+    }
+  ],
+  "generated_at": "2026-10-30T01:23:04Z"
+}

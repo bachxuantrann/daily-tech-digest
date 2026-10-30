@@ -1,5 +1,6 @@
 {
   "dates": [
+    "2026-10-30",
     "2026-10-29",
     "2026-10-28",
     "2026-10-27",
@@ -15,6 +16,7 @@
     "2026-10-17"
   ],
   "summaries": {
+    "2026-10-30": "Python 3.15 chính thức ra mắt với lazy import tường minh, Volcano 1.16 thêm hàng đợi theo namespace cho batch/AI trên Kubernetes; đọc thêm về chi phí thật của agent LLM và cách Baselime rời AWS bằng strangler fig.",
     "2026-10-29": "Node.js 26 chuyển sang LTS, Kubernetes nhắc lộ trình bỏ cgroup v1 và hướng dẫn dùng swap cho workload agent; Haiku 5.5 rẻ nhưng có ngưỡng giá ở 100K token.",
     "2026-10-28": "GitHub Actions có lockfile để khoá phụ thuộc workflow, Vault bỏ cap_ipc_lock khỏi bản build; đọc thêm cách GitHub tách lưu trữ khỏi compute cho Git và MCP Gateway của Uber.",
     "2026-10-27": "PostgreSQL 19 RC1 chốt hướng tới GA 19/11 với REPACK CONCURRENTLY và parallel autovacuum; Go 1.26.10 vá crypto/x509; Linux Foundation nhận thêm 4 dự án agent mã nguồn mở.",
