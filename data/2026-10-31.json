@@ -1,0 +1,134 @@
+{
+  "date": "2026-10-31",
+  "summary": "Anthropic chuyển Agent Skills sang Agentic AI Foundation, OpenSandbox thêm sandbox cho agent; đọc thêm Scion thay Git cho monorepo 30.000 thay đổi mỗi ngày và OpenTofu 1.13.",
+  "sections": [
+    {
+      "title": "Backend",
+      "items": [
+        {
+          "title": "MySQL tháng 10/2026: bản 26.10 Innovation cùng 9.7.4 LTS và 8.4.13 LTS",
+          "summary": "Oracle phát hành đợt cập nhật quý gồm nhánh Innovation 26.10 và hai bản bảo trì LTS 9.7.4, 8.4.13. Mình mới đọc được tiêu đề và đoạn tóm tắt, chưa xem chi tiết từng thay đổi.",
+          "apply": "Nếu còn chạy 8.4 LTS, đọc release notes để xem bản vá bảo mật nào áp dụng rồi lên lịch nâng cấp lên 8.4.13.",
+          "source": {
+            "title": "MySQL October 2026 GA Releases Now Available",
+            "url": "https://blogs.oracle.com/mysql/mysql-october-2026-ga-releases-now-available"
+          },
+          "published": "2026-10",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "DevOps / Cloud",
+      "items": [
+        {
+          "title": "OpenTofu 1.13: hàm convert, bỏ WinRM, hỗ trợ Windows ARM64",
+          "summary": "Bản 1.13 thêm hàm convert để ép kiểu theo type constraint, nhóm hàm assume..., và tham số associated_data cho key provider OpenBao khi mã hoá state. WinRM provisioner bị gỡ; nhánh được hỗ trợ đến 01/08/2027. Bản vá 1.13.2 ra ngày 21/10.",
+          "apply": "Dự án dùng provisioner WinRM cần chuyển sang cách khác trước khi nâng cấp.",
+          "source": {
+            "title": "OpenTofu v1.13 CHANGELOG",
+            "url": "https://raw.githubusercontent.com/opentofu/opentofu/v1.13/CHANGELOG.md"
+          },
+          "published": "2026-09-30",
+          "kind": "bài đọc"
+        }
+      ]
+    },
+    {
+      "title": "AI Engineering thực chiến",
+      "items": [
+        {
+          "title": "Anthropic tặng chuẩn Agent Skills cho Agentic AI Foundation",
+          "summary": "Tên, logo, GitHub organization và tên miền agentskills.io chuyển sang quỹ thuộc Linux Foundation; theo Anthropic đã có hơn 70 nền tảng tích hợp, khoảng 1 triệu skill được công bố. Lộ trình đề xuất gồm phát hành có phiên bản, quy trình đề xuất thay đổi và hướng dẫn bảo mật cho người viết và cài skill.",
+          "apply": "SKILL.md hiện có vẫn dùng được; nếu tự viết skill nội bộ, coi skill như code bên thứ ba: review và khoá phiên bản trước khi cài.",
+          "source": {
+            "title": "Donating Agent Skills to the Agentic AI Foundation",
+            "url": "https://anthropic.com/news/donating-agent-skills-to-the-agentic-ai-foundation"
+          },
+          "published": "2026-10-22",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "System Design & Architecture",
+      "items": [
+        {
+          "title": "Scion: Anthropic thay Git bằng source control client-server cho monorepo",
+          "summary": "Khi số thay đổi được merge mỗi ngày tăng từ khoảng 2.500 lên hơn 30.000, Git offline-first không còn hợp với client luôn online là agent và CI. Scion dùng changeset tạo ở server, dữ liệu dẫn xuất như blame tính lười, ref di chuyển bằng compare-and-swap trên một dòng Spanner, và cache nhiều tầng có hit rate trên 99%. Anthropic nói hạ tầng nhỏ hơn khoảng 200 lần so với hệ mirror Git trước đó.",
+          "apply": "Điểm đáng mượn ở quy mô nhỏ hơn: tách tạo dữ liệu (rẻ, không khoá) khỏi việc di chuyển con trỏ (một thao tác CAS).",
+          "source": {
+            "title": "Redesigning source control at Anthropic",
+            "url": "https://www.anthropic.com/research/redesigning-source-control"
+          },
+          "published": "2026-10-13",
+          "kind": "bài đọc"
+        }
+      ]
+    },
+    {
+      "title": "Open Source & công cụ mới",
+      "items": [
+        {
+          "title": "OpenSandbox: nền tảng sandbox chạy mã cho ứng dụng AI, nay thuộc AAIF",
+          "summary": "Dự án do Alibaba đóng góp, giấy phép Apache 2.0, gồm lifecycle server và SDK để tạo, kết nối, quản lý và huỷ sandbox thực thi. Tuần trước nó được nhận vào Agentic AI Foundation cùng Open Responses, OpenEnv và Agent Skills.",
+          "apply": "Đáng thử trên home lab để chạy mã do agent sinh ra mà không đụng máy chính.",
+          "source": {
+            "title": "Agentic AI Foundation Announces Four New Projects",
+            "url": "https://www.linuxfoundation.org/press/agentic-ai-foundation-announces-four-new-projects-agent-skills-open-responses-openenv-and-opensandbox"
+          },
+          "published": "2026-10-22",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "Career & kỹ năng mềm",
+      "items": [
+        {
+          "title": "Engineer/Manager Pendulum của Charity Majors",
+          "summary": "Bài cho rằng đi qua lại giữa vai trò kỹ sư và quản lý là con đường hợp lệ, thậm chí giúp bạn quản lý tốt hơn vì không mất cảm giác với việc kỹ thuật. Nó đáng đọc khi bạn đang cân nhắc lên tech lead hay quay lại code.",
+          "apply": "Nếu đang ngại bước sang quản lý vì sợ không quay lại được, hãy thử một nhiệm vụ lead có thời hạn rõ ràng trước.",
+          "source": {
+            "title": "The Engineer/Manager Pendulum",
+            "url": "https://charity.wtf/2017/05/11/the-engineer-manager-pendulum/"
+          },
+          "published": "2017-05",
+          "kind": "bài đọc"
+        }
+      ]
+    }
+  ],
+  "knowledge": {
+    "title": "Optimistic locking: chống ghi đè mất dữ liệu mà không cần khoá",
+    "body": "Khi hai request cùng đọc một bản ghi rồi cùng sửa, request ghi sau sẽ âm thầm ghi đè request ghi trước (lost update). Thay vì giữ khoá trong lúc người dùng suy nghĩ, thêm một cột version và chỉ cho UPDATE thành công nếu version vẫn là giá trị lúc đọc. Đây chính là compare-and-swap ở tầng ứng dụng.\n\nNếu số dòng bị ảnh hưởng bằng 0 thì có người đã sửa trước: trả 409 Conflict hoặc đọc lại rồi thử lại. Cách này hợp với tranh chấp thấp; tranh chấp cao thì retry liên tục sẽ tốn hơn khoá bi quan (SELECT ... FOR UPDATE). Với HTTP, có thể phơi version ra qua ETag và kiểm tra bằng header If-Match.",
+    "example": "UPDATE accounts\nSET balance = 90, version = version + 1\nWHERE id = 42 AND version = 7;\n-- rows affected = 0  => xung đột, trả 409 hoặc đọc lại và thử lại"
+  },
+  "sources": [
+    {
+      "title": "MySQL October 2026 GA Releases Now Available",
+      "url": "https://blogs.oracle.com/mysql/mysql-october-2026-ga-releases-now-available"
+    },
+    {
+      "title": "OpenTofu v1.13 CHANGELOG",
+      "url": "https://raw.githubusercontent.com/opentofu/opentofu/v1.13/CHANGELOG.md"
+    },
+    {
+      "title": "Donating Agent Skills to the Agentic AI Foundation",
+      "url": "https://anthropic.com/news/donating-agent-skills-to-the-agentic-ai-foundation"
+    },
+    {
+      "title": "Redesigning source control at Anthropic",
+      "url": "https://www.anthropic.com/research/redesigning-source-control"
+    },
+    {
+      "title": "Agentic AI Foundation Announces Four New Projects",
+      "url": "https://www.linuxfoundation.org/press/agentic-ai-foundation-announces-four-new-projects-agent-skills-open-responses-openenv-and-opensandbox"
+    },
+    {
+      "title": "The Engineer/Manager Pendulum",
+      "url": "https://charity.wtf/2017/05/11/the-engineer-manager-pendulum/"
+    }
+  ],
+  "generated_at": "2026-10-31T01:23:05Z"
+}
