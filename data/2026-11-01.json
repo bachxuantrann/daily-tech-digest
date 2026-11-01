@@ -1,0 +1,157 @@
+{
+  "date": "2026-11-01",
+  "summary": "LiteLLM 1.107.0 bị cài mã độc đánh cắp credential qua PyPI và Docker; Cloudflare giảm một nửa p99 R2 nhờ Origin Range Requests, Google ra Gemini API CLI beta cho agent.",
+  "sections": [
+    {
+      "title": "Backend",
+      "items": [
+        {
+          "title": "Cloudflare Origin Range Requests: bỏ lỗi tải thừa 128 MiB khi đọc file lớn",
+          "summary": "Cloudflare dựng lại cách cache điều phối các request theo dải byte tới origin, căn theo ranh giới 1 MiB. Với R2, p99 time to first byte giảm khoảng một nửa. Trước đó, đọc nhỏ vắt qua ranh giới 64 MiB có thể kéo tới 128 MiB giữa các data center.",
+          "apply": "Nếu phục vụ file lớn qua CDN, bật tính năng bằng Cache Rule (tự phục vụ, mọi gói) và lưu ý nó chưa hỗ trợ cùng Cache Reserve.",
+          "source": {
+            "title": "Origin Range Requests: Serving large files without range-request tuning",
+            "url": "https://blog.cloudflare.com/origin-range-requests/"
+          },
+          "published": "2026-10-30",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "DevOps / Cloud",
+      "items": [
+        {
+          "title": "Splunk Observability: quản lý từ xa OpenTelemetry Collector trên Kubernetes",
+          "summary": "Fleet Management cho phép gom collector theo nhóm thuộc tính và áp template cấu hình cho cả đội collector từ một chỗ, thay vì sửa Helm values từng cụm. Đây là bản phát hành của vendor, nhưng cho thấy hướng quản lý collector theo kiểu fleet đang thành chuẩn.",
+          "apply": "Dù không dùng Splunk, nên tách cấu hình collector thành template theo nhóm (gateway, daemonset) để nâng cấp đồng loạt.",
+          "source": {
+            "title": "Splunk Observability Cloud release notes, October 2026",
+            "url": "https://help.splunk.com/en/splunk-observability-cloud/release-notes/october-2026"
+          },
+          "published": "2026-10-15",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "AI Engineering thực chiến",
+      "items": [
+        {
+          "title": "Google ra Gemini API CLI (gemini-api) bản beta cho agent lập trình và CI",
+          "summary": "CLI không trạng thái, không phụ thuộc thư viện, gọi Interactions API để sinh văn bản/media, phân tích tệp và chạy agent Gemini được quản lý. Nhắm thẳng vào agent lập trình, script và pipeline CI. Mới có changelog chính thức, chưa có đánh giá độc lập.",
+          "apply": "Thử gọi từ một job CI để tóm tắt diff hoặc phân loại lỗi, so chi phí và độ trễ với SDK hiện có.",
+          "source": {
+            "title": "Gemini API changelog",
+            "url": "https://ai.google.dev/gemini-api/docs/changelog"
+          },
+          "published": "2026-10-27",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "System Design & Architecture",
+      "items": [
+        {
+          "title": "Cloudflare thiết kế lại quản lý khoá hậu lượng tử cho khoá bị giới hạn theo địa lý",
+          "summary": "Bài mô tả việc dựng lại lớp mật mã để các khoá có ràng buộc vị trí địa lý vẫn dùng được thuật toán hậu lượng tử. Đáng đọc để thấy ràng buộc data residency tác động tới thiết kế hệ thống khoá ra sao. Tôi mới đọc phần mô tả từ kết quả tìm kiếm, chưa kiểm chứng chi tiết kỹ thuật.",
+          "source": {
+            "title": "Cloudflare Blog: Engineering",
+            "url": "https://blog.cloudflare.com/tag/engineering/"
+          },
+          "published": "2026-10-23",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "Open Source & công cụ mới",
+      "items": [
+        {
+          "title": "Pi: agent lập trình CLI mã nguồn mở (MIT) của Armin Ronacher và Mario Zechner",
+          "summary": "Một tổng hợp giữa năm 2026 xếp Pi là gương mặt mới nổi trong nhóm CLI coding agent mã nguồn mở, khoảng 54 nghìn sao lúc đó. Số sao đã cũ nên cần kiểm tra lại.",
+          "apply": "Cài thử trên home lab cạnh OpenCode để so cách mở rộng và mức tiêu thụ token trên cùng một repo.",
+          "source": {
+            "title": "Best Open Source CLI Coding Agents in 2026",
+            "url": "https://pinggy.io/blog/best_open_source_cli_coding_agents/"
+          },
+          "published": "2026-05",
+          "kind": "bài đọc"
+        }
+      ]
+    },
+    {
+      "title": "Career & kỹ năng mềm",
+      "items": [
+        {
+          "title": "The Tech Lead Playbook: từ IC giỏi nhất thành người nhân hiệu quả của cả đội",
+          "summary": "Bài cho rằng kỹ năng có ROI cao nhất của tech lead là viết: design doc, RFC, decision record, để quyết định không phụ thuộc vào trí nhớ của một người. Nội dung thực dụng nhưng là blog cộng đồng, không phải nghiên cứu.",
+          "apply": "Tuần này thử viết một RFC một trang cho thay đổi tiếp theo trước khi mở PR đầu tiên.",
+          "source": {
+            "title": "The Tech Lead Playbook (DEV Community)",
+            "url": "https://dev.to/truongpx396/the-tech-lead-playbook-from-best-ic-multiplier-hff"
+          },
+          "published": "2026-10",
+          "kind": "bài đọc"
+        }
+      ]
+    },
+    {
+      "title": "Đáng chú ý khác",
+      "items": [
+        {
+          "title": "LiteLLM 1.107.0 trên PyPI và Docker bị cài mã độc đánh cắp credential",
+          "summary": "Kẻ tấn công dùng token maintainer bị lộ để phát hành bản độc, chạy payload ngay khi Python khởi động (qua startup hook) nên chỉ cần mở interpreter là đủ trúng. Bản độc sống dưới hai giờ ngày 21/10, chưa có CVE. Đây là lần thứ hai trong năm LiteLLM bị tấn công chuỗi cung ứng.",
+          "apply": "Kiểm tra môi trường từng cài 1.107.0, ghim về 1.106.2 hoặc bản sạch, và xoay mọi khoá API/cloud từng nằm trong môi trường đó.",
+          "source": {
+            "title": "Microsoft: Inside the LiteLLM 1.107.0 supply chain compromise",
+            "url": "https://www.microsoft.com/en-us/security/blog/2026/10/23/inside-the-litellm-1-107-0-supply-chain-compromise-credential-theft-through-python-startup-hooks/"
+          },
+          "published": "2026-10-23",
+          "kind": "tin"
+        }
+      ]
+    }
+  ],
+  "knowledge": {
+    "title": "Định luật Little và cách chọn kích thước connection pool",
+    "body": "Định luật Little nói số request đang xử lý đồng thời L bằng tốc độ đến λ nhân thời gian xử lý trung bình W. Nó đúng với mọi hệ thống ổn định, nên dùng được để ước lượng pool kết nối, số worker hay độ sâu hàng đợi.\n\nVí dụ dịch vụ nhận 500 req/s, mỗi request giữ một kết nối DB trung bình 20 ms: L = 500 x 0,02 = 10 kết nối đang bận. Pool cỡ 10 là vừa chạm ngưỡng, nên cần dư địa cho đỉnh tải và độ trễ đuôi, thường gấp 1,5 đến 2 lần. Pool quá lớn không làm nhanh hơn mà đẩy áp lực sang DB: nhiều kết nối tranh CPU và khoá, độ trễ W tăng, rồi L lại phải tăng theo, thành vòng xoáy.\n\nHệ quả thực tế: khi DB chậm gấp 5 (W tăng), cùng tốc độ đến thì L tăng gấp 5 và pool cạn. Vì vậy cần timeout ngắn và giới hạn hàng đợi chờ kết nối, để lỗi nổi lên sớm thay vì tích tụ.",
+    "example": "# Ước lượng nhanh\nlambda = 500      # req/s\nw = 0.020         # giây giữ kết nối\nl = lambda * w    # = 10 kết nối bận\npool_size = ceil(l * 1.5)   # ~15, kèm timeout lấy kết nối 200ms"
+  },
+  "sources": [
+    {
+      "title": "Origin Range Requests",
+      "url": "https://blog.cloudflare.com/origin-range-requests/"
+    },
+    {
+      "title": "Splunk Observability Cloud release notes, October 2026",
+      "url": "https://help.splunk.com/en/splunk-observability-cloud/release-notes/october-2026"
+    },
+    {
+      "title": "Gemini API changelog",
+      "url": "https://ai.google.dev/gemini-api/docs/changelog"
+    },
+    {
+      "title": "Cloudflare Blog: Engineering",
+      "url": "https://blog.cloudflare.com/tag/engineering/"
+    },
+    {
+      "title": "Best Open Source CLI Coding Agents in 2026",
+      "url": "https://pinggy.io/blog/best_open_source_cli_coding_agents/"
+    },
+    {
+      "title": "The Tech Lead Playbook (DEV Community)",
+      "url": "https://dev.to/truongpx396/the-tech-lead-playbook-from-best-ic-multiplier-hff"
+    },
+    {
+      "title": "Microsoft: Inside the LiteLLM 1.107.0 supply chain compromise",
+      "url": "https://www.microsoft.com/en-us/security/blog/2026/10/23/inside-the-litellm-1-107-0-supply-chain-compromise-credential-theft-through-python-startup-hooks/"
+    },
+    {
+      "title": "Help Net Security: LiteLLM second supply chain attack",
+      "url": "https://www.helpnetsecurity.com/2026/10/22/litellm-compromised-supply-chain-attack-pypi-docker/"
+    }
+  ],
+  "generated_at": "2026-11-01T01:22:53Z"
+}
