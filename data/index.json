@@ -1,5 +1,6 @@
 {
   "dates": [
+    "2026-11-02",
     "2026-11-01",
     "2026-10-31",
     "2026-10-30",
@@ -18,6 +19,7 @@
     "2026-10-17"
   ],
   "summaries": {
+    "2026-11-02": "PostgreSQL 14 hết hỗ trợ ngày 12/11, Cloudflare mở GA private origin cho Cloudflare One; Anthropic thêm Usage and Cost API và nâng giới hạn request lên 128 MB.",
     "2026-11-01": "LiteLLM 1.107.0 bị cài mã độc đánh cắp credential qua PyPI và Docker; Cloudflare giảm một nửa p99 R2 nhờ Origin Range Requests, Google ra Gemini API CLI beta cho agent.",
     "2026-10-31": "Anthropic chuyển Agent Skills sang Agentic AI Foundation, OpenSandbox thêm sandbox cho agent; đọc thêm Scion thay Git cho monorepo 30.000 thay đổi mỗi ngày và OpenTofu 1.13.",
     "2026-10-30": "Python 3.15 chính thức ra mắt với lazy import tường minh, Volcano 1.16 thêm hàng đợi theo namespace cho batch/AI trên Kubernetes; đọc thêm về chi phí thật của agent LLM và cách Baselime rời AWS bằng strangler fig.",

@@ -1,0 +1,133 @@
+{
+  "date": "2026-11-02",
+  "summary": "PostgreSQL 14 hết hỗ trợ ngày 12/11, Cloudflare mở GA private origin cho Cloudflare One; Anthropic thêm Usage and Cost API và nâng giới hạn request lên 128 MB.",
+  "sections": [
+    {
+      "title": "Backend",
+      "items": [
+        {
+          "title": "PostgreSQL 14 hết vòng đời ngày 12/11/2026",
+          "summary": "Dự án PostgreSQL xác nhận nhánh 14 ngừng nhận bản vá từ 12/11/2026; sau ngày đó lỗi và CVE mới sẽ không được sửa cho 14. Các nhà cung cấp managed cũng bắt đầu khoá tạo instance 14 mới và tự nâng cấp lên 17.",
+          "apply": "Còn khoảng 10 ngày: kiểm kê instance đang chạy 14, thử pg_upgrade --link trên bản sao và nhắm 17 hoặc 18 (hỗ trợ đến 2029/2030).",
+          "source": {
+            "title": "PostgreSQL 18.4, 17.10, 16.14, 15.18 and 14.23 Released",
+            "url": "https://postgresql.org/about/news/postgresql-184-1710-1614-1518-and-1423-released-3297"
+          },
+          "published": "2026-05-14",
+          "kind": "bài đọc"
+        }
+      ]
+    },
+    {
+      "title": "DevOps / Cloud",
+      "items": [
+        {
+          "title": "Cloudflare: private origin GA cho khách có Cloudflare One",
+          "summary": "Traffic công khai giờ có thể đi tới origin riêng tư (không có IP public) mà vẫn dùng WAF, bot management, caching và Workers, không cần mở cổng ra Internet.",
+          "apply": "Dịch vụ nội bộ cần phơi ra ngoài có thể bỏ load balancer public, chỉ giữ kết nối outbound từ mạng riêng.",
+          "source": {
+            "title": "Cloudflare Blog",
+            "url": "https://blog.cloudflare.com/"
+          },
+          "published": "2026-10-30",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "AI Engineering thực chiến",
+      "items": [
+        {
+          "title": "Anthropic: Usage and Cost Analytics API (beta) và request tới 128 MB",
+          "summary": "Anthropic nâng giới hạn kích thước request của Messages và Token Counting lên 128 MB, đồng thời ra API beta để lấy số liệu sử dụng và chi phí theo chương trình.",
+          "apply": "Kéo số liệu cost về dashboard nội bộ, gắn cảnh báo theo ngân sách thay vì chờ hoá đơn cuối tháng.",
+          "source": {
+            "title": "Anthropic Release Notes - Releasebot",
+            "url": "https://releasebot.io/updates/anthropic"
+          },
+          "published": "2026-10-29",
+          "kind": "tin"
+        },
+        {
+          "title": "OpenAI DevDay 2026: computer use cho Agents API, Codex chạy trên cloud",
+          "summary": "InfoQ tóm tắt các công bố chính: computer use trong Agents API, môi trường Codex trên cloud và Decisions API. Tên model giữa các nguồn còn lệch nhau nên nên đối chiếu changelog chính thức.",
+          "apply": "Nếu đang tự dựng vòng lặp agent điều khiển trình duyệt, đáng so sánh với API có sẵn trước khi viết thêm.",
+          "source": {
+            "title": "OpenAI DevDay 2026 Recap for Developers - InfoQ",
+            "url": "https://www.infoq.com/news/2026/10/openai-devday-2026/"
+          },
+          "published": "2026-10",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "System Design & Architecture",
+      "items": [
+        {
+          "title": "Uber Freight Search: ghép một search index từ các fragment do từng team sở hữu",
+          "summary": "Mỗi index ánh xạ tới một OpenSearch index, mỗi field chỉ thuộc đúng một fragment nên không xung đột giữa các team. Fragment được gộp thành một document phi chuẩn hoá cho mỗi entity và cập nhật từng phần thẳng vào OpenSearch; hệ thống ingest hơn 70 topic nguồn thành 300 fragment trên hơn 20 index.",
+          "apply": "Khi nhiều team cùng đổ dữ liệu vào một index, quy tắc một field một owner giúp tránh đè dữ liệu lẫn nhau.",
+          "source": {
+            "title": "Uber Engineering Blog",
+            "url": "https://www.uber.com/us/en/blog/engineering/"
+          },
+          "published": "2026-10-27",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "Open Source & công cụ mới",
+      "items": [
+        {
+          "title": "Garage: lưu trữ tương thích S3 gọn nhẹ cho home lab",
+          "summary": "Một người dùng mô tả Garage là giải pháp S3 tự host đơn giản và chạy ổn định; phù hợp thay MinIO cho nhu cầu object storage nhỏ.",
+          "apply": "Thử dựng một node Garage bằng Docker trên home lab làm đích backup cho restic hoặc Postgres WAL.",
+          "source": {
+            "title": "My Self Hosted Home Lab Software 2026",
+            "url": "https://forums.lawrencesystems.com/t/my-self-hosted-home-lab-software-2026/27035"
+          },
+          "published": "2026-09",
+          "kind": "bài đọc"
+        }
+      ]
+    }
+  ],
+  "knowledge": {
+    "title": "Idempotency key: retry an toàn cho API ghi dữ liệu",
+    "body": "Khi client timeout rồi gọi lại, request ghi có thể chạy hai lần (trừ tiền hai lần, tạo hai đơn). Giải pháp là client sinh một khoá duy nhất cho mỗi ý định (UUID) và gửi kèm trong header; server lưu khoá cùng kết quả, gặp lại khoá đó thì trả đúng kết quả cũ thay vì xử lý lại.\n\nChi tiết quan trọng: việc kiểm tra khoá và ghi nghiệp vụ phải nằm trong cùng một transaction hoặc dùng ràng buộc UNIQUE để hai request song song không cùng lọt qua. Nên lưu hash của payload để từ chối khoá bị dùng lại với nội dung khác, và đặt TTL (ví dụ 24 giờ) cho bản ghi khoá.",
+    "example": "CREATE TABLE idempotency_keys (\n  key text PRIMARY KEY,\n  request_hash text NOT NULL,\n  response jsonb,\n  created_at timestamptz DEFAULT now()\n);\n\n-- bước đầu của handler\nINSERT INTO idempotency_keys(key, request_hash) VALUES ($1, $2)\nON CONFLICT (key) DO NOTHING;\n-- 0 dòng bị chèn => đã có: trả response cũ (hoặc 409 nếu hash khác)"
+  },
+  "sources": [
+    {
+      "title": "PostgreSQL 18.4, 17.10, 16.14, 15.18 and 14.23 Released",
+      "url": "https://postgresql.org/about/news/postgresql-184-1710-1614-1518-and-1423-released-3297"
+    },
+    {
+      "title": "PostgreSQL 14 End of Life on 12 November 2026",
+      "url": "https://wz-it.com/en/blog/postgresql-14-end-of-life-upgrade-guide/"
+    },
+    {
+      "title": "Cloudflare Blog",
+      "url": "https://blog.cloudflare.com/"
+    },
+    {
+      "title": "Anthropic Release Notes - Releasebot",
+      "url": "https://releasebot.io/updates/anthropic"
+    },
+    {
+      "title": "OpenAI DevDay 2026 Recap for Developers - InfoQ",
+      "url": "https://www.infoq.com/news/2026/10/openai-devday-2026/"
+    },
+    {
+      "title": "Uber Engineering Blog",
+      "url": "https://www.uber.com/us/en/blog/engineering/"
+    },
+    {
+      "title": "My Self Hosted Home Lab Software 2026",
+      "url": "https://forums.lawrencesystems.com/t/my-self-hosted-home-lab-software-2026/27035"
+    }
+  ],
+  "generated_at": "2026-11-02T01:23:27Z"
+}
