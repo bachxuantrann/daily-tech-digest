@@ -1,0 +1,134 @@
+{
+  "date": "2026-11-03",
+  "summary": "Spring Boot 4.2 vào giai đoạn RC, Anthropic thêm message threads giảm độ trễ cho agent phiên dài; KubeCon NA tuần sau, LXD dính lỗ hổng CVSS 10.0.",
+  "sections": [
+    {
+      "title": "Backend",
+      "items": [
+        {
+          "title": "Spring Boot 4.2.0-RC1 xuất hiện trên blog Spring",
+          "summary": "Spring Boot 4.2 đã đến giai đoạn release candidate (23/10). Từ bản M1 hồi tháng 8, dòng 4.2 đã thêm hỗ trợ AMQP 1.0 kèm tính năng riêng cho RabbitMQ và cache build theo image cho Buildpacks.",
+          "apply": "Nếu đang chạy 4.1, thử nâng lên RC trên một nhánh CI riêng để biết trước các thay đổi gây vỡ trước khi bản GA ra.",
+          "source": {
+            "title": "Spring Boot 4.2.0-M1 available now",
+            "url": "https://spring.io/blog/2026/08/20/spring-boot-4-2-0-M1-available-now/"
+          },
+          "published": "2026-10-23",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "DevOps / Cloud",
+      "items": [
+        {
+          "title": "OpenTelemetry chuẩn bị mặt trận ở KubeCon NA 2026 (9-12/11)",
+          "summary": "Dự án OpenTelemetry công bố lịch talk và hoạt động tại KubeCon Bắc Mỹ ở Salt Lake City, gồm các chủ đề OpenTelemetry Collector và eBPF. Grafana cũng có mặt với chủ đề suy luận (inference) trên Kubernetes.",
+          "apply": "Lọc sẵn các talk về Collector và eBPF để xem lại bản ghi sau sự kiện nếu cần chuẩn hoá pipeline telemetry.",
+          "source": {
+            "title": "Join us for OpenTelemetry Talks and Activities at KubeCon NA 2026",
+            "url": "https://opentelemetry.io/blog/2026/kubecon-na/"
+          },
+          "published": "2026-10-20",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "AI Engineering thực chiến",
+      "items": [
+        {
+          "title": "Anthropic ra message threads (beta): agent không phải gửi lại cả hội thoại",
+          "summary": "Với message threads, agent gửi toàn bộ hội thoại một lần, các lượt sau chỉ gửi tin mới. Anthropic nói thời gian chờ phản hồi giảm khoảng 35% ở phiên rất dài, giá và rate limit giữ nguyên; tính năng chưa dùng được với zero data retention hay HIPAA.",
+          "apply": "Đáng thử cho agent chạy phiên dài, nhưng tự đo lại độ trễ trên workload của mình và kiểm tra yêu cầu tuân thủ dữ liệu trước.",
+          "source": {
+            "title": "Anthropic's message threads let Claude agents skip resending chats",
+            "url": "https://thenextweb.com/news/anthropic-message-threads-beta-claude-api-agents"
+          },
+          "published": "2026-11-02",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "System Design & Architecture",
+      "items": [
+        {
+          "title": "Lịch sử shard Postgres: vì sao khó hơn MySQL",
+          "summary": "PlanetScale kể lại vì sao hệ sinh thái sharding của Postgres đi sau MySQL và giới thiệu Neki, dịch vụ Postgres có shard của họ. Đây là góc nhìn của nhà cung cấp, nên cần đọc có chọn lọc.",
+          "apply": "Trước khi shard, hãy thử read replica và tách tải phân tích; chỉ shard khi ghi là nút thắt và có khoá phân phối rõ ràng.",
+          "source": {
+            "title": "The history of Postgres sharding",
+            "url": "https://planetscale.com/blog/the-history-of-postgres-sharding"
+          },
+          "published": "2026-08-24",
+          "kind": "bài đọc"
+        }
+      ]
+    },
+    {
+      "title": "Career & kỹ năng mềm",
+      "items": [
+        {
+          "title": "Long live the engineering manager (LeadDev)",
+          "summary": "Bài lập luận rằng AI loại bỏ phần báo cáo trạng thái nhưng không thay được phần phán đoán: coaching, ưu tiên và căn chỉnh. Code sinh nhanh hơn thì chi phí của việc lệch hướng càng cao.",
+          "apply": "Dành nhiều thời gian hơn cho làm rõ mục tiêu và tiêu chí hoàn thành trước khi giao việc, vì sai hướng giờ tốn kém nhanh hơn.",
+          "source": {
+            "title": "Long live the engineering manager",
+            "url": "https://leaddev.com/management/long-live-the-engineering-manager"
+          },
+          "published": "2026-10-19",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "Đáng chú ý khác",
+      "items": [
+        {
+          "title": "LXD và MicroCloud dính lỗ hổng chứng thực CVSS 10.0",
+          "summary": "Lỗi kiểm tra chứng chỉ ở HTTPS API cho phép kẻ tấn công giả danh client đã được tin cậy mà không cần khoá riêng; Canonical đã phát hành bản vá. Cụm LXD và MicroCloud chịu rủi ro lớn nhất. Mã CVE chưa được tôi xác nhận độc lập.",
+          "apply": "Cập nhật LXD/MicroCloud theo advisory của Canonical và hạn chế truy cập mạng tới cổng API HTTPS.",
+          "source": {
+            "title": "CVSS 10.0 LXD, MicroCloud Flaw Lets Attackers Impersonate Trusted Clients Without a Private Key",
+            "url": "https://thehackernews.com/2026/11/critical-lxd-and-microcloud-flaw-cvss.html"
+          },
+          "published": "2026-11-02",
+          "kind": "tin"
+        }
+      ]
+    }
+  ],
+  "knowledge": {
+    "title": "Saga: giao dịch phân tán bằng các bước bù trừ",
+    "body": "Khi một nghiệp vụ trải qua nhiều dịch vụ, mỗi dịch vụ có database riêng, bạn không có giao dịch ACID chung. Saga chia nghiệp vụ thành chuỗi giao dịch cục bộ; nếu một bước lỗi, các bước đã xong được hoàn tác bằng giao dịch bù trừ (compensating transaction) chứ không rollback.\n\nCó hai kiểu: choreography (các dịch vụ phản ứng theo sự kiện, đơn giản nhưng khó theo dõi) và orchestration (một bộ điều phối ra lệnh từng bước, dễ quan sát hơn). Bước bù trừ phải idempotent và chấp nhận trạng thái trung gian hiển thị ra ngoài, nên cần kết hợp với outbox và idempotency key.",
+    "example": "Đặt hàng:\n1. order.create (PENDING)\n2. payment.charge   -> lỗi? order.cancel\n3. inventory.reserve -> lỗi? payment.refund, order.cancel\n4. order.confirm\nMỗi hành động có cặp bù trừ: charge/refund, reserve/release."
+  },
+  "sources": [
+    {
+      "title": "Spring Boot 4.2.0-M1 available now",
+      "url": "https://spring.io/blog/2026/08/20/spring-boot-4-2-0-M1-available-now/"
+    },
+    {
+      "title": "Join us for OpenTelemetry Talks and Activities at KubeCon NA 2026",
+      "url": "https://opentelemetry.io/blog/2026/kubecon-na/"
+    },
+    {
+      "title": "Anthropic's message threads let Claude agents skip resending chats",
+      "url": "https://thenextweb.com/news/anthropic-message-threads-beta-claude-api-agents"
+    },
+    {
+      "title": "The history of Postgres sharding",
+      "url": "https://planetscale.com/blog/the-history-of-postgres-sharding"
+    },
+    {
+      "title": "Long live the engineering manager",
+      "url": "https://leaddev.com/management/long-live-the-engineering-manager"
+    },
+    {
+      "title": "CVSS 10.0 LXD, MicroCloud Flaw",
+      "url": "https://thehackernews.com/2026/11/critical-lxd-and-microcloud-flaw-cvss.html"
+    }
+  ],
+  "generated_at": "2026-11-03T01:23:14Z"
+}
