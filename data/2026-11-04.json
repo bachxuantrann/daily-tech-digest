@@ -1,0 +1,129 @@
+{
+  "date": "2026-11-04",
+  "summary": "Cloudflare kể cách giảm 40% build DNS đầy đủ và 85% bộ nhớ đỉnh bằng planner chọn build nhỏ nhất an toàn; Gemini 4 hết giá giới thiệu ngày 30/11, giá tăng gấp đôi từ 1/12.",
+  "sections": [
+    {
+      "title": "Backend",
+      "items": [
+        {
+          "title": "AlloyDB thêm ai.tune_sql: LLM gợi ý tối ưu truy vấn từ plan và thống kê chạy thật",
+          "summary": "Bản ghi chú phát hành AlloyDB ngày 02/11 giới thiệu hàm ai.tune_sql, dùng LLM kết hợp execution plan, schema và thống kê runtime để đề xuất cách tối ưu câu SQL.",
+          "apply": "Coi đây là bước gợi ý: vẫn chạy EXPLAIN ANALYZE trước và sau khi áp dụng, đừng tin mù quáng vào đề xuất.",
+          "source": {
+            "title": "AlloyDB for PostgreSQL release notes",
+            "url": "https://docs.cloud.google.com/alloydb/docs/release-notes"
+          },
+          "published": "2026-11-02",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "DevOps / Cloud",
+      "items": [
+        {
+          "title": "Argo CD ra loạt bản vá v3.5.7, v3.4.13 và v3.3.19",
+          "summary": "Ba nhánh được vá cùng ngày 02/11; changelog có thêm tuỳ chọn cấu hình TLS cipher suites và curve preferences cho kết nối tới Dex.",
+          "apply": "Nếu đang chạy Argo CD với Dex làm SSO, đọc changelog nhánh đang dùng và lên bản vá gần nhất trong cửa sổ bảo trì tới.",
+          "source": {
+            "title": "Releases - argoproj/argo-cd",
+            "url": "https://github.com/argoproj/argo-cd/releases"
+          },
+          "published": "2026-11-02",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "AI Engineering thực chiến",
+      "items": [
+        {
+          "title": "Gemini 4 Argon: giá giới thiệu hết ngày 30/11, từ 1/12 tăng gấp đôi",
+          "summary": "Theo các bản tổng hợp, giá 2 USD đầu vào và 10 USD đầu ra mỗi triệu token chỉ áp dụng đến 30/11/2026, sau đó là 4 và 20 USD. Đây là nguồn thứ cấp, nên đối chiếu lại với trang giá chính thức.",
+          "apply": "Nếu đang dùng Gemini 4 trong sản phẩm, ước tính lại chi phí theo giá mới và so sánh với các model khác trước tháng 12.",
+          "source": {
+            "title": "Google Gemini 4 Argon vs OpenAI & Anthropic",
+            "url": "https://www.indmoney.com/blog/us-stocks/google-gemini-4-argon-vs-openai-anthropic-ai-model-alphabet-stock"
+          },
+          "published": "2026-10",
+          "kind": "tin"
+        },
+        {
+          "title": "MCP revision 2026-07-28: bỏ session theo kết nối, hướng tới giao thức stateless",
+          "summary": "Một bài tổng hợp cho biết bản đặc tả này bỏ handshake khởi tạo và session theo từng kết nối; SDK Python 2.x đổi tên FastMCP thành MCPServer nên code viết cho 1.x có thể hỏng. Nhiều server npm vẫn dùng handshake cũ.",
+          "apply": "Ghim phiên bản SDK MCP trong lockfile và kiểm tra client/server có cùng revision trước khi nâng cấp.",
+          "source": {
+            "title": "MCP spec và SDK thay đổi (issoh.co.jp)",
+            "url": "https://www.issoh.co.jp/md/tech/15347"
+          },
+          "published": "2026-07",
+          "kind": "bài đọc"
+        }
+      ]
+    },
+    {
+      "title": "System Design & Architecture",
+      "items": [
+        {
+          "title": "Cloudflare: planner chọn build DNS nhỏ nhất mà vẫn chứng minh được an toàn",
+          "summary": "Thay vì dựng lại toàn bộ dữ liệu DNS mỗi lần có thay đổi, Cloudflare xây planner chọn phạm vi build nhỏ nhất có thể chứng minh đúng, cộng scheduler gộp các việc cùng zone. Kết quả nêu trong bài: giảm 40% build đầy đủ và 85% bộ nhớ đỉnh.",
+          "apply": "Với pipeline sinh dữ liệu lớn, thử tính phạm vi ảnh hưởng của thay đổi (incremental build) thay vì rebuild toàn bộ, và gộp các tác vụ trùng đối tượng.",
+          "source": {
+            "title": "How we halved DNS build delay and cut memory use by 85%",
+            "url": "https://blog.cloudflare.com/dns-targeted-zone-builds/"
+          },
+          "published": "2026-11-02",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "Career & kỹ năng mềm",
+      "items": [
+        {
+          "title": "Documenting Architecture Decisions của Michael Nygard",
+          "summary": "Bài gốc đề xuất ADR: mỗi quyết định kiến trúc là một tài liệu ngắn gồm bối cảnh, quyết định và hệ quả, lưu cùng mã nguồn để người đến sau hiểu vì sao hệ thống như vậy.",
+          "apply": "Mở thư mục docs/adr trong repo, viết ADR đầu tiên cho quyết định gần nhất mà team còn tranh luận.",
+          "source": {
+            "title": "Documenting Architecture Decisions",
+            "url": "https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions"
+          },
+          "published": "2011-11-15",
+          "kind": "bài đọc"
+        }
+      ]
+    }
+  ],
+  "knowledge": {
+    "title": "Cache stampede và singleflight: một request đi tính, phần còn lại chờ",
+    "body": "Khi một key cache nóng hết hạn, hàng trăm request cùng thấy miss và cùng đổ về database để tính lại, làm DB quá tải đúng lúc cache lẽ ra phải bảo vệ nó. Đó là cache stampede.\n\nCách giảm nhẹ: gộp các request cùng key thành một lần tính (singleflight), cộng TTL có jitter để các key không hết hạn cùng lúc, và tuỳ chọn trả bản cũ trong lúc làm mới ngầm (stale-while-revalidate).\n\nSingleflight chỉ có tác dụng trong một process; nếu chạy nhiều instance, mỗi instance vẫn gửi một lần, thường là chấp nhận được. Muốn chặt hơn thì dùng khoá phân tán ngắn hạn, nhưng phải đặt timeout để khoá không kẹt.",
+    "example": "// Go: golang.org/x/sync/singleflight\nvar g singleflight.Group\n\nfunc GetUser(id string) (User, error) {\n    if u, ok := cache.Get(id); ok { return u, nil }\n    v, err, _ := g.Do(id, func() (any, error) {\n        u, err := db.LoadUser(id)\n        if err == nil { cache.Set(id, u, ttl+jitter()) }\n        return u, err\n    })\n    if err != nil { return User{}, err }\n    return v.(User), nil\n}"
+  },
+  "sources": [
+    {
+      "title": "AlloyDB for PostgreSQL release notes",
+      "url": "https://docs.cloud.google.com/alloydb/docs/release-notes"
+    },
+    {
+      "title": "Releases - argoproj/argo-cd",
+      "url": "https://github.com/argoproj/argo-cd/releases"
+    },
+    {
+      "title": "Google Gemini 4 Argon vs OpenAI & Anthropic",
+      "url": "https://www.indmoney.com/blog/us-stocks/google-gemini-4-argon-vs-openai-anthropic-ai-model-alphabet-stock"
+    },
+    {
+      "title": "MCP spec và SDK thay đổi (issoh.co.jp)",
+      "url": "https://www.issoh.co.jp/md/tech/15347"
+    },
+    {
+      "title": "How we halved DNS build delay and cut memory use by 85%",
+      "url": "https://blog.cloudflare.com/dns-targeted-zone-builds/"
+    },
+    {
+      "title": "Documenting Architecture Decisions",
+      "url": "https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions"
+    }
+  ],
+  "generated_at": "2026-11-04T01:22:59Z"
+}

@@ -1,5 +1,6 @@
 {
   "dates": [
+    "2026-11-04",
     "2026-11-03",
     "2026-11-02",
     "2026-11-01",
@@ -20,6 +21,7 @@
     "2026-10-17"
   ],
   "summaries": {
+    "2026-11-04": "Cloudflare kể cách giảm 40% build DNS đầy đủ và 85% bộ nhớ đỉnh bằng planner chọn build nhỏ nhất an toàn; Gemini 4 hết giá giới thiệu ngày 30/11, giá tăng gấp đôi từ 1/12.",
     "2026-11-03": "Spring Boot 4.2 vào giai đoạn RC, Anthropic thêm message threads giảm độ trễ cho agent phiên dài; KubeCon NA tuần sau, LXD dính lỗ hổng CVSS 10.0.",
     "2026-11-02": "PostgreSQL 14 hết hỗ trợ ngày 12/11, Cloudflare mở GA private origin cho Cloudflare One; Anthropic thêm Usage and Cost API và nâng giới hạn request lên 128 MB.",
     "2026-11-01": "LiteLLM 1.107.0 bị cài mã độc đánh cắp credential qua PyPI và Docker; Cloudflare giảm một nửa p99 R2 nhờ Origin Range Requests, Google ra Gemini API CLI beta cho agent.",
