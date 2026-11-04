@@ -95,9 +95,9 @@
     }
   ],
   "knowledge": {
-    "title": "Cache stampede và singleflight: một request đi tính, phần còn lại chờ",
-    "body": "Khi một key cache nóng hết hạn, hàng trăm request cùng thấy miss và cùng đổ về database để tính lại, làm DB quá tải đúng lúc cache lẽ ra phải bảo vệ nó. Đó là cache stampede.\n\nCách giảm nhẹ: gộp các request cùng key thành một lần tính (singleflight), cộng TTL có jitter để các key không hết hạn cùng lúc, và tuỳ chọn trả bản cũ trong lúc làm mới ngầm (stale-while-revalidate).\n\nSingleflight chỉ có tác dụng trong một process; nếu chạy nhiều instance, mỗi instance vẫn gửi một lần, thường là chấp nhận được. Muốn chặt hơn thì dùng khoá phân tán ngắn hạn, nhưng phải đặt timeout để khoá không kẹt.",
-    "example": "// Go: golang.org/x/sync/singleflight\nvar g singleflight.Group\n\nfunc GetUser(id string) (User, error) {\n    if u, ok := cache.Get(id); ok { return u, nil }\n    v, err, _ := g.Do(id, func() (any, error) {\n        u, err := db.LoadUser(id)\n        if err == nil { cache.Set(id, u, ttl+jitter()) }\n        return u, err\n    })\n    if err != nil { return User{}, err }\n    return v.(User), nil\n}"
+    "title": "Read-your-writes: đọc được ngay thứ mình vừa ghi khi có read replica",
+    "body": "Khi tách ghi lên primary và đọc từ replica, replication lag khiến người dùng vừa lưu xong đã tải lại và thấy dữ liệu cũ. Đó là vi phạm read-your-writes, loại lỗi nhất quán người dùng nhận ra ngay.\n\nCác cách xử lý phổ biến: sau khi ghi, đọc từ primary trong một cửa sổ ngắn cho riêng user đó; hoặc lưu LSN/vị trí log của lần ghi cuối và chỉ đọc từ replica đã đuổi kịp vị trí đó; hoặc dán session vào primary cho các luồng nhạy cảm.\n\nKhông cần áp dụng cho mọi truy vấn: màn hình danh sách công khai chấp nhận dữ liệu trễ vài giây, còn màn hình sau khi submit form thì không.",
+    "example": "-- PostgreSQL: lấy vị trí WAL sau khi ghi (trên primary)\nSELECT pg_current_wal_lsn();\n\n-- Trên replica: đã đuổi kịp chưa?\nSELECT pg_last_wal_replay_lsn() >= '0/3000148'::pg_lsn AS caught_up;"
   },
   "sources": [
     {
@@ -125,5 +125,5 @@
       "url": "https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions"
     }
   ],
-  "generated_at": "2026-11-04T01:22:59Z"
+  "generated_at": "2026-11-04T01:23:13Z"
 }
