@@ -1,0 +1,140 @@
+{
+  "date": "2026-11-05",
+  "summary": "Go 1.27.3 và 1.26.10 ra bản vá, PostgreSQL 19 dự kiến GA ngày 19/11; Kubernetes ra loạt bản vá 28/10, Anthropic kể cách tách agent thành brain, hands và session.",
+  "sections": [
+    {
+      "title": "Backend",
+      "items": [
+        {
+          "title": "Go 1.27.3 và 1.26.10 được gắn tag",
+          "summary": "Hai bản vá của hai nhánh Go đang được hỗ trợ cùng xuất hiện ngày 20/10, sau cặp 1.27.2 và 1.26.9 hôm 8/10. Danh sách backport đang chờ cho thấy các lỗi runtime và go test -fuzztime sẽ nằm ở 1.27.4 và 1.26.11.",
+          "apply": "Cập nhật toolchain trong CI và image build lên bản vá mới nhất của nhánh đang dùng, và ghim phiên bản trong go.mod bằng dòng toolchain.",
+          "source": {
+            "title": "golang/go tags",
+            "url": "https://github.com/golang/go/tags"
+          },
+          "published": "2026-10-20",
+          "kind": "tin"
+        },
+        {
+          "title": "PostgreSQL 19 đã có RC1, dự kiến GA ngày 19/11",
+          "summary": "Theo thông báo PostgreSQL, bản 19 có công tắc bật tắt checksum dữ liệu trực tuyến không cần restart, lệnh REPACK, truy vấn đồ thị SQL/PGQ, và JIT bị tắt mặc định. Ngày GA là kế hoạch, có thể đổi.",
+          "apply": "Dựng thử RC1 trên home lab, so sánh plan của vài truy vấn nặng với JIT tắt, và chuẩn bị kế hoạch nâng cấp từ bản 14 đang sắp hết hỗ trợ.",
+          "source": {
+            "title": "PostgreSQL 19 RC 1 Released",
+            "url": "https://www.postgresql.org/about/news/postgresql-19-rc-1-released-3409/"
+          },
+          "published": "2026-11",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "DevOps / Cloud",
+      "items": [
+        {
+          "title": "Kubernetes ra bản vá v1.37.2, v1.36.6, v1.35.10 và alpha thứ ba của 1.38",
+          "summary": "Ba nhánh đang hỗ trợ cùng nhận bản vá ngày 28/10, cùng v1.38.0-alpha.3 cho chu kỳ kế tiếp. Trang releases chưa nêu nội dung cụ thể trong phần tôi đọc được.",
+          "apply": "Đọc changelog từng bản trước khi nâng cluster, ưu tiên rollout thử trên cluster staging hoặc home lab.",
+          "source": {
+            "title": "Kubernetes releases",
+            "url": "https://github.com/kubernetes/kubernetes/releases"
+          },
+          "published": "2026-10-28",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "AI Engineering thực chiến",
+      "items": [
+        {
+          "title": "Managed Agents: tách agent thành brain, hands và session",
+          "summary": "Anthropic chia agent thành brain (model và harness), hands (sandbox, công cụ) và session (log sự kiện bền vững), mỗi phần sau một interface riêng. Container hỏng chỉ là một lỗi tool call và được dựng lại, harness sập thì khởi động lại và đọc tiếp từ log, credential được giữ xa mã do model sinh.",
+          "apply": "Khi tự viết agent, lưu lịch sử bước đi vào store ngoài tiến trình để resume được, và coi sandbox là thứ dùng một lần.",
+          "source": {
+            "title": "Scaling Managed Agents: Decoupling the brain from the hands",
+            "url": "https://www.anthropic.com/research/managed-agents"
+          },
+          "published": "2026-04-08",
+          "kind": "bài đọc"
+        }
+      ]
+    },
+    {
+      "title": "System Design & Architecture",
+      "items": [
+        {
+          "title": "Cùng một ý tưởng ở tầng thấp hơn: log sự kiện làm nguồn sự thật cho agent",
+          "summary": "Thiết kế session log của Managed Agents là event sourcing áp vào agent: trạng thái chạy là hệ quả của log, nên thành phần tính toán thay thế được. Đây là cách nhìn hữu ích để thiết kế workflow dài hơi có khả năng phục hồi.",
+          "apply": "Với tác vụ nền chạy lâu, ghi từng bước vào bảng append-only và cho worker idempotent đọc tiếp từ bước cuối.",
+          "source": {
+            "title": "Scaling Managed Agents: Decoupling the brain from the hands",
+            "url": "https://www.anthropic.com/research/managed-agents"
+          },
+          "published": "2026-04-08",
+          "kind": "bài đọc"
+        }
+      ]
+    },
+    {
+      "title": "Open Source & công cụ mới",
+      "items": [
+        {
+          "title": "Floci: bộ giả lập AWS cục bộ giấy phép MIT",
+          "summary": "Floci chạy các dịch vụ kiểu AWS (S3, SQS, DynamoDB, Lambda, IAM...) ở localhost:4566, không cần tài khoản hay token, nhiều dịch vụ dùng container thật. Repo tự nhận là phương án thay thế LocalStack, khoảng 29,6 nghìn sao và đang lên trang trending.",
+          "apply": "Trỏ AWS SDK hoặc Terraform vào http://localhost:4566 trong CI để test tích hợp không tốn tiền cloud.",
+          "source": {
+            "title": "floci-io/floci",
+            "url": "https://github.com/floci-io/floci"
+          },
+          "published": "2026-11",
+          "kind": "tin"
+        },
+        {
+          "title": "Worktrunk: CLI quản lý Git worktree cho nhiều agent chạy song song",
+          "summary": "Công cụ viết bằng Rust, giấy phép MIT hoặc Apache-2.0, gom các thao tác worktree vào wt switch, wt list, wt merge, kèm hook và cổng dev server riêng cho mỗi worktree.",
+          "apply": "Thử khi chạy vài agent lập trình cùng lúc trên một repo, mỗi agent một worktree.",
+          "source": {
+            "title": "max-sixty/worktrunk",
+            "url": "https://github.com/max-sixty/worktrunk"
+          },
+          "published": "2026-11",
+          "kind": "tin"
+        }
+      ]
+    }
+  ],
+  "knowledge": {
+    "title": "Token bucket: giới hạn tốc độ cho phép bùng nổ ngắn",
+    "body": "Token bucket giữ một cái xô chứa tối đa B token, được nạp đều với tốc độ R token mỗi giây. Mỗi request lấy một token, hết token thì bị từ chối hoặc phải chờ. Khác với cửa sổ cố định, nó cho phép một cú bùng nổ tới B request rồi hạ về mức R trung bình, nên hợp với API có traffic nhấp nhô.\n\nCách cài không cần timer: chỉ lưu số token và thời điểm cập nhật cuối, rồi tính bù khi request đến. Trong hệ thống nhiều node, đặt trạng thái vào Redis và thực hiện đọc rồi ghi bằng một script Lua để tránh race. Chọn B theo độ bùng nổ chấp nhận được, R theo năng lực bền vững của backend, và trả về header Retry-After để client biết khi nào thử lại.",
+    "example": "def allow(state, now, rate=5, burst=10):\n    tokens = min(burst, state.tokens + (now - state.ts) * rate)\n    state.ts = now\n    if tokens >= 1:\n        state.tokens = tokens - 1\n        return True\n    state.tokens = tokens\n    return False"
+  },
+  "sources": [
+    {
+      "title": "golang/go tags",
+      "url": "https://github.com/golang/go/tags"
+    },
+    {
+      "title": "PostgreSQL 19 RC 1 Released",
+      "url": "https://www.postgresql.org/about/news/postgresql-19-rc-1-released-3409/"
+    },
+    {
+      "title": "Kubernetes releases",
+      "url": "https://github.com/kubernetes/kubernetes/releases"
+    },
+    {
+      "title": "Scaling Managed Agents",
+      "url": "https://www.anthropic.com/research/managed-agents"
+    },
+    {
+      "title": "floci-io/floci",
+      "url": "https://github.com/floci-io/floci"
+    },
+    {
+      "title": "max-sixty/worktrunk",
+      "url": "https://github.com/max-sixty/worktrunk"
+    }
+  ],
+  "generated_at": "2026-11-05T01:22:50Z"
+}
