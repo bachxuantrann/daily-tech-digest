@@ -1,0 +1,130 @@
+{
+  "date": "2026-11-06",
+  "summary": "Node.js 27 Alpha nâng V8 lên 15.6 với vài thay đổi dễ làm vỡ test, Node.js báo trước bản vá bảo mật mức HIGH ngày 11/11; Prometheus 3.16.0 ra mắt.",
+  "sections": [
+    {
+      "title": "Backend",
+      "items": [
+        {
+          "title": "Node.js 27 Alpha: V8 15.6 và những thay đổi dễ làm vỡ test",
+          "summary": "Node.js 27 Alpha nâng V8 từ 14.6 lên 15.6, thêm Math.sumPrecise và các hàm iterator mới. Một số kết quả Math sai khác ở bit cuối, chuỗi Math.random theo seed đổi, định dạng v8.serialize/structuredClone mới mà bản Node cũ không đọc được. Giới hạn old-generation mặc định cũng tăng trên máy 4-15 GB RAM.",
+          "apply": "Nếu chạy Node trong container có giới hạn bộ nhớ, đặt --max-old-space-size tường minh trước khi lên bản mới; rà các test so sánh số thực với giá trị cố định.",
+          "source": {
+            "title": "Notable V8 changes from Node.js 26 to 27 (Alpha)",
+            "url": "https://nodejs.org/en/blog/announcements/notable-v8-changes-from-node-js-26-to-27-alpha"
+          },
+          "published": "2026-11-05",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "DevOps / Cloud",
+      "items": [
+        {
+          "title": "Prometheus 3.16.0",
+          "summary": "Bản 3.16.0 có vài thay đổi hành vi: --web.external-url mặc định dùng https khi bật TLS qua web config, mẫu subquery được tính vào thống kê truy vấn. Ngoài ra có hàm integral() thử nghiệm, ước tính chi phí và giới hạn thực thi truy vấn (--enable-feature=query-cost), cùng nhiều bản sửa TSDB và native histogram.",
+          "apply": "Bật query-cost trên môi trường thử để xem giới hạn truy vấn có chặn được các dashboard nặng không; kiểm tra lại external-url nếu đang chạy sau reverse proxy TLS.",
+          "source": {
+            "title": "Prometheus releases",
+            "url": "https://github.com/prometheus/prometheus/releases"
+          },
+          "published": "2026-11-04",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "AI Engineering thực chiến",
+      "items": [
+        {
+          "title": "Nhiễu hạ tầng làm lệch điểm eval của agent lập trình",
+          "summary": "Bài của Anthropic định lượng việc cấu hình hạ tầng chạy eval (tài nguyên, môi trường) có thể làm điểm số agentic coding dao động đáng kể, nên chênh lệch nhỏ giữa hai mô hình chưa chắc là thật.",
+          "apply": "Khi so sánh mô hình hay prompt cho agent, cố định tài nguyên chạy, lặp nhiều lần và báo khoảng dao động thay vì một con số.",
+          "source": {
+            "title": "Quantifying infrastructure noise in agentic coding evals",
+            "url": "https://www.anthropic.com/engineering"
+          },
+          "published": "2026-02-05",
+          "kind": "bài đọc"
+        }
+      ]
+    },
+    {
+      "title": "Open Source & công cụ mới",
+      "items": [
+        {
+          "title": "claude-mem: bộ nhớ bền cho coding agent",
+          "summary": "Repo đang đứng đầu GitHub Trending tuần này (hơn 9.000 sao/tuần), nén hoạt động của phiên làm việc rồi đưa ngữ cảnh liên quan vào các phiên sau.",
+          "apply": "Đáng thử trên máy dev hoặc home lab, nhưng đọc kỹ dữ liệu nó lưu cục bộ trước khi dùng với mã nguồn công ty.",
+          "source": {
+            "title": "GitHub Trending (tuần)",
+            "url": "https://github.com/trending?since=weekly"
+          },
+          "published": "2026-11",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "Career & kỹ năng mềm",
+      "items": [
+        {
+          "title": "Thiết kế bài đánh giá kỹ thuật chống được AI",
+          "summary": "Anthropic kể ba vòng thiết kế bài take-home về tối ưu hiệu năng mà Claude liên tục giải được, và rút ra bài học cho cách tuyển dụng khi AI làm được bài kiểm tra cũ.",
+          "apply": "Nếu bạn tham gia phỏng vấn, ưu tiên bài thảo luận quyết định và trade-off hơn bài chỉ có một đáp án đúng.",
+          "source": {
+            "title": "Designing AI-resistant technical evaluations",
+            "url": "https://www.anthropic.com/engineering"
+          },
+          "published": "2026-01-21",
+          "kind": "bài đọc"
+        }
+      ]
+    },
+    {
+      "title": "Đáng chú ý khác",
+      "items": [
+        {
+          "title": "Node.js báo trước bản vá bảo mật ngày 11/11",
+          "summary": "Node.js thông báo bản vá bảo mật ngày 11/11/2026 cho các nhánh 26.x, 24.x và 22.x, mức nghiêm trọng cao nhất là HIGH. Chi tiết CVE chưa công bố.",
+          "apply": "Lên lịch nâng cấp Node trong image và pipeline CI ngay sau ngày 11/11; bản EOL luôn bị ảnh hưởng.",
+          "source": {
+            "title": "November 2026 Security Releases",
+            "url": "https://nodejs.org/en/blog/vulnerability/november-2026-security-releases"
+          },
+          "published": "2026-11-03",
+          "kind": "tin"
+        }
+      ]
+    }
+  ],
+  "knowledge": {
+    "title": "Transactional outbox: ghi DB và phát sự kiện không lệch nhau",
+    "body": "Vấn đề: dịch vụ vừa cập nhật database vừa gửi message lên broker thì hai việc này không cùng một giao dịch. Commit xong mà publish lỗi thì mất sự kiện, publish trước mà commit lỗi thì có sự kiện ma.\n\nGiải pháp: trong cùng giao dịch DB, ghi thêm một dòng vào bảng outbox. Một tiến trình riêng (poller hoặc CDC như Debezium) đọc bảng này, publish lên broker rồi đánh dấu đã gửi. Kết quả là at-least-once, nên consumer phải idempotent.",
+    "example": "BEGIN;\nUPDATE orders SET status='PAID' WHERE id=42;\nINSERT INTO outbox(aggregate_id, type, payload)\n  VALUES (42, 'OrderPaid', '{\"id\":42}');\nCOMMIT;\n-- relay: SELECT ... FROM outbox WHERE sent_at IS NULL\n--        ORDER BY id FOR UPDATE SKIP LOCKED LIMIT 100;"
+  },
+  "sources": [
+    {
+      "title": "Notable V8 changes from Node.js 26 to 27 (Alpha)",
+      "url": "https://nodejs.org/en/blog/announcements/notable-v8-changes-from-node-js-26-to-27-alpha"
+    },
+    {
+      "title": "November 2026 Security Releases",
+      "url": "https://nodejs.org/en/blog/vulnerability/november-2026-security-releases"
+    },
+    {
+      "title": "Prometheus releases",
+      "url": "https://github.com/prometheus/prometheus/releases"
+    },
+    {
+      "title": "Anthropic Engineering",
+      "url": "https://www.anthropic.com/engineering"
+    },
+    {
+      "title": "GitHub Trending (tuần)",
+      "url": "https://github.com/trending?since=weekly"
+    }
+  ],
+  "generated_at": "2026-11-06T01:23:28Z"
+}
