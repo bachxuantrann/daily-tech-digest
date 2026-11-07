@@ -1,0 +1,110 @@
+{
+  "date": "2026-11-07",
+  "summary": "Valkey 9.2.0-rc2 thêm DELEX và đồng bộ không cần fork, OTel Collector 1.71 bỏ vài trường HTTP cũ; Anthropic công bố các thành phần của bộ nhớ agent.",
+  "sections": [
+    {
+      "title": "Backend",
+      "items": [
+        {
+          "title": "Valkey 9.2.0-rc2: lệnh DELEX, nén Zstd cho RDB, đồng bộ không fork",
+          "summary": "Bản RC mới thêm DELEX (xoá khoá chuỗi chỉ khi giá trị khớp hoặc khác giá trị cho trước), Zstd làm codec nén streaming cho RDB và replication, cùng full sync tới replica bằng snapshot ở luồng nền thay vì fork.",
+          "apply": "DELEX giúp viết khoá phân tán an toàn hơn mà không cần script Lua: nhả khoá chỉ khi token vẫn là của mình. Thử RC trên home lab trước khi nâng cấp thật.",
+          "source": {
+            "title": "Valkey releases",
+            "url": "https://github.com/valkey-io/valkey/releases"
+          },
+          "published": "2026-11-04",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "DevOps / Cloud",
+      "items": [
+        {
+          "title": "OpenTelemetry Collector v1.71.0 / v0.165.0",
+          "summary": "Bản này bỏ các trường cũ IdleConnTimeout, MaxIdleConns, MaxIdleConnsPerHost, DisableKeepAlives khỏi confighttp (breaking), đưa processor queue_batch lên beta cho traces, metrics, logs, và giới hạn cửa sổ giải nén zstd cùng độ sâu đệ quy khi giải mã protobuf để chống payload độc.",
+          "apply": "Grep cấu hình collector xem còn dùng bốn trường bị bỏ không trước khi nâng cấp; cân nhắc queue_batch thay cho batch processor + sending_queue riêng lẻ.",
+          "source": {
+            "title": "opentelemetry-collector releases",
+            "url": "https://github.com/open-telemetry/opentelemetry-collector/releases"
+          },
+          "published": "2026-11-06",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "AI Engineering thực chiến",
+      "items": [
+        {
+          "title": "Anthropic: các thành phần của bộ nhớ agent",
+          "summary": "Bài chia bộ nhớ thành transcript, ghi chú, biểu diễn có cấu trúc (wiki), lớp context nạp sẵn nhỏ, và một pass nền gọi là dreaming để sửa lỗi và gộp ghi chú. Số liệu đáng chú ý: wiki kết hợp tìm kiếm đạt 61% so với 53% chỉ tìm kiếm và 48% chỉ wiki; nhiều agent ghi chung một tệp giữ 41/57 dữ kiện, mỗi agent một trang giữ đủ 57.",
+          "apply": "Giữ tệp memory nạp sẵn ngắn như một mục lục, mỗi tệp chỉ một agent được ghi, ghi rõ ghi chú nào đã kiểm chứng.",
+          "source": {
+            "title": "The components of agent memory",
+            "url": "https://www.anthropic.com/research/components-of-agent-memory"
+          },
+          "published": "2026-11-06",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "Open Source & công cụ mới",
+      "items": [
+        {
+          "title": "uv 0.13.7: uv audit gộp bản ghi OSV trùng, sửa uv init/uv add",
+          "summary": "Bản mới làm uv audit (preview) báo các bản ghi OSV bí danh thành một lỗ hổng duy nhất, thêm --output-version cho uv workspace metadata và sửa lỗi đường dẫn workspace bị coi là glob, mất comment khi uv add cập nhật nhóm phụ thuộc.",
+          "apply": "Chạy uv audit trong CI của dự án Python để quét lỗ hổng phụ thuộc mà không cần thêm công cụ.",
+          "source": {
+            "title": "uv releases",
+            "url": "https://github.com/astral-sh/uv/releases"
+          },
+          "published": "2026-11-03",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "Đáng chú ý khác",
+      "items": [
+        {
+          "title": "Valkey 9.1.3, 9.0.7, 8.1.11: vá tràn bộ đệm heap ở Pub/Sub cluster",
+          "summary": "Ba bản bảo mật cùng sửa lỗi tràn bộ đệm heap khi dựng thông điệp Pub/Sub trong cluster (GHSA-f4q9-j22m-xqq9), cùng một số lỗi đúng đắn như LSET sai phần tử và lệnh consumer-group không kích hoạt WATCH.",
+          "apply": "Nếu chạy Valkey cluster, nâng lên bản vá của nhánh đang dùng.",
+          "source": {
+            "title": "Valkey releases",
+            "url": "https://github.com/valkey-io/valkey/releases"
+          },
+          "published": "2026-10-26",
+          "kind": "tin"
+        }
+      ]
+    }
+  ],
+  "knowledge": {
+    "title": "Circuit breaker: ngắt sớm khi dịch vụ phụ thuộc đang hỏng",
+    "body": "Khi một dịch vụ downstream chậm hoặc lỗi, các request vẫn chờ timeout sẽ chiếm hết thread hoặc connection của bạn và lỗi lan ngược lên. Circuit breaker theo dõi tỉ lệ lỗi gần đây và có ba trạng thái: closed (cho qua bình thường), open (từ chối ngay, trả fallback hoặc lỗi nhanh) và half-open (sau một khoảng nghỉ, cho vài request thử để xem đã hồi phục chưa).\n\nCác tham số cần chọn có chủ đích: ngưỡng lỗi, kích thước cửa sổ đo, thời gian open, số request thử ở half-open. Hãy kết hợp với timeout ngắn và retry có backoff; breaker không thay thế chúng. Luôn có fallback rõ ràng (cache cũ, giá trị mặc định, báo lỗi dễ hiểu) và xuất metric trạng thái breaker để nhìn thấy sự cố sớm.",
+    "example": "// Go, sony/gobreaker\ncb := gobreaker.NewCircuitBreaker(gobreaker.Settings{\n  Name: \"payments\",\n  Timeout: 30 * time.Second, // thời gian open\n  ReadyToTrip: func(c gobreaker.Counts) bool {\n    return c.Requests >= 20 && float64(c.TotalFailures)/float64(c.Requests) > 0.5\n  },\n})\nres, err := cb.Execute(func() (any, error) { return callPayments(ctx) })"
+  },
+  "sources": [
+    {
+      "title": "Valkey releases",
+      "url": "https://github.com/valkey-io/valkey/releases"
+    },
+    {
+      "title": "opentelemetry-collector releases",
+      "url": "https://github.com/open-telemetry/opentelemetry-collector/releases"
+    },
+    {
+      "title": "The components of agent memory",
+      "url": "https://www.anthropic.com/research/components-of-agent-memory"
+    },
+    {
+      "title": "uv releases",
+      "url": "https://github.com/astral-sh/uv/releases"
+    }
+  ],
+  "generated_at": "2026-11-07T01:22:44Z"
+}
