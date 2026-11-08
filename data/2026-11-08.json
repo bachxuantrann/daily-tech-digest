@@ -1,0 +1,125 @@
+{
+  "date": "2026-11-08",
+  "summary": "Argo CD 3.6.0 ra mắt với health check mới và hydrator ký commit, Spring Boot 4.2.0-RC2 đổi vài mặc định RabbitMQ; Anthropic có IP allowlisting cho API key và Scion, hệ thống source control thay Git nội bộ.",
+  "sections": [
+    {
+      "title": "Backend",
+      "items": [
+        {
+          "title": "Spring Boot 4.2.0-RC2: dependency lớn nhảy phiên bản, vài mặc định SSL/RabbitMQ đổi",
+          "summary": "RC2 kéo theo Spring Framework 7.1.0-RC2, Hibernate 7.4.14, Netty 4.2.20 và Micrometer 1.18.0-RC2. Changelog có sửa mặc định khi dùng SSL bundle (cổng AMQP 1.0 là 5671, không còn mặc định ANONYMOUS), bỏ hỗ trợ reload LDAP SSL, và transaction manager của Kafka, R2DBC, Mongo giờ đi qua TransactionManagerCustomizers.",
+          "apply": "Nếu dùng RabbitMQ hoặc LDAP với SSL, thử nâng lên RC2 trên nhánh riêng và chạy integration test trước khi bản GA ra.",
+          "source": {
+            "title": "Spring Boot v4.2.0-RC2 release notes",
+            "url": "https://github.com/spring-projects/spring-boot/releases/tag/v4.2.0-RC2"
+          },
+          "published": "2026-11-05",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "DevOps / Cloud",
+      "items": [
+        {
+          "title": "Argo CD 3.6.0: health check cho nhiều CRD phổ biến, hydrator ký commit",
+          "summary": "Bản 3.6.0 thêm health check built-in cho Kyverno, CloudNativePG, cert-manager, Tekton, Velero, Prometheus Operator; ApplicationSet có metric cho progressive sync; commit do hydrator sinh ra có thể được ký (alpha). Giao diện cũng thêm virtual scrolling cho danh sách app lớn. 3.6.1 sửa hai lỗi UI ngay hôm sau.",
+          "apply": "Nếu đang tự viết Lua health check cho CloudNativePG hay cert-manager, thử bỏ và dùng bản built-in; nâng thẳng lên 3.6.1.",
+          "source": {
+            "title": "Argo CD releases",
+            "url": "https://github.com/argoproj/argo-cd/releases"
+          },
+          "published": "2026-11-03",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "AI Engineering thực chiến",
+      "items": [
+        {
+          "title": "Claude API: IP allowlisting cho API key (beta)",
+          "summary": "Admin của organization giới hạn địa chỉ được phép dùng API key, tối đa 1.000 dải IPv4/IPv6 hoặc CIDR; request từ IP ngoài danh sách bị từ chối. Đây là lớp chặn khi key bị lộ mà chưa kịp rotate.",
+          "apply": "Gắn allowlist vào egress IP của NAT gateway/cụm production, giữ key dev ở workspace riêng.",
+          "source": {
+            "title": "Claude Developer Platform release notes",
+            "url": "https://platform.claude.com/docs/en/release-notes/api"
+          },
+          "published": "2026-11-05",
+          "kind": "tin"
+        },
+        {
+          "title": "Fast mode của Claude Opus 4.8 bị gỡ ngày 30/11",
+          "summary": "Từ 30/11/2026, request claude-opus-4-8 với speed fast sẽ trả lỗi; release notes khuyên chuyển sang Claude Opus 5.5. Chỉ là thông báo deprecation, nhưng sẽ làm vỡ code nếu hard-code tham số này.",
+          "apply": "Grep codebase tìm speed fast và model id cũ, đặt model id vào config thay vì hard-code.",
+          "source": {
+            "title": "Claude Developer Platform release notes",
+            "url": "https://platform.claude.com/docs/en/release-notes/api"
+          },
+          "published": "2026-10-30",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "System Design & Architecture",
+      "items": [
+        {
+          "title": "Scion: Anthropic viết hệ thống source control riêng cho quy mô agent",
+          "summary": "Số thay đổi merge mỗi ngày tăng từ khoảng 2.500 lên hơn 30.000 trong vài tháng, monorepo gần 100 GB và khoảng 25 triệu lượt checkout CI mỗi ngày làm mô hình Git mirror không theo kịp. Họ làm server giữ history, blame, merge; client luôn online, dữ liệu content-addressed, cache nhiều tầng đạt hit rate trên 99%, hạ tầng nhỏ hơn khoảng 200 lần. Họ nói rõ đây không phải bản thay thế Git đại trà.",
+          "apply": "Bài học chung: khi client gần như luôn online, hãy cân nhắc đưa trạng thái về server và dùng cache phân tầng thay vì sao chép toàn bộ cho từng client.",
+          "source": {
+            "title": "Redesigning source control at Anthropic",
+            "url": "https://www.anthropic.com/engineering/redesigning-source-control"
+          },
+          "published": "2026-10-13",
+          "kind": "bài đọc"
+        }
+      ]
+    },
+    {
+      "title": "Open Source & công cụ mới",
+      "items": [
+        {
+          "title": "Scrapling: framework scraping Python, giấy phép BSD-3, có MCP server",
+          "summary": "Gộp HTTP client giả TLS fingerprint trình duyệt, browser tàng hình, parser CSS/XPath có khả năng tìm lại phần tử khi trang đổi, và spider có concurrency, proxy rotation, pause/resume, xuất JSON/CSV. Đang nằm trong top trending GitHub tuần này; repo chưa công bố release nên coi là dự án mới, cần kiểm tra ổn định.",
+          "apply": "Thử trên home lab: pip install \"scrapling[fetchers]\" rồi scrapling install, dùng để thu thập dữ liệu công khai cho pipeline thử nghiệm, nhớ tuân thủ robots.txt và điều khoản của site.",
+          "source": {
+            "title": "D4Vinci/Scrapling",
+            "url": "https://github.com/D4Vinci/Scrapling"
+          },
+          "published": "2026-11",
+          "kind": "bài đọc"
+        }
+      ]
+    }
+  ],
+  "knowledge": {
+    "title": "Cache stampede và single-flight: một request tính lại, phần còn lại chờ",
+    "body": "Khi một key cache nóng hết hạn, hàng trăm request cùng thấy miss và cùng đập xuống database để tính lại. Đó là cache stampede, và nó thường làm sập DB đúng lúc tải cao nhất.\n\nCách rẻ nhất là single-flight: với mỗi key chỉ cho một lời gọi đang chạy, các request đến sau chờ và dùng chung kết quả. Cách bổ sung là cộng thêm jitter ngẫu nhiên vào TTL để các key không hết hạn cùng lúc, hoặc trả bản cũ trong lúc làm mới ngầm (stale-while-revalidate).\n\nLưu ý single-flight trong tiến trình chỉ gộp request trong cùng một instance; nhiều instance vẫn có thể cùng tính lại, nên với key rất nóng hãy thêm khoá phân tán ngắn hạn hoặc làm mới chủ động.",
+    "example": "// Go: golang.org/x/sync/singleflight\nvar g singleflight.Group\n\nfunc GetUser(id string) (User, error) {\n    if u, ok := cache.Get(id); ok {\n        return u, nil\n    }\n    v, err, _ := g.Do(id, func() (any, error) {\n        u, err := db.LoadUser(id) // chỉ 1 lời gọi cho mỗi id\n        if err == nil {\n            cache.Set(id, u, ttl+jitter()) // TTL cộng ngẫu nhiên\n        }\n        return u, err\n    })\n    if err != nil {\n        return User{}, err\n    }\n    return v.(User), nil\n}"
+  },
+  "sources": [
+    {
+      "title": "Spring Boot v4.2.0-RC2",
+      "url": "https://github.com/spring-projects/spring-boot/releases/tag/v4.2.0-RC2"
+    },
+    {
+      "title": "Argo CD releases",
+      "url": "https://github.com/argoproj/argo-cd/releases"
+    },
+    {
+      "title": "Claude Developer Platform release notes",
+      "url": "https://platform.claude.com/docs/en/release-notes/api"
+    },
+    {
+      "title": "Redesigning source control at Anthropic",
+      "url": "https://www.anthropic.com/engineering/redesigning-source-control"
+    },
+    {
+      "title": "D4Vinci/Scrapling",
+      "url": "https://github.com/D4Vinci/Scrapling"
+    }
+  ],
+  "generated_at": "2026-11-08T01:23:26Z"
+}
