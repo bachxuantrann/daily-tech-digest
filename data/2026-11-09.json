@@ -1,0 +1,129 @@
+{
+  "date": "2026-11-09",
+  "summary": "Ruff 0.17.4 thêm rule bảo mật tarfile và tối ưu formatter, OpenTofu vá lỗi mất state khi apply đầu tiên bị crash; Grafana 13.3.0 vá 10 CVE, Kubernetes 1.38 lên beta đầu tiên.",
+  "sections": [
+    {
+      "title": "Backend",
+      "items": [
+        {
+          "title": "Ruff 0.17.4: rule tarfile-ignore-zeros-true và formatter nhanh hơn",
+          "summary": "Bản này thêm rule preview cảnh báo dùng tarfile với ignore_zeros=True, sửa lỗi panic khi gặp file có BOM, và tối ưu đường format/lint (dùng Bloom filter tra comment). Diagnostics giờ cũng tôn trọng NO_COLOR và CLICOLOR=0.",
+          "apply": "Nếu CI Python của bạn dùng Ruff, bump phiên bản và bật thử rule preview trên một nhánh để xem có phát hiện gì trong code xử lý file upload.",
+          "source": {
+            "title": "Ruff releases",
+            "url": "https://github.com/astral-sh/ruff/releases"
+          },
+          "published": "2026-11-05",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "DevOps / Cloud",
+      "items": [
+        {
+          "title": "OpenTofu 1.13.9 và 1.12.12: sửa lỗi mất state ở local backend",
+          "summary": "Nếu lần apply đầu tiên bị crash giữa chừng, state của local backend có thể không được ghi xuống đĩa, khiến tài nguyên đã tạo thành mồ côi. Hai bản vá ngày 5/11 sửa lỗi này; trước đó 1.13.8 trả lại tuỳ chọn -v và sửa panic khi cấu hình state encryption sai.",
+          "apply": "Dùng local backend (home lab, môi trường thử) thì nên nâng lên bản vá mới trước lần apply tiếp theo.",
+          "source": {
+            "title": "OpenTofu releases",
+            "url": "https://github.com/opentofu/opentofu/releases"
+          },
+          "published": "2026-11-05",
+          "kind": "tin"
+        },
+        {
+          "title": "Kubernetes v1.38.0-beta.0 xuất hiện",
+          "summary": "Sau alpha.3 ngày 28/10, nhánh 1.38 đã sang beta đầu tiên vào 6/11, nghĩa là danh sách tính năng gần như chốt. Các bản vá 1.37.2, 1.36.6 và 1.35.10 vẫn là bản ổn định mới nhất.",
+          "apply": "Đọc changelog beta để biết API nào sắp bị bỏ trước khi cụm của bạn nâng cấp.",
+          "source": {
+            "title": "Kubernetes releases",
+            "url": "https://github.com/kubernetes/kubernetes/releases"
+          },
+          "published": "2026-11-06",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "AI Engineering thực chiến",
+      "items": [
+        {
+          "title": "Harness design cho ứng dụng chạy dài hạn của agent",
+          "summary": "Bài của Anthropic bàn về việc thiết kế harness (vòng điều phối, công cụ, kiểm tra) ảnh hưởng thế nào đến chất lượng khi agent viết code tự động trong thời gian dài, gồm cả thiết kế frontend.",
+          "apply": "Khi agent làm sai, hãy xem lại harness (ngữ cảnh, bước kiểm tra, cách chia việc) trước khi đổi sang mô hình khác.",
+          "source": {
+            "title": "Harness design for long-running application development",
+            "url": "https://anthropic.com/research/harness-design-long-running-apps"
+          },
+          "published": "2026-03-24",
+          "kind": "bài đọc"
+        }
+      ]
+    },
+    {
+      "title": "Open Source & công cụ mới",
+      "items": [
+        {
+          "title": "anthropics/skills: kho Agent Skills công khai đang lên",
+          "summary": "Kho mã Python này gom các Agent Skills, tức gói hướng dẫn và script mà agent nạp khi cần, và nhận khoảng 3.100 sao trong tuần. Cùng danh sách trending còn có NVIDIA/auto-ontology, framework lớp ngữ nghĩa dạng đồ thị giúp truy xuất cho agent ổn định hơn.",
+          "apply": "Đọc vài skill mẫu để học cách đóng gói quy trình lặp lại của team thành skill cho coding agent trên home lab.",
+          "source": {
+            "title": "GitHub Trending (tuần)",
+            "url": "https://github.com/trending?since=weekly"
+          },
+          "published": "2026-11",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "Đáng chú ý khác",
+      "items": [
+        {
+          "title": "Grafana 13.3.0 vá 10 lỗ hổng bảo mật",
+          "summary": "Cùng đợt 27/10, các nhánh 13.2.5, 13.1.9 và 13.0.12 vá thêm 4, 3 và 3 lỗ hổng. Bản 13.3.0 còn đặt auto grid làm bố cục dashboard mặc định và thêm biến $__namespace.",
+          "apply": "Kiểm tra phiên bản Grafana đang chạy và lên lịch nâng cấp lên bản vá tương ứng nhánh của bạn.",
+          "source": {
+            "title": "Grafana releases",
+            "url": "https://github.com/grafana/grafana/releases"
+          },
+          "published": "2026-10-27",
+          "kind": "tin"
+        }
+      ]
+    }
+  ],
+  "knowledge": {
+    "title": "Backpressure: đừng để producer nhanh hơn consumer",
+    "body": "Khi producer sinh việc nhanh hơn consumer xử lý, hàng đợi không giới hạn sẽ phình dần cho tới khi hết bộ nhớ, và độ trễ tăng theo vì request nằm chờ rất lâu. Backpressure là cơ chế báo ngược cho phía trên biết hãy chậm lại.\n\nBa cách hay dùng: hàng đợi có giới hạn (đầy thì block hoặc từ chối), trả 429/503 kèm Retry-After để client tự lùi, và cơ chế pull (consumer chủ động lấy việc theo sức mình, như Kafka consumer hay prefetch của RabbitMQ).\n\nTừ chối sớm và rõ ràng luôn tốt hơn nhận hết rồi chết chậm. Hãy đặt giới hạn ở mọi ranh giới giữa các thành phần, và theo dõi độ sâu hàng đợi như một metric chính.",
+    "example": "// Go: channel có đệm, đầy thì từ chối thay vì chặn vô hạn\njobs := make(chan Job, 100)\n\nfunc submit(j Job) error {\n    select {\n    case jobs <- j:\n        return nil\n    default:\n        return ErrBusy // handler trả 429 + Retry-After\n    }\n}"
+  },
+  "sources": [
+    {
+      "title": "Ruff releases",
+      "url": "https://github.com/astral-sh/ruff/releases"
+    },
+    {
+      "title": "OpenTofu releases",
+      "url": "https://github.com/opentofu/opentofu/releases"
+    },
+    {
+      "title": "Kubernetes releases",
+      "url": "https://github.com/kubernetes/kubernetes/releases"
+    },
+    {
+      "title": "Harness design for long-running application development",
+      "url": "https://anthropic.com/research/harness-design-long-running-apps"
+    },
+    {
+      "title": "GitHub Trending (tuần)",
+      "url": "https://github.com/trending?since=weekly"
+    },
+    {
+      "title": "Grafana releases",
+      "url": "https://github.com/grafana/grafana/releases"
+    }
+  ],
+  "generated_at": "2026-11-09T01:22:47Z"
+}
