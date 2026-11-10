@@ -1,0 +1,148 @@
+{
+  "date": "2026-11-10",
+  "summary": "Google đưa Agent Substrate 1.0 lên GKE và tặng gVisor cho CNCF; .NET 8 và 9 hết hỗ trợ hôm nay; Cursor, Antigravity thêm chế độ giọng nói cho coding agent.",
+  "sections": [
+    {
+      "title": "Backend",
+      "items": [
+        {
+          "title": ".NET 8 và .NET 9 cùng hết hỗ trợ ngày 10/11/2026",
+          "summary": "Microsoft kéo dài hỗ trợ cho bản STS từ 18 lên 24 tháng, nên .NET 8 (LTS) và .NET 9 (STS) cùng chạm mốc hết hỗ trợ vào hôm nay. Thông tin lấy từ bài tổng hợp thứ cấp, nên cần đối chiếu lại với trang chính sách hỗ trợ của Microsoft.",
+          "apply": "Nếu còn dịch vụ chạy .NET 8 hoặc 9, lên lịch nâng lên .NET 10 và kiểm tra base image trong Dockerfile.",
+          "source": {
+            "title": "State of .NET 2026",
+            "url": "https://devnewsletter.com/p/state-of-dot-net-2026/"
+          },
+          "published": "2026-11",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "DevOps / Cloud",
+      "items": [
+        {
+          "title": "Agent Substrate 1.0 GA trên GKE, gVisor và OpenRL được đề xuất tặng CNCF",
+          "summary": "Google công bố tại KubeCon NA ngày 5/11 Agent Substrate 1.0, lớp cô lập để chạy agent AI trên Kubernetes bằng gVisor hoặc microVM Cloud Hypervisor; mã nguồn mở triển khai được trên cluster bất kỳ. Việc tặng ba dự án cho CNCF (mức Sandbox) vẫn đang hoàn tất thủ tục onboarding.",
+          "apply": "Nếu định cho agent chạy code không tin cậy, cân nhắc sandbox kiểu gVisor thay vì container thường; có thể thử trên cluster home lab.",
+          "source": {
+            "title": "Sandboxing untrusted AI agents at scale (Google Open Source Blog)",
+            "url": "https://opensource.googleblog.com/2026/11/sandboxing-untrusted-ai-agents-at-scale.html"
+          },
+          "published": "2026-11-05",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "AI Engineering thực chiến",
+      "items": [
+        {
+          "title": "Coding agent có chế độ giọng nói: Cursor và Antigravity",
+          "summary": "Cursor ra Voice Chat with Agents, Google thêm Voice mode (Gemini Live) cho Antigravity trên cả app desktop lẫn CLI, trong cùng một ngày. Claude Code hiện chưa có tính năng tương tự theo The New Stack.",
+          "apply": "Giọng nói hợp để mô tả ý định thay đổi lớn; vẫn nên bắt agent ghi lại kế hoạch bằng văn bản trước khi sửa code.",
+          "source": {
+            "title": "Cursor and Google join OpenAI in giving coding agents a voice",
+            "url": "https://thenewstack.io/cursor-antigravity-voice-agents/"
+          },
+          "published": "2026-11",
+          "kind": "tin"
+        },
+        {
+          "title": "Android Studio hỗ trợ Bring Your Own Agent",
+          "summary": "IDE này nay chạy được hơn 40 coding agent, trong đó có Claude Agent và Codex; Google cũng thêm Agentic API bản alpha trong ML Kit và AppFunctions bản beta.",
+          "source": {
+            "title": "Google opens Android development to third-party AI agents",
+            "url": "https://the-decoder.com/google-opens-android-development-to-third-party-ai-agents-and-unveils-new-gemini-apis/"
+          },
+          "published": "2026-10",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "System Design & Architecture",
+      "items": [
+        {
+          "title": "Cloudflare: từ 0 đến 20 tỉ request với Crawler Hints",
+          "summary": "Bài kể cách Cloudflare dựng pipeline xử lý tín hiệu thay đổi nội dung ở quy mô toàn cầu, từ thiết kế ban đầu đến các đánh đổi khi lượng dữ liệu tăng vọt.",
+          "apply": "Đọc để lấy cách họ chọn thành phần đơn giản trước, đo tải thật rồi mới tối ưu.",
+          "source": {
+            "title": "From 0 to 20 billion - How We Built Crawler Hints",
+            "url": "https://blog.cloudflare.com/from-0-to-20-billion-how-we-built-crawler-hints/"
+          },
+          "published": "2021-10",
+          "kind": "bài đọc"
+        }
+      ]
+    },
+    {
+      "title": "Open Source & công cụ mới",
+      "items": [
+        {
+          "title": "rtk-ai/rtk: proxy CLI giảm token cho coding agent",
+          "summary": "Công cụ viết bằng Rust, đứng giữa agent và các lệnh dev quen thuộc để cắt bớt output thừa, được nhắc tới là giảm 60-90% token. Số liệu này theo trang tổng hợp trending, chưa tự kiểm chứng.",
+          "apply": "Thử trên home lab với vài lệnh nhiều output như git log hoặc test runner, rồi so số token trước và sau.",
+          "source": {
+            "title": "30 Best Developer Tools on GitHub (November 2026)",
+            "url": "https://findarepo.com/categories/dev-tools/"
+          },
+          "published": "2026-11",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "Career & kỹ năng mềm",
+      "items": [
+        {
+          "title": "The Standard of Code Review của Google",
+          "summary": "Nguyên tắc cốt lõi: reviewer nên duyệt khi thay đổi cải thiện sức khoẻ tổng thể của codebase, dù chưa hoàn hảo. Tránh biến review thành nơi tranh luận phong cách; việc đó thuộc về linter.",
+          "apply": "Đưa câu này vào hướng dẫn review của team để giảm tình trạng chặn PR vì sở thích cá nhân.",
+          "source": {
+            "title": "The Standard of Code Review (Google Engineering Practices)",
+            "url": "https://google.github.io/eng-practices/review/reviewer/standard.html"
+          },
+          "published": "2019-01",
+          "kind": "bài đọc"
+        }
+      ]
+    }
+  ],
+  "knowledge": {
+    "title": "Bulkhead: cô lập tài nguyên để một phần hỏng không kéo sập cả hệ thống",
+    "body": "Bulkhead mượn ý tưởng vách ngăn khoang tàu: chia tài nguyên (thread pool, connection pool, hàng đợi) theo từng nhóm tải hoặc từng dependency, để một nhóm cạn tài nguyên không làm nhóm khác đói theo.\n\nVí dụ điển hình: một dịch vụ gọi cả API thanh toán lẫn API gợi ý chung một pool. Khi API gợi ý chậm, mọi thread bị giữ lại và luồng thanh toán cũng đứng. Tách pool riêng, có giới hạn đồng thời và timeout cho từng dependency thì sự cố gợi ý chỉ làm giảm tính năng gợi ý.\n\nBulkhead đi cùng circuit breaker và timeout: breaker ngắt sớm, bulkhead giới hạn phạm vi ảnh hưởng. Đánh đổi là tổng tài nguyên bị chia nhỏ nên dùng kém hiệu quả hơn; hãy chia theo mức quan trọng của luồng nghiệp vụ chứ đừng chia quá vụn.",
+    "example": "// Go: giới hạn 10 lời gọi đồng thời tới dịch vụ gợi ý\nvar recSem = make(chan struct{}, 10)\n\nfunc callRecs(ctx context.Context) error {\n    select {\n    case recSem <- struct{}{}:\n        defer func() { <-recSem }()\n        return fetchRecs(ctx)\n    default:\n        return ErrBulkheadFull // fail nhanh, không chờ\n    }\n}"
+  },
+  "sources": [
+    {
+      "title": "State of .NET 2026",
+      "url": "https://devnewsletter.com/p/state-of-dot-net-2026/"
+    },
+    {
+      "title": "Sandboxing untrusted AI agents at scale",
+      "url": "https://opensource.googleblog.com/2026/11/sandboxing-untrusted-ai-agents-at-scale.html"
+    },
+    {
+      "title": "Cursor and Google join OpenAI in giving coding agents a voice",
+      "url": "https://thenewstack.io/cursor-antigravity-voice-agents/"
+    },
+    {
+      "title": "Google opens Android development to third-party AI agents",
+      "url": "https://the-decoder.com/google-opens-android-development-to-third-party-ai-agents-and-unveils-new-gemini-apis/"
+    },
+    {
+      "title": "From 0 to 20 billion - How We Built Crawler Hints",
+      "url": "https://blog.cloudflare.com/from-0-to-20-billion-how-we-built-crawler-hints/"
+    },
+    {
+      "title": "30 Best Developer Tools on GitHub (November 2026)",
+      "url": "https://findarepo.com/categories/dev-tools/"
+    },
+    {
+      "title": "The Standard of Code Review",
+      "url": "https://google.github.io/eng-practices/review/reviewer/standard.html"
+    }
+  ],
+  "generated_at": "2026-11-10T01:23:50Z"
+}

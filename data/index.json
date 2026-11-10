@@ -1,5 +1,6 @@
 {
   "dates": [
+    "2026-11-10",
     "2026-11-09",
     "2026-11-08",
     "2026-11-07",
@@ -26,6 +27,7 @@
     "2026-10-17"
   ],
   "summaries": {
+    "2026-11-10": "Google đưa Agent Substrate 1.0 lên GKE và tặng gVisor cho CNCF; .NET 8 và 9 hết hỗ trợ hôm nay; Cursor, Antigravity thêm chế độ giọng nói cho coding agent.",
     "2026-11-09": "Ruff 0.17.4 thêm rule bảo mật tarfile và tối ưu formatter, OpenTofu vá lỗi mất state khi apply đầu tiên bị crash; Grafana 13.3.0 vá 10 CVE, Kubernetes 1.38 lên beta đầu tiên.",
     "2026-11-08": "Argo CD 3.6.0 ra mắt với health check mới và hydrator ký commit, Spring Boot 4.2.0-RC2 đổi vài mặc định RabbitMQ; Anthropic có IP allowlisting cho API key và Scion, hệ thống source control thay Git nội bộ.",
     "2026-11-07": "Valkey 9.2.0-rc2 thêm DELEX và đồng bộ không cần fork, OTel Collector 1.71 bỏ vài trường HTTP cũ; Anthropic công bố các thành phần của bộ nhớ agent.",
