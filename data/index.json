@@ -1,5 +1,6 @@
 {
   "dates": [
+    "2026-11-11",
     "2026-11-10",
     "2026-11-09",
     "2026-11-08",
@@ -27,6 +28,7 @@
     "2026-10-17"
   ],
   "summaries": {
+    "2026-11-11": "Go 1.27.4/1.26.11 vá 12 CVE, Fluent Bit 5.2 thêm processor FTS và hàng loạt hardening, Redis 8.12 RC có SEXPIRE cho từng phần tử set, vLLM 0.33 chỉ còn image CUDA 13.",
     "2026-11-10": "Google đưa Agent Substrate 1.0 lên GKE và tặng gVisor cho CNCF; .NET 8 và 9 hết hỗ trợ hôm nay; Cursor, Antigravity thêm chế độ giọng nói cho coding agent.",
     "2026-11-09": "Ruff 0.17.4 thêm rule bảo mật tarfile và tối ưu formatter, OpenTofu vá lỗi mất state khi apply đầu tiên bị crash; Grafana 13.3.0 vá 10 CVE, Kubernetes 1.38 lên beta đầu tiên.",
     "2026-11-08": "Argo CD 3.6.0 ra mắt với health check mới và hydrator ký commit, Spring Boot 4.2.0-RC2 đổi vài mặc định RabbitMQ; Anthropic có IP allowlisting cho API key và Scion, hệ thống source control thay Git nội bộ.",

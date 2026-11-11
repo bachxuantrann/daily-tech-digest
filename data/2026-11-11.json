@@ -1,0 +1,241 @@
+{
+  "date": "2026-11-11",
+  "summary": "Go 1.27.4/1.26.11 vá 12 CVE, Fluent Bit 5.2 thêm processor FTS và hàng loạt hardening, Redis 8.12 RC có SEXPIRE cho từng phần tử set, vLLM 0.33 chỉ còn image CUDA 13.",
+  "sections": [
+    {
+      "title": "Backend",
+      "items": [
+        {
+          "title": "Redis 8.12 RC: hết hạn theo từng phần tử set, bitmap nén và lệnh BLESS",
+          "summary": "Bản RC1 (29/10) và RC2 (1/11) của Redis 8.12 thêm nhóm lệnh SEXPIRE để đặt TTL cho từng member trong set, bitmap nén cùng lệnh BITRANGEINTARRAY, và BLESS để đánh dấu key không bị eviction. RC cũng gom nhiều bản vá bảo mật cho RediSearch.",
+          "apply": "Nếu đang tự dọn member hết hạn bằng sorted set kèm timestamp và job quét định kỳ, hãy thử SEXPIRE trên môi trường staging; còn production thì chờ bản GA.",
+          "source": {
+            "title": "Redis releases trên GitHub",
+            "url": "https://github.com/redis/redis/releases"
+          },
+          "published": "2026-11-01",
+          "kind": "tin"
+        },
+        {
+          "title": "Temporal 1.32.2, 1.31.5, 1.30.9: bản vá bảo mật kèm một thay đổi quyền",
+          "summary": "Ngày 2/11 Temporal phát hành bản vá bảo mật cho cả ba nhánh đang hỗ trợ, sửa thêm race khi shutdown làm poll không bị huỷ và lỗi đếm backlog. Điểm cần để ý: ValidateWorkerDeploymentVersionComputeConfig giờ đòi quyền Write trên namespace.",
+          "apply": "Trước khi nâng cấp, rà lại role của các service account gọi API Worker Deployment để tránh lỗi permission denied sau khi deploy.",
+          "source": {
+            "title": "Temporal releases trên GitHub",
+            "url": "https://github.com/temporalio/temporal/releases"
+          },
+          "published": "2026-11-02",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "DevOps / Cloud",
+      "items": [
+        {
+          "title": "Fluent Bit 5.2.0: processor FTS, throttle cho output và nhiều bản vá hardening",
+          "summary": "Ra ngày 9/11 đúng dịp KubeCon NA. Bản này thêm processor Fluent Typed Scripting (processor_fts) để biến đổi log có kiểu, có thể dùng lại theo policy pack, cùng cơ chế throttle cho output plugin. Phần bảo mật khá dày: scanner kiểm tra trước cho in_forward, sửa lỗi bypass URI credential AWS, giới hạn giải nén HTTP và giới hạn stack regex.",
+          "apply": "Nếu Fluent Bit đang nhận in_forward từ mạng không tin cậy, nên lên 5.2 sớm; đồng thời thử throttle cho output đẩy về backend hay bị quá tải.",
+          "source": {
+            "title": "Fluent Bit 5.2.0 release",
+            "url": "https://github.com/fluent/fluent-bit/releases"
+          },
+          "published": "2026-11-09",
+          "kind": "tin"
+        },
+        {
+          "title": "Loki 4.0 vào giai đoạn RC: bỏ Simple Scalable Deployment và backend BigTable",
+          "summary": "Các bản v4.0.0-rc ra trong tuần đầu tháng 11 mang nhiều thay đổi phá vỡ tương thích: bỏ các target của chế độ Simple Scalable Deployment, bỏ backend lưu trữ BigTable/GCP, module Go chuyển sang đường dẫn /v4, và rc.3 chỉ còn chấp nhận lớp lưu trữ S3 STANDARD và STANDARD_IA.",
+          "apply": "Ai đang chạy Loki theo chế độ SSD nên lên kế hoạch chuyển sang microservices hoặc monolithic trước khi 4.0 GA; trong lúc chờ, nhánh 3.6.x vẫn đang nhận bản vá bảo mật (v3.6.20 ngày 6/11).",
+          "source": {
+            "title": "Grafana Loki releases trên GitHub",
+            "url": "https://github.com/grafana/loki/releases"
+          },
+          "published": "2026-11-07",
+          "kind": "tin"
+        },
+        {
+          "title": "Cilium 1.21.0-pre.4: BPF masquerading bật mặc định",
+          "summary": "Bản pre-release ngày 2/11 bật BPF masquerading theo mặc định, thêm BGP unnumbered peering, kiểm tra chứng chỉ client (mTLS) ở frontend Gateway API và Multi-Pool IPAM. Tuỳ chọn --tofqdns-pre-cache bị gỡ, XDP prefilter bị đánh dấu deprecated.",
+          "apply": "Nếu cluster đang dựa vào masquerade bằng iptables, hãy test 1.21 trên cluster phụ để kiểm tra đường đi egress trước khi bản stable ra.",
+          "source": {
+            "title": "Cilium releases trên GitHub",
+            "url": "https://github.com/cilium/cilium/releases"
+          },
+          "published": "2026-11-02",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "AI Engineering thực chiến",
+      "items": [
+        {
+          "title": "vLLM 0.33.0: chỉ còn image CUDA 13, bỏ Medusa, sửa prefix cache cho EAGLE/MTP",
+          "summary": "Bản 0.33.0 (2/11) lên PyTorch 2.14, bỏ CUDA 12.9 nên image phát hành chỉ còn CUDA 13.0, thêm image cho AWS EFA. Speculative decoding có drafter refiner, lm_head của draft được lượng tử hoá, và cách xử lý prefix cache cho EAGLE/MTP thay đổi. Medusa, MLP speculator và executor compiled-graph cũ của Ray bị gỡ.",
+          "apply": "Kiểm tra driver GPU trên node có hỗ trợ CUDA 13 chưa và cấu hình speculative decoding có dùng Medusa không trước khi đổi tag image.",
+          "source": {
+            "title": "vLLM v0.33.0 release",
+            "url": "https://github.com/vllm-project/vllm/releases"
+          },
+          "published": "2026-11-02",
+          "kind": "tin"
+        },
+        {
+          "title": "NVIDIA Auto Ontology: lớp ngữ nghĩa để agent viết SQL có kiểm chứng",
+          "summary": "Repo đứng đầu GitHub trending tuần này (khoảng 9.600 sao trong tuần). Nó đọc schema và dữ liệu mẫu để dựng ontology (thuật ngữ nghiệp vụ, quan hệ bảng) lưu trong Postgres + pgvector, cho người duyệt và chứng nhận, rồi agent dùng để sinh SQL, kiểm tra giá trị filter, tự sửa lỗi và trả kèm SQL đã chạy. Có MCP server, CLI và REST API, giấy phép Apache-2.0.",
+          "apply": "Nếu đang làm text-to-SQL trên data warehouse, đáng tham khảo mô hình sinh, chứng nhận, trả lời: để con người duyệt từ điển nghiệp vụ thay vì nhét cả schema vào prompt. Lưu ý tích hợp KumoRFM sẽ đẩy bảng lên dịch vụ ngoài.",
+          "source": {
+            "title": "NVIDIA/auto-ontology",
+            "url": "https://github.com/NVIDIA/auto-ontology"
+          },
+          "published": "2026-11",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "System Design & Architecture",
+      "items": [
+        {
+          "title": "How to do distributed locking của Martin Kleppmann",
+          "summary": "Bài phân tích vì sao Redlock không đủ an toàn khi lock dùng để bảo vệ tính đúng đắn: GC pause, mạng trễ hay lệch đồng hồ có thể khiến hai client cùng tin mình giữ lock. Lời giải là fencing token, một số tăng dần cấp theo mỗi lần lấy lock, và tầng lưu trữ từ chối mọi lần ghi mang token cũ hơn.",
+          "apply": "Phân loại lock trong hệ thống: lock chỉ để tránh làm trùng việc thì Redis là đủ; lock bảo vệ dữ liệu thì cần token đơn điệu (revision của etcd, sequence node của ZooKeeper) và cột version kiểm tra ở chỗ ghi.",
+          "source": {
+            "title": "How to do distributed locking",
+            "url": "https://martin.kleppmann.com/2016/02/08/how-to-do-distributed-locking.html"
+          },
+          "published": "2016-02-08",
+          "kind": "bài đọc"
+        }
+      ]
+    },
+    {
+      "title": "Open Source & công cụ mới",
+      "items": [
+        {
+          "title": "cloudflare/security-audit-skill: skill kiểm toán bảo mật nhiều pha cho coding agent",
+          "summary": "Cloudflare công bố harness tìm lỗ hổng của họ dưới dạng Agent Skill, giấy phép MIT, đang đứng đầu trending tuần. Quy trình gồm trinh sát, săn lỗi theo ledger độ phủ, một verifier độc lập cố bác bỏ từng phát hiện, rồi xuất findings.json theo JSON schema và báo cáo. Lần chạy sau chỉ nhắm vào phần còn hở và mã đã đổi.",
+          "apply": "Thử trên một repo nội bộ ở home lab: npx skills add https://github.com/cloudflare/security-audit-skill --skill security-audit, và nhớ chạy trong sandbox vì skill có thể thực thi mã đích.",
+          "source": {
+            "title": "cloudflare/security-audit-skill",
+            "url": "https://github.com/cloudflare/security-audit-skill"
+          },
+          "published": "2026-11",
+          "kind": "tin"
+        },
+        {
+          "title": "vercel-labs/agent-desktop: computer use qua cây accessibility thay vì ảnh chụp màn hình",
+          "summary": "CLI và thư viện C (Apache-2.0) cho agent điều khiển ứng dụng desktop trên macOS, Windows và Linux bằng cách đọc cây accessibility thành JSON, mỗi phần tử có ref để thao tác. Không cần mô hình thị giác, mặc định chạy headless nên không chiếm chuột, và có thể chạy như một MCP server.",
+          "apply": "Cách tiếp cận này rẻ token và ổn định hơn nhiều so với agent đọc screenshot; hợp để tự động hoá kiểm thử UI desktop hoặc tác vụ lặp trên máy Linux trong lab.",
+          "source": {
+            "title": "vercel-labs/agent-desktop",
+            "url": "https://github.com/vercel-labs/agent-desktop"
+          },
+          "published": "2026-11",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "Career & kỹ năng mềm",
+      "items": [
+        {
+          "title": "Write five, then synthesize: chiến lược kỹ thuật tốt thường nhàm chán",
+          "summary": "Will Larson đề xuất cách làm chiến lược kỹ thuật từ dưới lên: viết năm design doc cụ thể cho các quyết định thật, rồi đọc chung để rút ra điểm chung thành strategy. Ông nhấn mạnh câu chữ cụ thể mới tạo được sự đồng thuận, còn tuyên bố chung chung chỉ tạo cảm giác đồng thuận.",
+          "apply": "Thay vì ngồi viết tầm nhìn kiến trúc từ đầu, gom 5 ADR hoặc design doc gần nhất của team, tìm các nguyên tắc lặp lại và viết chúng thành một trang chiến lược.",
+          "source": {
+            "title": "Write five, then synthesize: good engineering strategy is boring",
+            "url": "https://archive.lethain.com/archive/write-five-then-synthesize-good-engineering/"
+          },
+          "published": "2020-12-02",
+          "kind": "bài đọc"
+        }
+      ]
+    },
+    {
+      "title": "Đáng chú ý khác",
+      "items": [
+        {
+          "title": "Go 1.27.4 và 1.26.11 vá 12 CVE trong thư viện chuẩn và toolchain",
+          "summary": "Phát hành ngày 10/11 theo lịch báo trước, milestone 1.27.4 gồm 12 bản vá bảo mật (CVE-2026-97033 đến 97043 và 97054) cùng các lỗi compiler, runtime và net.Dialer coi địa chỉ không hợp lệ là ::. Chi tiết package bị ảnh hưởng chưa được công bố đầy đủ tại thời điểm viết.",
+          "apply": "Cập nhật image builder và go.mod toolchain lên 1.27.4 hoặc 1.26.11, rồi build lại các binary Go đang chạy production; với tool bên thứ ba (Cilium, Loki, Temporal...) theo dõi bản rebuild của họ.",
+          "source": {
+            "title": "Go milestone 1.27.4",
+            "url": "https://github.com/golang/go/issues?q=milestone%3AGo1.27.4"
+          },
+          "published": "2026-11-10",
+          "kind": "tin"
+        }
+      ]
+    }
+  ],
+  "knowledge": {
+    "title": "Graceful shutdown trên Kubernetes: rút khỏi load balancer trước, rồi mới dừng",
+    "body": "Khi pod bị xoá, Kubernetes gửi SIGTERM cho container và đồng thời gỡ pod khỏi Endpoints. Hai việc này chạy song song, nên trong vài giây đầu kube-proxy, ingress hay load balancer vẫn có thể đẩy request mới vào pod đang tắt. Nếu ứng dụng thoát ngay khi nhận SIGTERM, client sẽ thấy lỗi 502 hoặc connection reset mỗi lần deploy.\n\nCách làm chuẩn: thêm preStop sleep vài giây để chờ endpoint được gỡ ở mọi nơi; khi nhận SIGTERM thì cho readiness trả về lỗi, ngừng nhận kết nối mới, chờ các request đang chạy xong và đóng pool DB, consumer một cách có trật tự. Đặt terminationGracePeriodSeconds lớn hơn tổng thời gian preStop cộng thời gian drain, nếu không kubelet sẽ gửi SIGKILL giữa chừng.\n\nVới consumer hàng đợi, drain nghĩa là ngừng poll, xử lý nốt message đang giữ rồi commit offset hoặc ack. Kết hợp với idempotency ở phía xử lý để lần giao lại sau khi pod chết đột ngột vẫn an toàn.",
+    "example": "# Deployment\nterminationGracePeriodSeconds: 45\ncontainers:\n- name: api\n  lifecycle:\n    preStop:\n      exec: { command: [\"sleep\", \"10\"] }\n\n// Go\nctx, stop := signal.NotifyContext(context.Background(), syscall.SIGTERM)\ndefer stop()\ngo srv.ListenAndServe()\n<-ctx.Done()\nready.Store(false)\nshutdownCtx, cancel := context.WithTimeout(context.Background(), 30*time.Second)\ndefer cancel()\nsrv.Shutdown(shutdownCtx) // ngừng nhận kết nối mới, chờ request đang chạy"
+  },
+  "sources": [
+    {
+      "title": "Redis releases trên GitHub",
+      "url": "https://github.com/redis/redis/releases"
+    },
+    {
+      "title": "Temporal releases trên GitHub",
+      "url": "https://github.com/temporalio/temporal/releases"
+    },
+    {
+      "title": "Fluent Bit 5.2.0 release",
+      "url": "https://github.com/fluent/fluent-bit/releases"
+    },
+    {
+      "title": "Grafana Loki releases trên GitHub",
+      "url": "https://github.com/grafana/loki/releases"
+    },
+    {
+      "title": "Cilium releases trên GitHub",
+      "url": "https://github.com/cilium/cilium/releases"
+    },
+    {
+      "title": "vLLM v0.33.0 release",
+      "url": "https://github.com/vllm-project/vllm/releases"
+    },
+    {
+      "title": "NVIDIA/auto-ontology",
+      "url": "https://github.com/NVIDIA/auto-ontology"
+    },
+    {
+      "title": "GitHub trending (weekly)",
+      "url": "https://github.com/trending?since=weekly"
+    },
+    {
+      "title": "How to do distributed locking",
+      "url": "https://martin.kleppmann.com/2016/02/08/how-to-do-distributed-locking.html"
+    },
+    {
+      "title": "cloudflare/security-audit-skill",
+      "url": "https://github.com/cloudflare/security-audit-skill"
+    },
+    {
+      "title": "vercel-labs/agent-desktop",
+      "url": "https://github.com/vercel-labs/agent-desktop"
+    },
+    {
+      "title": "Write five, then synthesize: good engineering strategy is boring",
+      "url": "https://archive.lethain.com/archive/write-five-then-synthesize-good-engineering/"
+    },
+    {
+      "title": "Go milestone 1.27.4",
+      "url": "https://github.com/golang/go/issues?q=milestone%3AGo1.27.4"
+    },
+    {
+      "title": "Go tags trên GitHub",
+      "url": "https://github.com/golang/go/tags"
+    },
+    {
+      "title": "oss-security: báo trước Go 1.27.4 và 1.26.11",
+      "url": "https://www.openwall.com/lists/oss-security/2026/11/05/13"
+    }
+  ],
+  "generated_at": "2026-11-11T01:26:10Z"
+}
