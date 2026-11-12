@@ -1,0 +1,233 @@
+{
+  "date": "2026-11-12",
+  "summary": "Node.js vá 16 CVE (7 mức HIGH, chủ yếu ở HTTP/2 và TLS) trên 22, 24, 26; Claude Fable 5.2 ra mắt, giá giảm 20% nhưng có 4 thay đổi dễ vỡ code; Istio 1.32 thêm cân bằng tải theo tải thực của backend.",
+  "sections": [
+    {
+      "title": "Backend",
+      "items": [
+        {
+          "title": "FastAPI 0.162.3 đến 0.162.5: hỗ trợ Python 3.15, sửa dọn dẹp dependency khi request bị huỷ",
+          "summary": "Ba bản vá trong hai ngày 10–11/11: 0.162.3 thêm hỗ trợ Python 3.15 và nâng Pydantic khoá lên 2.14.3, 0.162.4 yêu cầu AnyIO tối thiểu 4.1.0, 0.162.5 sửa lỗi dependency đồng bộ (dạng yield) không được dọn dẹp đúng khi client huỷ request. Không có breaking change.",
+          "source": {
+            "title": "FastAPI releases",
+            "url": "https://github.com/fastapi/fastapi/releases"
+          },
+          "published": "2026-11-11",
+          "kind": "tin",
+          "apply": "Nếu service có dependency sync giữ connection hay lock và hay gặp client ngắt giữa chừng, lên thẳng 0.162.5; kiểm tra AnyIO trong lockfile đã từ 4.1.0 trở lên trước khi nâng."
+        },
+        {
+          "title": "SQLAlchemy 2.1.7 và 2.1.8: xem được connection mà transaction đang giữ, phát hành qua trusted publishing",
+          "summary": "2.1.7 thêm SessionTransaction.connections và bound_connection() (có bản async) để biết transaction đã lấy những connection nào, sửa RecursionError khi các with_loader_criteria() tham chiếu lẫn nhau, và vá rò rỉ connection của pool trên Python 3.15; hide_parameters giờ áp dụng cả cho câu lệnh phụ như default cột. 2.1.8 và 2.0.57 chuyển sang phát hành lên PyPI bằng trusted publishing kèm attestation PEP 740.",
+          "source": {
+            "title": "SQLAlchemy releases",
+            "url": "https://github.com/sqlalchemy/sqlalchemy/releases"
+          },
+          "published": "2026-11-03",
+          "kind": "tin",
+          "apply": "Đang thử Python 3.15 thì cần từ 2.1.7 để tránh rò connection; nếu pipeline có kiểm tra provenance của gói, attestation mới giúp xác minh wheel SQLAlchemy đến từ đúng workflow GitHub Actions của dự án."
+        }
+      ]
+    },
+    {
+      "title": "DevOps / Cloud",
+      "items": [
+        {
+          "title": "Istio 1.32.0: cân bằng tải theo tải backend, outlier detection theo tỉ lệ lỗi, timeout cho Kubernetes API client",
+          "summary": "Bản 1.32 hỗ trợ Kubernetes 1.33 đến 1.37. Điểm mới gồm chính sách cân bằng tải backendUtilization dựa trên báo cáo tải từ backend, outlier detection trong DestinationRule chọn được mã lỗi HTTP và loại endpoint theo tỉ lệ lỗi, JWT rule đánh dấu REQUIRED, và AuthorizationPolicy trỏ vào HTTPRoute (thử nghiệm). Khi nâng cấp lưu ý: istiod giờ có timeout phía client cho Kubernetes API (header 90 giây, toàn request 15 phút), và nếu bật ENABLE_GATEWAY_API_HTTPROUTE_AUTH thì filter RBAC ALLOW trên gateway đổi tên thành istio.authorization.allow, khiến EnvoyFilter khớp theo tên cũ lặng lẽ mất tác dụng.",
+          "source": {
+            "title": "Announcing Istio 1.32 (nguồn trang istio.io)",
+            "url": "https://github.com/istio/istio.io/tree/master/content/en/news/releases/1.32.x/announcing-1.32"
+          },
+          "published": "2026-11-09",
+          "kind": "tin",
+          "apply": "Trước khi nâng, grep các EnvoyFilter khớp envoy.filters.http.rbac và bật PILOT_ENVOY_FILTER_STATS=true để thấy patch nào không còn khớp; giữ ISTIO_KUBE_HEADER_TIMEOUT lớn hơn --request-timeout của API server."
+        },
+        {
+          "title": "Traefik 3.7.18 và 3.8.0-rc.2: giới hạn độ dài mật khẩu BasicAuth, chặn bộ nhớ zstd, Gateway API 1.7",
+          "summary": "Bản ổn định 3.7.18 (10/11) là bản hardening: giới hạn độ dài mật khẩu BasicAuth, giới hạn bộ nhớ encoder zstd trong middleware Compress, kiểm tra giá trị matcher Host, sửa xử lý dot-segment trong path parameter, cùng vài sửa lỗi cho provider ingress-nginx. Nhánh 3.8 đang ở RC2, mang theo middleware tap, timeout phản hồi theo từng router, số request tối thiểu cho circuit breaker và nhiều phần Gateway API mới (ListenerSet, retry, CORS, RequestMirror cho HTTPRoute).",
+          "source": {
+            "title": "Traefik releases",
+            "url": "https://github.com/traefik/traefik/releases"
+          },
+          "published": "2026-11-10",
+          "kind": "tin",
+          "apply": "Đang chạy 3.7 thì nâng lên 3.7.18 như bản vá thường lệ; 3.8 nên thử ở staging nếu bạn đang chuyển từ ingress-nginx sang Gateway API."
+        }
+      ]
+    },
+    {
+      "title": "AI Engineering thực chiến",
+      "items": [
+        {
+          "title": "Claude Fable 5.2 ra mắt: rẻ hơn 20%, context 1M, kèm bốn thay đổi có thể làm vỡ code",
+          "summary": "Anthropic phát hành Claude Fable 5.2 ngày 9/11: 8 USD mỗi triệu token input và 40 USD output (5.1 là 10 và 50), context 1M token, output tối đa 128k, adaptive thinking luôn bật, có fast mode nhanh tới 2,5 lần với giá gấp đôi. Bốn điểm dễ vỡ khi chuyển từ 5.1: prefix check áp cho mọi tài khoản (sửa system, tools hoặc message cũ rồi gửi lại thinking block sẽ nhận lỗi 400), thinking block của 5.2 chỉ 5.2 và Mythos 5.2 đọc được, tool computer_20251124 bị từ chối ngoài Bedrock, và advisor tool của executor 5.2 phải là 5.2. Ngoài ra tool_choice ép gọi tool (any hoặc chỉ định tên) không được hỗ trợ.",
+          "source": {
+            "title": "What's new in Claude Fable 5.2",
+            "url": "https://platform.claude.com/docs/en/models/fable-5-2/whats-new-fable-5-2"
+          },
+          "published": "2026-11-09",
+          "kind": "tin",
+          "apply": "Nếu tự dựng mảng messages, giữ lịch sử chỉ nối thêm (append-only) và chạy bài test prefix check trong migration guide trước khi đổi model ID; router hay fallback chuyển hội thoại sang model khác sẽ làm rơi phần suy luận của 5.2, nên chạy lại eval kèm quét mức effort bắt đầu từ high."
+        },
+        {
+          "title": "Ollama 0.40.16: /v1/responses tôn trọng truncation, /v1/models trả mảng rỗng thay vì null",
+          "summary": "Bản 9/11 sửa hai hành vi tương thích OpenAI dễ gây lỗi ngầm: /v1/responses không còn tự cắt ngữ cảnh im lặng mà theo tham số truncation, và /v1/models trả danh sách rỗng thay cho null khi chưa cài model. Bản này cũng thêm model Ripple Preview 65B cho agentic coding, giảm khoảng 27 GiB bộ nhớ cho Qwen3.8 Flash Next trên Apple silicon, và ollama launch claude luôn định tuyến Claude Code tới model đã chọn.",
+          "source": {
+            "title": "Ollama releases",
+            "url": "https://github.com/ollama/ollama/releases"
+          },
+          "published": "2026-11-09",
+          "kind": "tin",
+          "apply": "Nếu ứng dụng gọi Ollama qua API tương thích OpenAI với prompt dài, kiểm tra lại sau khi nâng: request trước đây bị cắt ngầm giờ có thể báo lỗi vượt context, hãy đặt truncation rõ ràng."
+        }
+      ]
+    },
+    {
+      "title": "System Design & Architecture",
+      "items": [
+        {
+          "title": "Timeouts, retries, and backoff with jitter (Marc Brooker, Amazon Builders' Library)",
+          "summary": "Bài kinh điển về ba công cụ chống lỗi tạm thời và mặt trái của chúng: retry là hành vi ích kỷ vì client chiếm thêm năng lực của server đang quá tải, nên dễ biến sự cố nhỏ thành bão retry. Bài đề xuất timeout đặt theo phân vị độ trễ thực đo, exponential backoff có trần, thêm jitter để các client không retry đồng loạt, và chỉ retry ở một tầng thay vì mọi tầng trong chuỗi gọi. Jitter cũng nên dùng cho timer và job định kỳ, không riêng gì retry.",
+          "source": {
+            "title": "Timeouts, retries, and backoff with jitter (Amazon Builders' Library)",
+            "url": "https://aws.amazon.com/builders-library/timeouts-retries-and-backoff-with-jitter/"
+          },
+          "published": "2019-12",
+          "kind": "bài đọc",
+          "apply": "Rà lại client HTTP/gRPC nội bộ: timeout có đặt tường minh không, retry có nhân lên qua nhiều tầng không, và backoff có jitter chưa (ví dụ sleep = random(0, min(cap, base * 2^attempt))); lỗi 4xx thì không retry."
+        }
+      ]
+    },
+    {
+      "title": "Open Source & công cụ mới",
+      "items": [
+        {
+          "title": "openai/codex-security 0.9.1: CLI quét, xác minh và vá lỗ hổng trong repo",
+          "summary": "Công cụ giấy phép Apache-2.0 của OpenAI, có CLI (lệnh cs), SDK TypeScript và GitHub Action; bản 0.9.1 ra ngày 10/11. Nó quét cả repo, một số đường dẫn hoặc chỉ phần diff so với nhánh gốc, xác minh từng phát hiện, sinh bản vá, lập threat model, và xuất SARIF/JSON/CSV. Ngoài OpenAI còn chạy được với Bedrock, OpenRouter và Fireworks.",
+          "source": {
+            "title": "openai/codex-security",
+            "url": "https://github.com/openai/codex-security"
+          },
+          "published": "2026-11-10",
+          "kind": "tin",
+          "apply": "Thử trên một repo cá nhân: npm install --global @openai/codex-security, cs login, rồi cs scan . --diff origin/main để chỉ quét thay đổi của nhánh; so kết quả SARIF với công cụ SAST đang dùng trước khi đưa vào CI."
+        },
+        {
+          "title": "shadcn/improve: skill dùng model mạnh để audit và lập kế hoạch, model rẻ để thực thi",
+          "summary": "Agent skill giấy phép MIT đang lên trending hôm nay (gần 11 nghìn sao). Nó khảo sát repo, chạy subagent song song audit theo chín nhóm (đúng đắn, bảo mật, hiệu năng, test...), tự kiểm lại để loại false positive, xếp hạng theo tác động và công sức, rồi viết mỗi phát hiện thành một tệp kế hoạch markdown độc lập trong plans/ có bước kiểm chứng và điều kiện dừng. Skill không tự sửa code; lệnh execute giao kế hoạch cho model rẻ hơn chạy trong worktree riêng.",
+          "source": {
+            "title": "shadcn/improve",
+            "url": "https://github.com/shadcn/improve"
+          },
+          "published": "2026-06",
+          "kind": "bài đọc",
+          "apply": "Cài bằng npx skills add shadcn/improve rồi chạy /improve quick trên một service nhỏ để xem chất lượng kế hoạch; ý tách model lập kế hoạch và model thực thi cũng đáng mượn cho pipeline agent của riêng bạn để giảm chi phí."
+        }
+      ]
+    },
+    {
+      "title": "Career & kỹ năng mềm",
+      "items": [
+        {
+          "title": "Being Glue của Tanya Reilly: việc kết dính đội và cái bẫy thăng tiến",
+          "summary": "Bài viết năm 2019 từ bài nói cùng tên. Glue work là những việc ít ai giao nhưng thiếu thì dự án kẹt: onboarding người mới, nhắc việc bị bỏ quên, nối các team, viết tài liệu, gỡ vướng cho người khác. Reilly chỉ ra rằng người làm nhiều việc này sớm trong sự nghiệp dễ bị đánh giá là thiếu đóng góp kỹ thuật và hụt thăng tiến, dù chính việc đó là kỹ năng lãnh đạo kỹ thuật ở cấp senior trở lên.",
+          "source": {
+            "title": "Being Glue (Tanya Reilly)",
+            "url": "https://noidea.dog/glue"
+          },
+          "kind": "bài đọc",
+          "apply": "Là tech lead, hãy gọi tên glue work trong đánh giá hiệu suất và luân phiên các vai như ghi biên bản, điều phối họp; là người đang gánh nhiều glue work, hỏi thẳng quản lý rằng việc này có được tính cho kỳ thăng cấp tới không."
+        }
+      ]
+    },
+    {
+      "title": "Đáng chú ý khác",
+      "items": [
+        {
+          "title": "Node.js 26.13.1, 24.22.3, 22.23.5: vá 16 CVE, 7 lỗi mức HIGH ở HTTP/2 và TLS",
+          "summary": "Bản vá bảo mật đã báo trước tuần rồi phát hành ngày 11/11. Bảy lỗi HIGH gồm: abort tiến trình từ xa không cần xác thực qua Http2Session, use-after-free ở HTTP/2 có thể gửi vùng nhớ đã giải phóng cho peer, re-entrancy trong llhttp làm lộ heap của server HTTPS vào body request, rò bộ nhớ và file descriptor sau lỗi giao thức HTTP/2, và renegotiation TLS 1.2 cho phép đổi servername để vượt qua xác thực client certificate. Nhóm MEDIUM có hai lỗi bỏ qua mTLS theo host (ngữ cảnh SNI chỉ có CA, và https.Agent dùng lại TLS session giữa các chính sách CA khác nhau) cùng lỗi lộ credential proxy trong thông báo lỗi. Node 20 trở về trước đã hết vòng đời nên không có bản vá.",
+          "source": {
+            "title": "Node.js: November 2026 Security Releases",
+            "url": "https://nodejs.org/en/blog/vulnerability/november-2026-security-releases"
+          },
+          "published": "2026-11-11",
+          "kind": "tin",
+          "apply": "Service Node mở HTTP/2 hoặc TLS trực tiếp ra internet cần nâng ngay trong tuần; service đứng sau reverse proxy chỉ nói HTTP/1.1 ít lộ diện hơn nhưng vẫn nên nâng, nhất là nơi dùng mTLS. Rebuild image từ base mới thay vì chỉ đổi tag."
+        }
+      ]
+    }
+  ],
+  "knowledge": {
+    "title": "Expand/contract: đổi schema không downtime bằng các bước tương thích ngược",
+    "body": "Khi deploy cuốn chiếu (rolling), code cũ và code mới cùng chạy trên một database trong vài phút, có khi vài ngày. Vì vậy mọi thay đổi schema phải tương thích với cả hai phiên bản; đổi tên hay xoá cột trong một bước là cách chắc chắn nhất để gây lỗi giữa chừng và không rollback được.\n\nMẫu expand/contract (còn gọi là parallel change) tách một thay đổi phá vỡ thành ba pha. Expand: thêm cấu trúc mới bên cạnh cái cũ (cột mới cho phép NULL, bảng mới), code ghi vào cả hai. Migrate: backfill dữ liệu cũ theo lô nhỏ, rồi chuyển phần đọc sang cấu trúc mới. Contract: khi không còn phiên bản nào đọc hay ghi cái cũ thì mới xoá.\n\nMỗi pha là một lần deploy riêng và rollback được độc lập. Cái giá là thay đổi kéo dài qua nhiều release và có giai đoạn ghi kép, nên cần ghi rõ ai chịu trách nhiệm dọn pha contract, nếu không cột cũ sẽ nằm lại mãi.",
+    "example": "-- Đổi tên users.fullname thành display_name\n-- 1) Expand (deploy 1): thêm cột, code ghi cả hai\nALTER TABLE users ADD COLUMN display_name text;\n\n-- 2) Migrate: backfill theo lô, rồi deploy 2 đọc từ cột mới\nUPDATE users SET display_name = fullname\nWHERE id BETWEEN 1 AND 10000 AND display_name IS NULL;\n\n-- 3) Contract (deploy 3): code ngừng ghi cột cũ, sau đó mới xoá\nALTER TABLE users DROP COLUMN fullname;"
+  },
+  "sources": [
+    {
+      "title": "FastAPI releases",
+      "url": "https://github.com/fastapi/fastapi/releases"
+    },
+    {
+      "title": "SQLAlchemy releases",
+      "url": "https://github.com/sqlalchemy/sqlalchemy/releases"
+    },
+    {
+      "title": "Announcing Istio 1.32 (nguồn trang istio.io)",
+      "url": "https://github.com/istio/istio.io/tree/master/content/en/news/releases/1.32.x/announcing-1.32"
+    },
+    {
+      "title": "Istio releases",
+      "url": "https://github.com/istio/istio/releases"
+    },
+    {
+      "title": "Traefik releases",
+      "url": "https://github.com/traefik/traefik/releases"
+    },
+    {
+      "title": "What's new in Claude Fable 5.2",
+      "url": "https://platform.claude.com/docs/en/models/fable-5-2/whats-new-fable-5-2"
+    },
+    {
+      "title": "Claude Platform release notes",
+      "url": "https://platform.claude.com/docs/en/release-notes/api"
+    },
+    {
+      "title": "Ollama releases",
+      "url": "https://github.com/ollama/ollama/releases"
+    },
+    {
+      "title": "Timeouts, retries, and backoff with jitter (Amazon Builders' Library)",
+      "url": "https://aws.amazon.com/builders-library/timeouts-retries-and-backoff-with-jitter/"
+    },
+    {
+      "title": "openai/codex-security",
+      "url": "https://github.com/openai/codex-security"
+    },
+    {
+      "title": "openai/codex-security releases",
+      "url": "https://github.com/openai/codex-security/releases"
+    },
+    {
+      "title": "shadcn/improve",
+      "url": "https://github.com/shadcn/improve"
+    },
+    {
+      "title": "GitHub Trending",
+      "url": "https://github.com/trending?since=daily"
+    },
+    {
+      "title": "Being Glue (Tanya Reilly)",
+      "url": "https://noidea.dog/glue"
+    },
+    {
+      "title": "Node.js: November 2026 Security Releases",
+      "url": "https://nodejs.org/en/blog/vulnerability/november-2026-security-releases"
+    },
+    {
+      "title": "Node.js releases",
+      "url": "https://github.com/nodejs/node/releases"
+    }
+  ],
+  "generated_at": "2026-11-12T01:26:26Z"
+}
