@@ -1,0 +1,149 @@
+{
+  "date": "2026-11-13",
+  "summary": "Gradle 9.9.0 biên dịch Kotlin DSL theo gia tăng, GitHub quét secret trong log Actions, PostgreSQL 14 chính thức hết hỗ trợ cùng bản RC2 của PostgreSQL 19; Netflix tách kiểm chứng sự thật bằng router theo từng claim.",
+  "sections": [
+    {
+      "title": "Backend",
+      "items": [
+        {
+          "title": "Gradle 9.9.0: Kotlin DSL biên dịch gia tăng, thay đổi ở JUnit Platform và Problems API",
+          "summary": "Bản 9.9.0 cho phép script Kotlin DSL được biên dịch gia tăng qua Kotlin Build Tools API, đồng thời có thay đổi ở phần chạy test JUnit Platform và Problems API. Có hướng dẫn nâng cấp riêng liệt kê các mục deprecated và thay đổi gây lỗi.",
+          "apply": "Nếu build script Kotlin của bạn chậm khi sửa nhỏ, thử nâng lên 9.9.0 trên một nhánh riêng và đọc upgrade guide trước khi bật cho CI chung.",
+          "source": {
+            "title": "Gradle 9.9.0 Release Notes",
+            "url": "https://docs.gradle.org/9.9.0/release-notes.html"
+          },
+          "published": "2026-11-06",
+          "kind": "tin"
+        },
+        {
+          "title": "Open Liberty 26.0.0.11: cấu hình được thời gian chờ ở giai đoạn quiesce",
+          "summary": "Bản tháng 11 cho phép đặt quiesceTimeout, trước đây thời gian chờ khi server dừng nhẹ nhàng cố định ở 30 giây. Bản này cũng gồm các bản sửa CVE theo tổng hợp tuần của InfoQ.",
+          "apply": "Dịch vụ có request chạy lâu hoặc kết nối kéo dài nên chỉnh giá trị này khớp với terminationGracePeriodSeconds của Kubernetes.",
+          "source": {
+            "title": "Java News Roundup, 2 tháng 11 2026 (InfoQ)",
+            "url": "https://www.infoq.com/news/2026/11/java-news-roundup-nov02-2026/"
+          },
+          "published": "2026-11-02",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "DevOps / Cloud",
+      "items": [
+        {
+          "title": "GitHub quét secret trong log của workflow Actions (public preview)",
+          "summary": "Secret scanning nay quét cả log của workflow khi workflow chạy xong, ngoài issue, wiki, discussion và PR. Phát hiện hiện trong tab cảnh báo secret scanning của repo; bản preview chưa gửi thông báo. Một số bản tổng hợp còn nói từ 2/12 repo public sẽ chặn sự kiện pull_request_target theo mặc định, mục này chưa kiểm chứng ở nguồn gốc nên cần đối chiếu changelog chính thức.",
+          "apply": "Bật thử trên org nếu có Enterprise Cloud, và rà các workflow public đang dùng pull_request_target trước 2/12.",
+          "source": {
+            "title": "Secret scanning detects secrets in GitHub Actions workflow logs",
+            "url": "https://github.blog/changelog/2026-11-09-secret-scanning-detects-secrets-in-github-actions-workflow-logs/"
+          },
+          "published": "2026-11-09",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "AI Engineering thực chiến",
+      "items": [
+        {
+          "title": "Netflix: kiểm tra tính xác thực của synopsis bằng cascade và router theo từng claim",
+          "summary": "Pipeline hiện tại đưa toàn bộ dữ liệu title và rubric cho một mô hình suy luận phán xét một lần. Bản đề xuất thêm bước kiểm từng claim nhỏ qua router và dùng các điểm không chắc trong lập luận để bắt lỗi mà verdict bỏ sót. Theo bài, Recall-Fail tăng từ 0.77 lên 0.86; con số giảm chi phí 52.4% chỉ thấy ở bản tổng hợp thứ cấp, chưa xác minh với bài gốc.",
+          "apply": "Với LLM-as-judge của bạn, thử tách đầu ra thành các claim nhỏ và chỉ gọi mô hình mạnh cho claim không chắc để cân bằng chất lượng và chi phí.",
+          "source": {
+            "title": "Fact-Checking at Scale: Building a More Accurate and Efficient Synopsis Factuality System (bản đăng lại của Netflix Tech Blog)",
+            "url": "https://noise.getoto.net/2026/11/09/fact-checking-at-scale-building-a-more-accurate-and-efficient-synopsis-factuality-system/"
+          },
+          "published": "2026-11-09",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "System Design & Architecture",
+      "items": [
+        {
+          "title": "Life Beyond Distributed Transactions của Pat Helland",
+          "summary": "Bài kinh điển lập luận rằng ứng dụng cần scale lớn nên tránh giao dịch phân tán, thay vào đó chấp nhận sự không chắc chắn giữa các thực thể và thiết kế theo từng entity cùng thông điệp. Nền tảng tư duy cho saga, outbox và xử lý idempotent.",
+          "apply": "Khi định dùng 2PC giữa các dịch vụ, thử vẽ lại ranh giới entity để mỗi giao dịch chỉ nằm trong một phân vùng.",
+          "source": {
+            "title": "Life Beyond Distributed Transactions (ACM Queue)",
+            "url": "https://queue.acm.org/detail.cfm?id=3025012"
+          },
+          "published": "2007-01",
+          "kind": "bài đọc"
+        }
+      ]
+    },
+    {
+      "title": "Career & kỹ năng mềm",
+      "items": [
+        {
+          "title": "Documenting Architecture Decisions của Michael Nygard",
+          "summary": "Bài gốc năm 2011 đề xuất ADR: mỗi quyết định kiến trúc là một ghi chú ngắn gồm bối cảnh, quyết định và hệ quả. Cấu trúc hầu như không đổi đến nay và vẫn là mẫu phổ biến nhất.",
+          "apply": "Đặt thư mục docs/adr trong repo, mỗi quyết định lớn một tệp ngắn có trạng thái, và không sửa ADR đã chấp nhận mà thay bằng ADR mới.",
+          "source": {
+            "title": "Documenting Architecture Decisions",
+            "url": "https://www.cognitect.com/blog/2011/11/15/documenting-architecture-decisions"
+          },
+          "published": "2011-11",
+          "kind": "bài đọc"
+        }
+      ]
+    },
+    {
+      "title": "Đáng chú ý khác",
+      "items": [
+        {
+          "title": "PostgreSQL 14 hết hỗ trợ, ra bản cập nhật cuối cùng cùng RC2 của PostgreSQL 19",
+          "summary": "Bản dự thảo thông báo ngày 12/11 liệt kê 18.7, 17.12, 16.16, 15.20, 14.25 và RC2 của PostgreSQL 19; 14.25 là bản 14.x cuối cùng. Ngày GA dự kiến của PostgreSQL 19 là 19/11. Chưa tìm thấy bài đăng chính thức cuối cùng nên chi tiết có thể thay đổi.",
+          "apply": "Nếu còn chạy PG 14, lên lịch nâng cấp ngay; lên 19 nên đợi GA và bản vá đầu tiên.",
+          "source": {
+            "title": "PostgreSQL update release announcement (dự thảo)",
+            "url": "https://www.postgresql.org/message-id/attachment/208544/20261112updaterelease.md"
+          },
+          "published": "2026-11-12",
+          "kind": "tin"
+        }
+      ]
+    }
+  ],
+  "knowledge": {
+    "title": "Keyset pagination: phân trang ổn định thay cho OFFSET",
+    "body": "OFFSET N buộc database quét và bỏ N dòng đầu nên trang càng sâu càng chậm, và dữ liệu chèn thêm giữa các lần gọi làm dòng bị lặp hoặc sót. Keyset pagination dùng giá trị của dòng cuối trang trước làm điểm bắt đầu, nên chi phí gần như không đổi nhờ index.\n\nYêu cầu: thứ tự sắp xếp phải xác định duy nhất (thêm id làm tie-breaker) và có index trùng thứ tự đó. Đổi lại, không nhảy tới trang số N được; cursor trả về cho client nên được mã hoá thành chuỗi opaque.",
+    "example": "-- trang đầu\nSELECT id, created_at, title FROM posts ORDER BY created_at DESC, id DESC LIMIT 20;\n\n-- trang kế, truyền created_at và id của dòng cuối\nSELECT id, created_at, title FROM posts\nWHERE (created_at, id) < ('2026-11-10 08:00:00', 4821)\nORDER BY created_at DESC, id DESC LIMIT 20;\n\nCREATE INDEX ON posts (created_at DESC, id DESC);"
+  },
+  "sources": [
+    {
+      "title": "Gradle 9.9.0 Release Notes",
+      "url": "https://docs.gradle.org/9.9.0/release-notes.html"
+    },
+    {
+      "title": "Java News Roundup, 2 tháng 11 2026 (InfoQ)",
+      "url": "https://www.infoq.com/news/2026/11/java-news-roundup-nov02-2026/"
+    },
+    {
+      "title": "Secret scanning detects secrets in GitHub Actions workflow logs",
+      "url": "https://github.blog/changelog/2026-11-09-secret-scanning-detects-secrets-in-github-actions-workflow-logs/"
+    },
+    {
+      "title": "Fact-Checking at Scale (Netflix Tech Blog, bản đăng lại)",
+      "url": "https://noise.getoto.net/2026/11/09/fact-checking-at-scale-building-a-more-accurate-and-efficient-synopsis-factuality-system/"
+    },
+    {
+      "title": "Life Beyond Distributed Transactions (ACM Queue)",
+      "url": "https://queue.acm.org/detail.cfm?id=3025012"
+    },
+    {
+      "title": "Documenting Architecture Decisions",
+      "url": "https://www.cognitect.com/blog/2011/11/15/documenting-architecture-decisions"
+    },
+    {
+      "title": "PostgreSQL update release announcement (dự thảo)",
+      "url": "https://www.postgresql.org/message-id/attachment/208544/20261112updaterelease.md"
+    }
+  ],
+  "generated_at": "2026-11-13T01:23:09Z"
+}
