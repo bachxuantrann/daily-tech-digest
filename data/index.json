@@ -1,5 +1,6 @@
 {
   "dates": [
+    "2026-11-14",
     "2026-11-13",
     "2026-11-12",
     "2026-11-11",
@@ -30,6 +31,7 @@
     "2026-10-17"
   ],
   "summaries": {
+    "2026-11-14": "Prometheus 3.16 đổi vài mặc định dễ gây vỡ, Terraform 1.17.2 sửa vòng phụ thuộc, Python 3.16.0a2 ra mắt; Anthropic chia sẻ cách xây eval an toàn có độ tin cậy.",
     "2026-11-13": "Gradle 9.9.0 biên dịch Kotlin DSL theo gia tăng, GitHub quét secret trong log Actions, PostgreSQL 14 chính thức hết hỗ trợ cùng bản RC2 của PostgreSQL 19; Netflix tách kiểm chứng sự thật bằng router theo từng claim.",
     "2026-11-12": "Node.js vá 16 CVE (7 mức HIGH, chủ yếu ở HTTP/2 và TLS) trên 22, 24, 26; Claude Fable 5.2 ra mắt, giá giảm 20% nhưng có 4 thay đổi dễ vỡ code; Istio 1.32 thêm cân bằng tải theo tải thực của backend.",
     "2026-11-11": "Go 1.27.4/1.26.11 vá 12 CVE, Fluent Bit 5.2 thêm processor FTS và hàng loạt hardening, Redis 8.12 RC có SEXPIRE cho từng phần tử set, vLLM 0.33 chỉ còn image CUDA 13.",

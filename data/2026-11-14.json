@@ -1,0 +1,109 @@
+{
+  "date": "2026-11-14",
+  "summary": "Prometheus 3.16 đổi vài mặc định dễ gây vỡ, Terraform 1.17.2 sửa vòng phụ thuộc, Python 3.16.0a2 ra mắt; Anthropic chia sẻ cách xây eval an toàn có độ tin cậy.",
+  "sections": [
+    {
+      "title": "Backend",
+      "items": [
+        {
+          "title": "Python 3.16.0a2: bản alpha thứ hai của nhánh 3.16",
+          "summary": "CPython gắn tag v3.16.0a2 ngày 10/11, tiếp tục chu kỳ alpha của nhánh 3.16. Cũng trong tháng này nhánh 3.15 nhận bản vá 3.15.2 (25/10). Tag không kèm ghi chú thay đổi nên chỉ nên xem đây là mốc phát hành.",
+          "apply": "Thêm Python 3.16 alpha vào ma trận CI ở chế độ cho phép lỗi để phát hiện sớm thư viện nào chưa tương thích.",
+          "source": {
+            "title": "CPython tags",
+            "url": "https://github.com/python/cpython/tags.atom"
+          },
+          "published": "2026-11-10",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "DevOps / Cloud",
+      "items": [
+        {
+          "title": "Prometheus 3.16.0: vài thay đổi mặc định cần đọc trước khi nâng cấp",
+          "summary": "Bản 3.16.0 (4/11) giới hạn batch_size của search endpoint thử nghiệm ở 1000, khi bật TLS qua web.config.file thì web.external-url mặc định là https, và từ chối exemplar có tên nhãn trùng. Smoothed/anchored vector selector nay đã ổn định, kèm hàm integral() thử nghiệm sau feature flag.",
+          "apply": "Nếu Prometheus chạy sau reverse proxy với TLS, đặt tường minh --web.external-url trước khi nâng cấp để link trong alert không đổi scheme.",
+          "source": {
+            "title": "Prometheus v3.16.0",
+            "url": "https://github.com/prometheus/prometheus/releases/tag/v3.16.0"
+          },
+          "published": "2026-11-04",
+          "kind": "tin"
+        },
+        {
+          "title": "Terraform 1.17.2: sửa vòng phụ thuộc với destroy=false và tăng tốc sinh config",
+          "summary": "Bản vá ngày 11/11 sửa lỗi hình thành cycle khi provider tham chiếu tài nguyên có destroy=false, giảm cảnh báo lặp về schema provider lúc init, và tối ưu bộ nhớ khi sinh cấu hình từ truy vấn HCP Terraform lớn.",
+          "apply": "Nếu từng gặp lỗi cycle lạ với provider cấu hình từ resource được quản lý, thử nâng lên 1.17.2 trên nhánh riêng và chạy plan so sánh.",
+          "source": {
+            "title": "Terraform v1.17.2",
+            "url": "https://github.com/hashicorp/terraform/releases/tag/v1.17.2"
+          },
+          "published": "2026-11-11",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "AI Engineering thực chiến",
+      "items": [
+        {
+          "title": "Anthropic: xây safety eval đáng tin cậy",
+          "summary": "Bài kỹ thuật ngày 13/11 nêu nguyên tắc: mỗi eval trả lời một câu hỏi cụ thể, đo đúng đại lượng (ví dụ tỉ lệ phản hồi phù hợp thay vì tỉ lệ từ chối, gồm cả prompt vô hại), mô phỏng nhiều lượt, chống nhiễm dữ liệu và bão hoà, hiệu chỉnh grader bằng tiêu chí nhị phân và đối chiếu nhãn người, báo cáo kèm độ bất định.",
+          "apply": "Áp dụng cho eval LLM ở sản phẩm: thêm tập prompt lành tính để bắt hồi quy over-refusal, và kiểm tra LLM-judge với một tập nhãn tay trước khi tin điểm số.",
+          "source": {
+            "title": "Building strong safety evaluations",
+            "url": "https://www.anthropic.com/research/building-strong-safety-evaluations"
+          },
+          "published": "2026-11-13",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "Open Source & công cụ mới",
+      "items": [
+        {
+          "title": "uv 0.13.8: tránh build môi trường trùng khi chạy uvx song song",
+          "summary": "Bản 12/11 không còn build cùng một môi trường hai lần khi nhiều lệnh uvx hoặc uv run --with chạy đồng thời, giới hạn quyền tệp credential dạng plaintext trên Unix chỉ cho chủ sở hữu, và cập nhật các bản CPython được quản lý.",
+          "apply": "Chạy uv self update trên máy dev và runner CI; script chạy nhiều uvx song song sẽ nhanh hơn.",
+          "source": {
+            "title": "uv 0.13.8",
+            "url": "https://github.com/astral-sh/uv/releases/tag/0.13.8"
+          },
+          "published": "2026-11-12",
+          "kind": "tin"
+        }
+      ]
+    }
+  ],
+  "knowledge": {
+    "title": "Idempotency key: để client retry mà không tạo trùng",
+    "body": "Khi client retry sau timeout, server có thể đã xử lý lần đầu nên thao tác như tạo đơn hay trừ tiền dễ bị thực hiện hai lần. Giải pháp là client sinh một idempotency key (UUID) cho mỗi ý định và gửi kèm request; server lưu key cùng kết quả, gặp lại key thì trả đúng kết quả cũ thay vì xử lý lại.\n\nCần chú ý: ghi key và thao tác nghiệp vụ trong cùng một transaction (hoặc dùng unique constraint), lưu hash của payload để từ chối cùng key nhưng nội dung khác, và đặt TTL cho key.",
+    "example": "POST /payments\nIdempotency-Key: 7c9e6679-7425-40de-944b-e07fc1f90ae7\n\nINSERT INTO idempotency_keys(key, request_hash, response)\nVALUES ($1, $2, NULL)\nON CONFLICT (key) DO NOTHING;\n-- 0 dòng được chèn: đọc response đã lưu và trả lại"
+  },
+  "sources": [
+    {
+      "title": "CPython tags",
+      "url": "https://github.com/python/cpython/tags.atom"
+    },
+    {
+      "title": "Prometheus v3.16.0",
+      "url": "https://github.com/prometheus/prometheus/releases/tag/v3.16.0"
+    },
+    {
+      "title": "Terraform v1.17.2",
+      "url": "https://github.com/hashicorp/terraform/releases/tag/v1.17.2"
+    },
+    {
+      "title": "Building strong safety evaluations",
+      "url": "https://www.anthropic.com/research/building-strong-safety-evaluations"
+    },
+    {
+      "title": "uv 0.13.8",
+      "url": "https://github.com/astral-sh/uv/releases/tag/0.13.8"
+    }
+  ],
+  "generated_at": "2026-11-14T01:23:29Z"
+}
