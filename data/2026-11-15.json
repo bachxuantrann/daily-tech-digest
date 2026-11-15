@@ -1,0 +1,179 @@
+{
+  "date": "2026-11-15",
+  "summary": "Django ra bản vá 6.1.3/6.0.10/5.2.19, OpenTelemetry Collector 1.71 đưa queue_batch lên beta, Docker Compose 5.7 gộp create và start thành một kế hoạch; agent-browser 0.43 thêm snapshot hints cho agent.",
+  "sections": [
+    {
+      "title": "Backend",
+      "items": [
+        {
+          "title": "Django 6.1.3, 6.0.10 và 5.2.19 phát hành cùng ngày",
+          "summary": "Cả ba nhánh đang được hỗ trợ của Django cùng ra bản vá vào 3/11. Theo nhịp phát hành của Django, đây thường là các bản sửa lỗi và bảo mật định kỳ; mình chưa đọc được ghi chú chi tiết nên hãy kiểm tra release notes trước khi nâng.",
+          "apply": "Ghim phiên bản patch mới nhất trong lockfile và chạy test suite trước khi triển khai.",
+          "source": {
+            "title": "Django tags trên GitHub",
+            "url": "https://github.com/django/django/tags"
+          },
+          "published": "2026-11-03",
+          "kind": "tin"
+        },
+        {
+          "title": "Spring Boot 4.2.0-RC2 loại bỏ hỗ trợ reload SSL của LDAP",
+          "summary": "RC2 ngày 5/11 bỏ LDAP SSL reload, thêm hỗ trợ X-Forwarded-Prefix cho Reactor Netty và sửa nhiều lỗi về cipher/protocol SSL của Kafka và RabbitMQ. Bản 4.1.2 mới nhất thêm giá trị JavaVersion.TWENTY_SEVEN và sửa lỗi xác thực JWT khi issuer-uri rỗng.",
+          "apply": "Nếu dùng reload SSL cho LDAP, kiểm tra trước khi nâng lên 4.2.",
+          "source": {
+            "title": "Spring Boot releases",
+            "url": "https://github.com/spring-projects/spring-boot/releases"
+          },
+          "published": "2026-11-05",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "DevOps / Cloud",
+      "items": [
+        {
+          "title": "OpenTelemetry Collector 1.71.0: queue_batch lên beta, bỏ vài trường confighttp",
+          "summary": "Bản 1.71.0/0.165.0 (6/11) đưa processor queue_batch lên beta cho traces, metrics, logs, thêm mục garbage_collector cho memory limiter để tắt GC cưỡng bức, và gỡ các trường IdleConnTimeout, MaxIdleConns, MaxIdleConnsPerHost, DisableKeepAlives của confighttp. Có cảnh báo khi kết hợp batch processor với batching của exporterhelper.",
+          "apply": "Grep cấu hình collector tìm bốn trường bị gỡ trước khi nâng cấp.",
+          "source": {
+            "title": "opentelemetry-collector releases",
+            "url": "https://github.com/open-telemetry/opentelemetry-collector/releases"
+          },
+          "published": "2026-11-06",
+          "kind": "tin"
+        },
+        {
+          "title": "Docker Compose 5.7.0 và 5.7.1",
+          "summary": "5.7.0 (2/11) cho lệnh up chạy Create và Start thành một kế hoạch trên cùng một snapshot daemon, thêm run --no-recreate, stats --all-projects và thuộc tính umask. 5.7.1 (11/11) kiểm tra manifest OCI theo digest và sửa nhiều lỗi cache.",
+          "apply": "Home lab dùng compose có thể nâng lên 5.7.1 để có bản sửa cache OCI.",
+          "source": {
+            "title": "docker/compose releases",
+            "url": "https://github.com/docker/compose/releases"
+          },
+          "published": "2026-11-11",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "AI Engineering thực chiến",
+      "items": [
+        {
+          "title": "LangGraph 1.2.22: tối ưu hiệu năng cho state rộng và checkpoint Postgres",
+          "summary": "Các bản ra ngày 14/11 làm add_messages nhanh hơn, giảm số lần đọc pending write, dùng so khớp khoá theo tập hợp trên state rộng và bỏ khoá không cần thiết ở saver bất đồng bộ của Postgres. Một lỗi streaming subgraph trên thread riêng cũng được sửa.",
+          "apply": "Agent chạy dài với state lớn nên nâng lên để giảm độ trễ mỗi bước.",
+          "source": {
+            "title": "langgraph releases",
+            "url": "https://github.com/langchain-ai/langgraph/releases"
+          },
+          "published": "2026-11-14",
+          "kind": "tin"
+        },
+        {
+          "title": "MCP 2026-07-28: server không trạng thái",
+          "summary": "Bản đặc tả này bỏ handshake initialize và header Mcp-Session-Id khỏi đường request chính, nên request có thể đến bất kỳ instance nào mà không cần lưu phiên chung. Đã ra từ tháng 7 nhưng ảnh hưởng trực tiếp đến cách triển khai server MCP.",
+          "apply": "Xem lại MCP server đang giữ session trong bộ nhớ để dễ scale ngang sau load balancer.",
+          "source": {
+            "title": "MCP releases",
+            "url": "https://github.com/modelcontextprotocol/modelcontextprotocol/releases"
+          },
+          "published": "2026-07-28",
+          "kind": "bài đọc"
+        }
+      ]
+    },
+    {
+      "title": "System Design & Architecture",
+      "items": [
+        {
+          "title": "Dynamo: kho key-value sẵn sàng cao của Amazon",
+          "summary": "Bài báo SOSP 2007 mô tả consistent hashing, vector clock, sloppy quorum và hinted handoff để ưu tiên tính sẵn sàng. Vẫn là nền tảng để hiểu trade-off giữa nhất quán và khả dụng trong các kho dữ liệu phân tán.",
+          "apply": "Đọc cùng phần quorum R+W>N khi chọn cấu hình replication cho Cassandra hoặc ScyllaDB.",
+          "source": {
+            "title": "Dynamo (SOSP 2007)",
+            "url": "https://www.allthingsdistributed.com/files/amazon-dynamo-sosp2007.pdf"
+          },
+          "published": "2007-10",
+          "kind": "bài đọc"
+        }
+      ]
+    },
+    {
+      "title": "Open Source & công cụ mới",
+      "items": [
+        {
+          "title": "vercel-labs/agent-browser 0.43: snapshot hints cho agent",
+          "summary": "CLI kèm MCP server điều khiển Chrome qua DevTools Protocol bằng cây accessibility. Bản 0.43 (12/11) thêm gợi ý cho control trùng hoặc rỗng tên, cài binary theo từng nền tảng; 0.42 thêm saved flows thử nghiệm để ghi một tác vụ rồi phát lại request.",
+          "apply": "Thử trên home lab để tự động hoá kiểm thử giao diện nội bộ; cần Node 22+.",
+          "source": {
+            "title": "agent-browser releases",
+            "url": "https://github.com/vercel-labs/agent-browser/releases"
+          },
+          "published": "2026-11-12",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "Career & kỹ năng mềm",
+      "items": [
+        {
+          "title": "Design Docs at Google",
+          "summary": "Bài của Malte Ubl giải thích design doc dùng để làm rõ vấn đề, ghi trade-off và gom ý kiến sớm, kèm các dấu hiệu nên và không nên viết. Hữu ích để chuẩn hoá cách ra quyết định kiến trúc trong team.",
+          "apply": "Thêm mục Non-goals và Alternatives vào template design doc của team.",
+          "source": {
+            "title": "Design Docs at Google",
+            "url": "https://www.industrialempathy.com/posts/design-docs-at-google/"
+          },
+          "published": "2020-05",
+          "kind": "bài đọc"
+        }
+      ]
+    }
+  ],
+  "knowledge": {
+    "title": "Circuit breaker: ngắt nhanh khi dịch vụ phụ thuộc đang hỏng",
+    "body": "Circuit breaker theo dõi tỉ lệ lỗi hoặc timeout khi gọi một dịch vụ khác. Khi vượt ngưỡng, breaker chuyển sang trạng thái open: các lời gọi bị từ chối ngay, không chiếm thread và kết nối, giúp dịch vụ lỗi có thời gian hồi phục.\n\nSau một khoảng chờ, breaker sang half-open và cho vài request thử. Thành công thì đóng lại, thất bại thì mở tiếp. Nên kết hợp với timeout, retry có jitter và một phương án dự phòng như dữ liệu cache hoặc giá trị mặc định.",
+    "example": "# Resilience4j (application.yml)\nresilience4j.circuitbreaker.instances.payment:\n  slidingWindowSize: 20\n  failureRateThreshold: 50\n  waitDurationInOpenState: 30s\n  permittedNumberOfCallsInHalfOpenState: 3"
+  },
+  "sources": [
+    {
+      "title": "Django tags",
+      "url": "https://github.com/django/django/tags"
+    },
+    {
+      "title": "Spring Boot releases",
+      "url": "https://github.com/spring-projects/spring-boot/releases"
+    },
+    {
+      "title": "opentelemetry-collector releases",
+      "url": "https://github.com/open-telemetry/opentelemetry-collector/releases"
+    },
+    {
+      "title": "docker/compose releases",
+      "url": "https://github.com/docker/compose/releases"
+    },
+    {
+      "title": "langgraph releases",
+      "url": "https://github.com/langchain-ai/langgraph/releases"
+    },
+    {
+      "title": "MCP releases",
+      "url": "https://github.com/modelcontextprotocol/modelcontextprotocol/releases"
+    },
+    {
+      "title": "Dynamo (SOSP 2007)",
+      "url": "https://www.allthingsdistributed.com/files/amazon-dynamo-sosp2007.pdf"
+    },
+    {
+      "title": "agent-browser releases",
+      "url": "https://github.com/vercel-labs/agent-browser/releases"
+    },
+    {
+      "title": "Design Docs at Google",
+      "url": "https://www.industrialempathy.com/posts/design-docs-at-google/"
+    }
+  ],
+  "generated_at": "2026-11-15T01:22:58Z"
+}
