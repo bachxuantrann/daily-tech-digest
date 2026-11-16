@@ -1,5 +1,6 @@
 {
   "dates": [
+    "2026-11-16",
     "2026-11-15",
     "2026-11-14",
     "2026-11-13",
@@ -32,6 +33,7 @@
     "2026-10-17"
   ],
   "summaries": {
+    "2026-11-16": ".NET 11 GA và Rust 1.100 (Cargo có thời gian chờ trước khi dùng bản mới của dependency), Gemini 4 Carbon mở cho API trả phí, k6 2.4 đưa tracing sang OpenTelemetry, Cloudsmith thêm registry cho agent skill.",
     "2026-11-15": "Django ra bản vá 6.1.3/6.0.10/5.2.19, OpenTelemetry Collector 1.71 đưa queue_batch lên beta, Docker Compose 5.7 gộp create và start thành một kế hoạch; agent-browser 0.43 thêm snapshot hints cho agent.",
     "2026-11-14": "Prometheus 3.16 đổi vài mặc định dễ gây vỡ, Terraform 1.17.2 sửa vòng phụ thuộc, Python 3.16.0a2 ra mắt; Anthropic chia sẻ cách xây eval an toàn có độ tin cậy.",
     "2026-11-13": "Gradle 9.9.0 biên dịch Kotlin DSL theo gia tăng, GitHub quét secret trong log Actions, PostgreSQL 14 chính thức hết hỗ trợ cùng bản RC2 của PostgreSQL 19; Netflix tách kiểm chứng sự thật bằng router theo từng claim.",

@@ -1,0 +1,232 @@
+{
+  "date": "2026-11-16",
+  "summary": ".NET 11 GA và Rust 1.100 (Cargo có thời gian chờ trước khi dùng bản mới của dependency), Gemini 4 Carbon mở cho API trả phí, k6 2.4 đưa tracing sang OpenTelemetry, Cloudsmith thêm registry cho agent skill.",
+  "sections": [
+    {
+      "title": "Backend",
+      "items": [
+        {
+          "title": ".NET 11 phát hành chính thức: C# 15 có union type, ASP.NET Core thêm validation bất đồng bộ và OpenAPI 3.2",
+          "summary": ".NET 11 ra ngày 10/11, là bản STS nên chỉ được hỗ trợ 2 năm, đến tháng 11/2028. Các điểm chính: union type trong C# 15, async validation và OpenAPI 3.2 trong ASP.NET Core, nén Zstandard có sẵn trong thư viện chuẩn. Một breaking change cần chú ý: trên x64 CPU tối thiểu phải đạt x86-64-v2 (SSE4.2, POPCNT), còn Windows Arm64 cần LSE.",
+          "apply": ".NET 8 và 9 đã hết hỗ trợ cùng ngày. Nếu team ưu tiên ổn định thì lên .NET 10 LTS, còn muốn dùng .NET 11 thì kiểm tra trước CPU của các node build và host cũ.",
+          "source": {
+            "title": "What's new in .NET 11 (Microsoft Learn)",
+            "url": "https://learn.microsoft.com/en-us/dotnet/core/whats-new/dotnet-11/overview"
+          },
+          "published": "2026-11-10",
+          "kind": "tin"
+        },
+        {
+          "title": "Rust 1.100.0: ổn định never type và custom allocator, Cargo có thời gian chờ tối thiểu trước khi dùng bản mới của dependency",
+          "summary": "Bản phát hành 12/11 ổn định kiểu ! và trait Allocator, nên Box và Vec dùng được allocator riêng. Với vận hành, Cargo có thêm lint riêng trong [lints.cargo], tự kiểm tra dependency không dùng đến và có thiết lập tuổi tối thiểu khi chọn bản mới của crate (RFC 3923): crate vừa đăng phải đủ tuổi mới được chọn, giúp tránh cài phải bản độc hại vừa bị đẩy lên.",
+          "apply": "Bật thiết lập tuổi tối thiểu (ví dụ vài ngày) trong cấu hình Cargo của CI, rồi chạy kiểm tra unused dependency để dọn Cargo.toml.",
+          "source": {
+            "title": "Rust releases (rust-lang/rust)",
+            "url": "https://github.com/rust-lang/rust/releases"
+          },
+          "published": "2026-11-12",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "DevOps / Cloud",
+      "items": [
+        {
+          "title": "k6 2.4.0: tracing thử nghiệm xuất sang OpenTelemetry, ngừng khuyến nghị output InfluxDB và Prometheus",
+          "summary": "Tính năng native-tracing tạo span cho test run, scenario, VU và iteration rồi xuất qua OpenTelemetry, nên kết quả load test xem được chung với trace của dịch vụ. Bản này cũng thêm http.query() cho method QUERY và cờ --http-debug-redact để che header chứa credential khi bật debug log. Output InfluxDB và Prometheus remote-write được đánh dấu deprecated và dự kiến bỏ ở k6 v3.",
+          "apply": "Nếu dashboard load test đang đọc từ InfluxDB, nên lên kế hoạch chuyển sang output OpenTelemetry ngay bây giờ. Sau khi nâng cấp, kiểm tra lại threshold có dùng browser_data_received.",
+          "source": {
+            "title": "k6 releases (grafana/k6)",
+            "url": "https://github.com/grafana/k6/releases"
+          },
+          "published": "2026-11-12",
+          "kind": "tin"
+        },
+        {
+          "title": "Cloudsmith ra mắt registry cho agent skill tại KubeCon NA 2026",
+          "summary": "Skill (SKILL.md và các tệp đi kèm) được quản lý như mọi artifact khác: có version, proxy được catalog công khai, có allow/deny list và log audit xem team nào đang dùng skill nào. Ý tưởng là coi skill của agent là một phần của supply chain, vì một skill chứa prompt độc hại nguy hiểm không kém một package độc hại.",
+          "apply": "Dù không dùng Cloudsmith, hãy lập danh sách skill/plugin mà team đang cài cho coding agent, ghim version và review chúng như review dependency.",
+          "source": {
+            "title": "Cloudsmith secures the AI software supply chain with agent skills registry support",
+            "url": "https://cloudsmith.com/company/press/ai-skills-registry"
+          },
+          "published": "2026-11-09",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "AI Engineering thực chiến",
+      "items": [
+        {
+          "title": "Gemini 4 Carbon mở cho Gemini API trả phí, giá giới thiệu tăng gấp đôi từ 1/12",
+          "summary": "Google đưa Gemini 4 Carbon, model mạnh nhất của họ cho bảo mật và tác vụ dài hơi, vào Gemini API (chỉ tier trả phí) và Antigravity. Nhiều nguồn cùng cho biết giá là 2/10 USD mỗi triệu token input/output đến hết 30/11, sau đó 4/20 USD. Token suy luận được tính theo giá output.",
+          "apply": "Nếu đang benchmark model cho coding agent hoặc review bảo mật, chạy eval ngay trong giai đoạn giá rẻ, nhưng ước tính chi phí theo giá sau 1/12.",
+          "source": {
+            "title": "Gemini 4 Carbon is now available for developers (Google)",
+            "url": "https://blog.google/innovation-and-ai/technology/developers-tools/gemini-4-carbon-developers/"
+          },
+          "published": "2026-11-10",
+          "kind": "tin"
+        },
+        {
+          "title": "Pydantic AI 2.67 và 2.68: fallback khi chạm giới hạn output token, sub-agent chạy được trong durable workflow",
+          "summary": "ModelFallback giờ tự chuyển sang model kế tiếp khi response bị cắt vì hết output token, một lỗi hay bị bỏ sót trong production. Sub-agent chạy được dưới dạng child workflow của Temporal và DBOS, và RequestInput cho phép dừng giữa run để chờ người duyệt. Bản 2.66 ngày 4/11 vá nhiều advisory, trong đó có lỗi telemetry embedding ghi lại credential.",
+          "apply": "Nếu đang dùng nhánh 1.x hoặc 2.x cũ, ít nhất hãy lên bản có bản vá của 2.66 (hoặc 1.107.10). Với agent chạy lâu, cân nhắc chạy trong durable workflow thay vì tự viết retry.",
+          "source": {
+            "title": "Pydantic AI releases",
+            "url": "https://github.com/pydantic/pydantic-ai/releases"
+          },
+          "published": "2026-11-11",
+          "kind": "tin"
+        },
+        {
+          "title": "Qdrant 1.20.1: sửa lỗi build HNSW chậm gấp 3 lần, giảm một nửa lượt đọc khi search trên đĩa lạnh",
+          "summary": "Bản vá 13/11 sửa một regression của 1.20.0 làm build index HNSW chậm tới 3 lần trên máy nhiều nhân. Search HNSW trên storage on-disk chưa được cache giờ đọc đĩa khoảng một nửa so với trước, và filter nhiều điều kiện trên payload index on-disk cũng nhanh hơn. Nhắc lại từ 1.20.0: BM25 chạy trực tiếp trên full-text index, và internal auth bật mặc định khi có API key.",
+          "apply": "Ai đã lên 1.20.0 nên lên ngay 1.20.1, nhất là nếu đang re-index collection lớn.",
+          "source": {
+            "title": "Qdrant releases",
+            "url": "https://github.com/qdrant/qdrant/releases"
+          },
+          "published": "2026-11-13",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "System Design & Architecture",
+      "items": [
+        {
+          "title": "Uber: giải bài toán định danh cho agent trong workflow nhiều agent",
+          "summary": "Khi request đi qua nhiều agent, dịch vụ phía sau chỉ thấy một service identity chung và mất dấu người dùng gốc. Uber cấp cho mỗi agent identity riêng qua Agent Registry, dùng SPIFFE/SPIRE để chứng thực workload, rồi để Security Token Service cấp JWT ngắn hạn, giới hạn theo từng hop và mang theo chuỗi provenance. Bài cũng kết luận rằng truyền ngữ cảnh phải làm ngay trong agent SDK, chỉ đặt proxy bên ngoài là không đủ.",
+          "apply": "Trước khi cho agent gọi API nội bộ, thiết kế token theo từng hop có audience cụ thể, đừng dùng chung một credential dài hạn của service.",
+          "source": {
+            "title": "Solving the Identity Crisis for AI Agents (Uber Engineering)",
+            "url": "https://www.uber.com/blog/solving-the-agent-identity-crisis/"
+          },
+          "published": "2026-05-21",
+          "kind": "bài đọc"
+        },
+        {
+          "title": "Metastable Failures in Distributed Systems (Bronson và cộng sự, HotOS 2021)",
+          "summary": "Bài báo đặt tên cho kiểu sự cố hệ thống không tự hồi phục dù nguyên nhân ban đầu (một đợt tải tăng, một lần cache bị xoá) đã qua: retry, cache miss hay timeout tạo một vòng phản hồi giữ hệ thống ở trạng thái xấu. Nhóm tác giả chỉ ra rằng chính các cơ chế giúp hệ thống hiệu quả lúc bình thường lại là thứ duy trì vòng lặp này.",
+          "apply": "Khi viết postmortem, hỏi thêm câu 'vì sao hệ thống không tự hồi phục sau khi trigger đã hết' và tìm vòng phản hồi (retry, cache cold, queue tồn) để cắt.",
+          "source": {
+            "title": "Metastable Failures in Distributed Systems (HotOS 2021)",
+            "url": "https://sigops.org/s/conferences/hotos/2021/papers/hotos21-s11-bronson.pdf"
+          },
+          "published": "2021-06",
+          "kind": "bài đọc"
+        }
+      ]
+    },
+    {
+      "title": "Open Source & công cụ mới",
+      "items": [
+        {
+          "title": "google/elephant-goldfish-model: plugin thiết kế và review spec với reviewer không mang ngữ cảnh cũ",
+          "summary": "Repo đang trending tuần này. Ý tưởng: Elephant giữ ngữ cảnh dự án và viết spec, các Goldfish là subagent mở ngữ cảnh mới để review, nên dễ thấy những giả định chưa được nói ra. Người dùng chốt trade-off và duyệt trước khi cho implement. Cài được vào Claude Code, Codex CLI và Antigravity CLI. Dự án không phải sản phẩm được Google hỗ trợ chính thức.",
+          "apply": "Thử trên home lab với một tính năng nhỏ: cho agent viết spec, chạy bước review rồi so với các câu hỏi bạn tự đặt ra.",
+          "source": {
+            "title": "google/elephant-goldfish-model",
+            "url": "https://github.com/google/elephant-goldfish-model"
+          },
+          "published": "2026-11",
+          "kind": "tin"
+        },
+        {
+          "title": "backnotprop/plannotator: giao diện trên trình duyệt để chú thích plan và review diff của coding agent",
+          "summary": "Cũng nằm trong trending tuần, thêm khoảng 1.700 sao. Khi agent đưa ra plan hoặc làm xong việc, Plannotator mở trang review ở local để bạn bình luận từng đoạn hoặc duyệt, rồi gửi phản hồi về đúng phiên agent. Hỗ trợ Claude Code, Codex, Gemini CLI, OpenCode và một số agent khác.",
+          "apply": "Phù hợp khi review plan dài trong terminal bất tiện. Cài bằng tuỳ chọn --minimal nếu chỉ muốn binary mà không để script tự sửa cấu hình agent.",
+          "source": {
+            "title": "backnotprop/plannotator",
+            "url": "https://github.com/backnotprop/plannotator"
+          },
+          "published": "2026-11",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "Career & kỹ năng mềm",
+      "items": [
+        {
+          "title": "Choose Boring Technology của Dan McKinley",
+          "summary": "Mỗi tổ chức chỉ có vài 'innovation token', mỗi công nghệ mới tiêu một token vì nó mang theo những rủi ro chưa ai biết, chi phí vận hành và phần kiến thức team phải học. McKinley lập luận rằng giá trị nằm ở việc giải bài toán kinh doanh, không phải ở stack, và việc thêm một công nghệ phải được cân với chi phí của toàn hệ thống chứ không chỉ của một team.",
+          "apply": "Lần tới có đề xuất thêm database hay framework mới, yêu cầu ghi trong ADR: bài toán này có giải được bằng stack hiện có không, và ai sẽ trực on-call cho thứ mới.",
+          "source": {
+            "title": "Choose Boring Technology (Dan McKinley)",
+            "url": "https://mcfunley.com/choose-boring-technology"
+          },
+          "published": "2015-03-30",
+          "kind": "bài đọc"
+        }
+      ]
+    }
+  ],
+  "knowledge": {
+    "title": "Composite index và quy tắc leftmost prefix",
+    "body": "Index nhiều cột trong B-tree được sắp xếp theo cột thứ nhất, rồi đến cột thứ hai trong cùng giá trị cột thứ nhất, và tiếp tục như vậy. Vì thế index (a, b, c) phục vụ được điều kiện trên a, trên a và b, hoặc trên cả a, b, c, nhưng gần như vô dụng nếu query chỉ lọc theo b hoặc c.\n\nQuy tắc đặt thứ tự cột: cột so sánh bằng (=) đặt trước, cột range (>, <, BETWEEN) hoặc cột ORDER BY đặt sau. Khi gặp một cột range, các cột phía sau nó không còn dùng để thu hẹp phạm vi quét được nữa.\n\nNếu index chứa đủ mọi cột mà query cần thì database đọc thẳng từ index, không phải quay lại bảng (index-only scan, hay covering index). Trong Postgres có thể thêm cột chỉ để đọc bằng INCLUDE. Luôn kiểm chứng bằng EXPLAIN, đừng đoán.",
+    "example": "-- Query hay chạy:\nSELECT id, total FROM orders\nWHERE tenant_id = $1 AND status = 'paid' AND created_at >= now() - interval '7 days'\nORDER BY created_at DESC;\n\n-- Bằng trước, range/sort sau, INCLUDE để index-only scan:\nCREATE INDEX CONCURRENTLY orders_tenant_status_created\n  ON orders (tenant_id, status, created_at DESC) INCLUDE (total);\n\n-- Index này KHÔNG giúp được: WHERE status = 'paid' (thiếu tenant_id ở đầu)\nEXPLAIN (ANALYZE, BUFFERS) SELECT ...;"
+  },
+  "sources": [
+    {
+      "title": "What's new in .NET 11 (Microsoft Learn)",
+      "url": "https://learn.microsoft.com/en-us/dotnet/core/whats-new/dotnet-11/overview"
+    },
+    {
+      "title": "Rust releases (rust-lang/rust)",
+      "url": "https://github.com/rust-lang/rust/releases"
+    },
+    {
+      "title": "k6 releases (grafana/k6)",
+      "url": "https://github.com/grafana/k6/releases"
+    },
+    {
+      "title": "Cloudsmith secures the AI software supply chain with agent skills registry support",
+      "url": "https://cloudsmith.com/company/press/ai-skills-registry"
+    },
+    {
+      "title": "Gemini 4 Carbon is now available for developers (Google)",
+      "url": "https://blog.google/innovation-and-ai/technology/developers-tools/gemini-4-carbon-developers/"
+    },
+    {
+      "title": "Gemini 4 Carbon Pricing: $2/$10 Until Nov 30, Then $4/$20 (Apidog)",
+      "url": "https://apidog.com/blog/gemini-4-carbon-pricing/"
+    },
+    {
+      "title": "Pydantic AI releases",
+      "url": "https://github.com/pydantic/pydantic-ai/releases"
+    },
+    {
+      "title": "Qdrant releases",
+      "url": "https://github.com/qdrant/qdrant/releases"
+    },
+    {
+      "title": "Solving the Identity Crisis for AI Agents (Uber Engineering)",
+      "url": "https://www.uber.com/blog/solving-the-agent-identity-crisis/"
+    },
+    {
+      "title": "Metastable Failures in Distributed Systems (HotOS 2021)",
+      "url": "https://sigops.org/s/conferences/hotos/2021/papers/hotos21-s11-bronson.pdf"
+    },
+    {
+      "title": "google/elephant-goldfish-model",
+      "url": "https://github.com/google/elephant-goldfish-model"
+    },
+    {
+      "title": "backnotprop/plannotator",
+      "url": "https://github.com/backnotprop/plannotator"
+    },
+    {
+      "title": "GitHub Trending (weekly)",
+      "url": "https://github.com/trending?since=weekly"
+    },
+    {
+      "title": "Choose Boring Technology (Dan McKinley)",
+      "url": "https://mcfunley.com/choose-boring-technology"
+    }
+  ],
+  "generated_at": "2026-11-16T01:26:29Z"
+}
