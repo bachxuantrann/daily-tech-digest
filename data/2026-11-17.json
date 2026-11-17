@@ -1,0 +1,194 @@
+{
+  "date": "2026-11-17",
+  "summary": "Quarkus 4.0 lên CR1 với Graceful Shutdown API, Vault 2.2.2 vá lỗi ACL deny phân biệt hoa thường, Anthropic cho tự host Managed Agents, và Alibaba mở mã công cụ review code bằng agent.",
+  "sections": [
+    {
+      "title": "Backend",
+      "items": [
+        {
+          "title": "Quarkus 4.0.0.CR1: có Graceful Shutdown API, chuẩn bị GA",
+          "summary": "Bản ứng viên phát hành đầu tiên của Quarkus 4 thêm Graceful Shutdown API, tách riêng điều khiển validation callback và DDL constraint của Hibernate ORM, và tùy chọn --remote cho quarkus dev. Nhánh 4.0 đã nâng Java tối thiểu lên 21, chuyển sang Jackson 3, Jakarta REST 4, Hibernate ORM 8 và bật mặc định metrics/logs OpenTelemetry.",
+          "apply": "Nếu đang chạy Quarkus 3.x, dựng một nhánh thử với 4.0.0.CR1 ngay bây giờ: Jackson 3 và Hibernate 8 là hai chỗ dễ vỡ nhất, nên chạy toàn bộ test serialize và migration trước khi GA ra.",
+          "source": {
+            "title": "Quarkus releases trên GitHub",
+            "url": "https://github.com/quarkusio/quarkus/releases"
+          },
+          "published": "2026-11-11",
+          "kind": "tin"
+        },
+        {
+          "title": "Kotlin 2.5.0-RC: multi-field value class bản alpha",
+          "summary": "Kotlin 2.5.0-RC đưa multi-field value class vào giai đoạn alpha (value class nhiều trường, tránh cấp phát object bọc), sửa tương tác Lombok như vô hiệu @Builder trong mã Kotlin, cùng loạt sửa lỗi Wasm, JS và Gradle. Bản ổn định hiện tại vẫn là 2.4.21.",
+          "apply": "Với service Kotlin dùng chung Lombok trong dự án Java/Kotlin lẫn lộn, thử build với RC để bắt sớm thay đổi quanh @Builder.",
+          "source": {
+            "title": "Kotlin releases trên GitHub",
+            "url": "https://github.com/JetBrains/kotlin/releases"
+          },
+          "published": "2026-11-11",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "DevOps / Cloud",
+      "items": [
+        {
+          "title": "Vault 2.2.2: rule deny tường minh trong ACL giờ không phân biệt hoa thường",
+          "summary": "Bản vá bảo mật này sửa việc so khớp explicit-deny trong ACL để bỏ qua khác biệt hoa thường, tiếp nối chuỗi lỗi bypass bằng tên viết hoa lẫn thường ở 2.1.2 và 2.2.0. Kèm Go 1.27.4, từ chối SecretID AppRole đã hết hạn khi login và sửa payload audit syslog quá lớn.",
+          "apply": "Nâng Vault lên 2.2.2, sau đó rà policy có rule deny và đảm bảo tên resource trong policy viết thường như hướng dẫn từ 2.1.2.",
+          "source": {
+            "title": "Vault v2.2.2 release",
+            "url": "https://github.com/hashicorp/vault/releases"
+          },
+          "published": "2026-11-12",
+          "kind": "tin"
+        },
+        {
+          "title": "Helm 4.3.2 và thông báo không còn bản minor nào cho Helm 3",
+          "summary": "Helm 4.3.2 là bản vá nhỏ (sửa transport của registry client, cập nhật golang.org/x/net và k8s.io). Điểm đáng lưu ý hơn nằm trong release notes: Helm 3 sẽ không có thêm bản minor, còn Helm 4.4.0 dự kiến ra ngày 13/1/2027.",
+          "apply": "Nếu pipeline CI/CD còn ghim Helm 3.x, lên kế hoạch chuyển sang Helm 4 trong quý tới và kiểm tra lại các plugin cũng như cờ CLI đã đổi.",
+          "source": {
+            "title": "Helm releases trên GitHub",
+            "url": "https://github.com/helm/helm/releases"
+          },
+          "published": "2026-11-13",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "AI Engineering thực chiến",
+      "items": [
+        {
+          "title": "Claude Managed Agents cho phép tự host toàn bộ dịch vụ",
+          "summary": "Anthropic cho chạy toàn bộ dịch vụ Managed Agents trên hạ tầng của khách hàng, gồm cả việc lưu agent, session và lịch sử session tại chỗ. Muốn dùng phải liên hệ đội account của Anthropic.",
+          "apply": "Nếu yêu cầu lưu trữ dữ liệu trong nước hoặc tuân thủ nội bộ đang chặn việc dùng agent được host sẵn, đây là phương án đáng đem ra đánh giá thay vì tự viết harness từ đầu.",
+          "source": {
+            "title": "Claude API release notes",
+            "url": "https://platform.claude.com/docs/en/release-notes/api"
+          },
+          "published": "2026-11-12",
+          "kind": "tin"
+        },
+        {
+          "title": "Watermark văn bản mở rộng sang Opus 4.6, Opus 4.5, Sonnet 4.5 và Haiku 4.5",
+          "summary": "Văn bản do các model này sinh ra giờ mang watermark của Anthropic trên những nền tảng hỗ trợ. Request đặt temperature, top_p hoặc top_k khác mặc định có thể không mang watermark.",
+          "apply": "Nếu sản phẩm cần chứng minh nội dung do AI sinh, kiểm tra xem code có đang ghi đè tham số sampling hay không, vì điều này ảnh hưởng trực tiếp đến watermark.",
+          "source": {
+            "title": "Claude API release notes",
+            "url": "https://platform.claude.com/docs/en/release-notes/api"
+          },
+          "published": "2026-11-16",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "System Design & Architecture",
+      "items": [
+        {
+          "title": "IO devices and latency (Ben Dicken, PlanetScale)",
+          "summary": "Bài tương tác đi qua lịch sử thiết bị lưu trữ từ băng từ, HDD đến SSD, NVMe, rồi so sánh ổ gắn trực tiếp với ổ gắn qua mạng như EBS. Luận điểm chính: mỗi lần IO qua mạng thêm độ trễ cỡ hàng trăm micro giây và kém ổn định, nên với database nặng IO, ổ NVMe cục bộ cộng replication thường là lựa chọn tốt hơn mặc định của cloud.",
+          "apply": "Khi định cỡ database trên cloud, đo p99 IO latency và giới hạn IOPS của volume trước khi tăng CPU; nhiều vụ chậm là do lưu trữ chứ không phải do truy vấn.",
+          "source": {
+            "title": "IO devices and latency",
+            "url": "https://planetscale.com/blog/io-devices-and-latency"
+          },
+          "published": "2025-03-13",
+          "kind": "bài đọc"
+        }
+      ]
+    },
+    {
+      "title": "Open Source & công cụ mới",
+      "items": [
+        {
+          "title": "alibaba/open-code-review: CLI review code kết hợp pipeline tất định và agent LLM",
+          "summary": "Công cụ review nội bộ của Alibaba được mở mã (Apache-2.0) và đang lên GitHub Trending tuần này. Phần tất định lo chọn file, gom file liên quan, khớp rule và kiểm tra vị trí comment; agent chỉ lo phần cần suy luận và truy xuất ngữ cảnh. Theo benchmark tự công bố, công cụ đạt precision cao hơn với khoảng một phần chín số token, đổi lại recall thấp hơn.",
+          "apply": "Thử trên home lab: npm install -g @alibaba-group/open-code-review, cấu hình model cục bộ qua ocr config, rồi chạy ocr review --from main --to <nhánh> trên một PR thật để so với reviewer người.",
+          "source": {
+            "title": "alibaba/open-code-review",
+            "url": "https://github.com/alibaba/open-code-review"
+          },
+          "published": "2026-11",
+          "kind": "tin"
+        },
+        {
+          "title": "GoogleChrome/modern-web-guidance-src: skill giúp coding agent viết web theo chuẩn mới",
+          "summary": "Bộ skill do các đội Chrome, Edge, Firefox và MDN cùng duy trì, cung cấp hướng dẫn gọn về 262 tính năng web hiện đại kèm dữ liệu tương thích trình duyệt, được cắt tỉa bằng eval để tiết kiệm token. Repo đang dẫn đầu GitHub Trending tuần này.",
+          "apply": "Chạy npx modern-web-guidance@latest legacy-scan trên frontend nội bộ hoặc admin dashboard để xem chỗ nào còn dùng pattern cũ có thể thay bằng API nền tảng.",
+          "source": {
+            "title": "GoogleChrome/modern-web-guidance-src",
+            "url": "https://github.com/GoogleChrome/modern-web-guidance-src"
+          },
+          "published": "2026-11",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "Career & kỹ năng mềm",
+      "items": [
+        {
+          "title": "The Engineer/Manager Pendulum của Charity Majors",
+          "summary": "Bài viết kinh điển lập luận rằng đi qua lại giữa vai trò kỹ sư và quản lý là một lựa chọn sự nghiệp chính đáng, và chính việc đó tạo ra những người lãnh đạo kỹ thuật giỏi, giữ được độ sắc về kỹ thuật lẫn sự thấu hiểu con người. Làm quản lý không phải thăng chức mà là chuyển sang một nhánh song song.",
+          "apply": "Nếu đang cân nhắc lên tech lead hoặc EM, hãy coi đó là một vòng thử có thời hạn (ví dụ 2 năm) và thỏa thuận trước với cấp trên đường quay lại vai trò IC.",
+          "source": {
+            "title": "The Engineer/Manager Pendulum",
+            "url": "https://charity.wtf/2017/05/11/the-engineer-manager-pendulum/"
+          },
+          "published": "2017-05-11",
+          "kind": "bài đọc"
+        }
+      ]
+    }
+  ],
+  "knowledge": {
+    "title": "Optimistic locking: chặn lost update bằng cột version",
+    "body": "Lost update xảy ra khi hai request cùng đọc một bản ghi, cùng sửa trong bộ nhớ, rồi lần ghi sau đè lên lần ghi trước mà không ai hay biết. Thay vì khóa bản ghi suốt quá trình xử lý (SELECT ... FOR UPDATE), optimistic locking thêm một cột version và chỉ cho phép UPDATE khi version vẫn còn là giá trị đã đọc.\n\nNếu số dòng bị ảnh hưởng là 0, nghĩa là có người khác đã ghi trước: ứng dụng đọc lại rồi thử lại, hoặc trả 409 Conflict cho client. Cách này không giữ khóa lâu nên hợp với hệ thống ít xung đột, đặc biệt khi người dùng mở form vài phút rồi mới bấm lưu.\n\nKhi xung đột thường xuyên (ví dụ trừ tồn kho của một sản phẩm hot), retry liên tục sẽ tốn hơn khóa bi quan; lúc đó nên dùng FOR UPDATE hoặc cập nhật nguyên tử dạng SET stock = stock - 1 WHERE stock > 0. Với HTTP API, có thể đưa version ra ngoài qua ETag và If-Match để client cũng tham gia kiểm tra.",
+    "example": "-- đọc: version = 7\nUPDATE orders\nSET status = 'PAID', version = version + 1\nWHERE id = 42 AND version = 7;\n-- 0 dòng bị ảnh hưởng => đã có người cập nhật trước, đọc lại hoặc trả 409\n\n// JPA: chỉ cần thêm\n@Version\nprivate long version;  // xung đột ném OptimisticLockException"
+  },
+  "sources": [
+    {
+      "title": "Quarkus releases trên GitHub",
+      "url": "https://github.com/quarkusio/quarkus/releases"
+    },
+    {
+      "title": "Kotlin releases trên GitHub",
+      "url": "https://github.com/JetBrains/kotlin/releases"
+    },
+    {
+      "title": "Vault releases trên GitHub",
+      "url": "https://github.com/hashicorp/vault/releases"
+    },
+    {
+      "title": "Helm releases trên GitHub",
+      "url": "https://github.com/helm/helm/releases"
+    },
+    {
+      "title": "Claude API release notes",
+      "url": "https://platform.claude.com/docs/en/release-notes/api"
+    },
+    {
+      "title": "IO devices and latency",
+      "url": "https://planetscale.com/blog/io-devices-and-latency"
+    },
+    {
+      "title": "alibaba/open-code-review",
+      "url": "https://github.com/alibaba/open-code-review"
+    },
+    {
+      "title": "GoogleChrome/modern-web-guidance-src",
+      "url": "https://github.com/GoogleChrome/modern-web-guidance-src"
+    },
+    {
+      "title": "GitHub Trending (tuần)",
+      "url": "https://github.com/trending?since=weekly"
+    },
+    {
+      "title": "The Engineer/Manager Pendulum",
+      "url": "https://charity.wtf/2017/05/11/the-engineer-manager-pendulum/"
+    }
+  ],
+  "generated_at": "2026-11-17T01:24:46Z"
+}
