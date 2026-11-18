@@ -1,0 +1,254 @@
+{
+  "date": "2026-11-18",
+  "summary": "Spec GraphQL bản 2026 cho phép selection set rỗng, Valkey 9.2 RC2 có DELEX và đồng bộ replica không fork, Argo CD 3.6 đổi mặc định sang server-side diff, Agent Substrate lên 1.0, Claude API thêm IP allowlist.",
+  "sections": [
+    {
+      "title": "Backend",
+      "items": [
+        {
+          "title": "GraphQL spec bản September 2026: selection set rỗng hợp lệ, @oneOf kiểm tra chặt hơn",
+          "summary": "GraphQL Foundation phát hành bản spec mới với 12 thay đổi: cho phép selection set rỗng, directive gắn lên directive, validation chặt hơn cho @oneOf và làm rõ định nghĩa fragment. Nhóm spec cũng cam kết phát hành khoảng mỗi năm một lần thay vì cách quãng nhiều năm như trước.",
+          "apply": "Nếu dùng @oneOf cho input kiểu union, kiểm tra thư viện server (graphql-js, gqlgen, Hot Chocolate...) đã theo quy tắc mới chưa trước khi client bắt đầu gửi query dựa trên spec mới.",
+          "source": {
+            "title": "graphql/graphql-spec releases",
+            "url": "https://github.com/graphql/graphql-spec/releases"
+          },
+          "published": "2026-11-12",
+          "kind": "tin"
+        },
+        {
+          "title": "Valkey 9.2.0-rc2: lệnh DELEX, nén RDB bằng Zstd, full sync không cần fork",
+          "summary": "RC thứ hai của Valkey 9.2 thêm DELEX để xoá key có điều kiện theo giá trị (xoá nếu bằng hoặc khác giá trị cho trước), cho phép nén RDB và luồng replication bằng Zstd, và hỗ trợ đồng bộ toàn phần cho replica mà không fork tiến trình. Bản ổn định hiện tại vẫn là 9.1.3.",
+          "apply": "DELEX thay được đoạn Lua 'GET rồi DEL nếu khớp' khi nhả distributed lock; thử RC này trên staging và đo bộ nhớ lúc full sync, vốn hay phình do copy-on-write khi fork.",
+          "source": {
+            "title": "valkey-io/valkey releases",
+            "url": "https://github.com/valkey-io/valkey/releases"
+          },
+          "published": "2026-11-04",
+          "kind": "tin"
+        },
+        {
+          "title": "Spring Framework 7.1.0-RC2: hỗ trợ If-Range, siết cú pháp profile expression",
+          "summary": "RC2 của Spring Framework 7.1 hỗ trợ header If-Range cho range request trên resource, từ chối profile expression viết sai (tên cách nhau bằng dấu cách, thiếu toán tử), sửa rò file tạm trong PartGenerator khi vượt giới hạn đĩa và nâng AspectJ để chạy trên Java 27.",
+          "apply": "Grep các @Profile và spring.profiles.active trong dự án tìm biểu thức dạng 'dev prod' không có toán tử: sau khi nâng lên 7.1 chúng sẽ báo lỗi lúc khởi động.",
+          "source": {
+            "title": "spring-projects/spring-framework releases",
+            "url": "https://github.com/spring-projects/spring-framework/releases"
+          },
+          "published": "2026-11-05",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "DevOps / Cloud",
+      "items": [
+        {
+          "title": "Argo CD 3.6.0: thêm nhiều health check, mặc định dùng server-side diff khi bật SSA",
+          "summary": "Bản minor mới bổ sung health check có sẵn cho CloudNativePG, cert-manager, Tekton, Velero, Kyverno, KServe; ApplicationSet có metric cho progressive sync và generator OCI; UI có virtual scrolling cho danh sách lớn. Vài thay đổi cần để ý khi nâng cấp: mặc định chuyển sang server-side diff khi dùng server-side apply, SyncWindow đổi tên thành InlineSyncWindow, cờ --signature-keys bị đánh dấu deprecated. Nhánh 3.3 đã hết hỗ trợ từ 3/11.",
+          "apply": "Nếu còn chạy 3.3, lên kế hoạch nâng cấp; đọc tài liệu upgrade và chạy thử diff trên vài Application dùng SSA trước khi rollout cho toàn cụm.",
+          "source": {
+            "title": "Argo CD v3.6.0 release",
+            "url": "https://github.com/argoproj/argo-cd/releases/tag/v3.6.0"
+          },
+          "published": "2026-11-03",
+          "kind": "tin"
+        },
+        {
+          "title": "Grafana 13.3.1, 13.2.6, 13.1.10, 13.0.13, 12.4.15: loạt bản vá bảo mật",
+          "summary": "Grafana phát hành cùng lúc năm bản vá cho các nhánh đang hỗ trợ, mỗi bản sửa từ sáu đến tám lỗ hổng có CVE, kèm cập nhật dữ liệu múi giờ 2026. Release notes không ghi mức độ nghiêm trọng, phải xem từng advisory GHSA.",
+          "apply": "Grafana tự host thường mở ra internet cho cả team; nâng lên bản patch cùng nhánh ngay, không cần chờ lên minor mới.",
+          "source": {
+            "title": "Grafana v13.3.1 release",
+            "url": "https://github.com/grafana/grafana/releases/tag/v13.3.1"
+          },
+          "published": "2026-11-10",
+          "kind": "tin"
+        },
+        {
+          "title": "Kubernetes v1.38.0-beta.0 đã có",
+          "summary": "Bản beta đầu tiên của Kubernetes 1.38 được phát hành, nghĩa là tính năng đã đóng băng và đang chuyển sang giai đoạn ổn định hoá trước bản chính thức.",
+          "apply": "Dựng một cụm kind hoặc k3d bằng bản beta và chạy bộ manifest, Helm chart của bạn để phát hiện sớm API bị gỡ hoặc hành vi đổi mặc định.",
+          "source": {
+            "title": "kubernetes/kubernetes releases",
+            "url": "https://github.com/kubernetes/kubernetes/releases"
+          },
+          "published": "2026-11-06",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "AI Engineering thực chiến",
+      "items": [
+        {
+          "title": "Claude API thêm IP allowlisting (beta)",
+          "summary": "Tổ chức có thể khai báo tối đa 1.000 địa chỉ hoặc dải CIDR (IPv4/IPv6) trong Claude Console; request từ IP ngoài danh sách bị từ chối. Mục tiêu là giới hạn thiệt hại khi API key bị lộ.",
+          "apply": "Nếu backend gọi LLM qua NAT gateway có IP egress cố định, bật allowlist cho các IP đó; key rò ra laptop hay log CI sẽ không dùng được từ chỗ khác.",
+          "source": {
+            "title": "Claude Platform release notes",
+            "url": "https://platform.claude.com/docs/en/release-notes/api"
+          },
+          "published": "2026-11-05",
+          "kind": "tin"
+        },
+        {
+          "title": "Claude API: linked billing (beta) cho khách hàng tự trả tiền dùng model",
+          "summary": "Ứng dụng có thể để khách hàng trả chi phí Claude qua chính tổ chức Claude của họ: bật bằng beta header và đặt billing_policy trên từng request để chọn ai trả. Khách hàng tự đặt hạn mức chi tiêu hoặc gỡ liên kết trong Console; hiện chỉ áp dụng cho tổ chức trả tiền trực tiếp cho Anthropic.",
+          "apply": "Với sản phẩm B2B có khách hàng dùng LLM nhiều, đây là cách chuyển chi phí token khỏi biên lợi nhuận của bạn mà không phải tự làm hệ thống đo đếm và tính tiền lại.",
+          "source": {
+            "title": "Claude Platform release notes",
+            "url": "https://platform.claude.com/docs/en/release-notes/api"
+          },
+          "published": "2026-11-17",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "System Design & Architecture",
+      "items": [
+        {
+          "title": "How Discord Stores Trillions of Messages",
+          "summary": "Discord kể lại việc chuyển kho tin nhắn từ Cassandra (177 node) sang ScyllaDB và vì sao chỉ đổi database là chưa đủ: hot partition vẫn còn. Họ thêm một lớp data service viết bằng Rust phía trước để gộp các request đọc trùng nhau vào cùng một partition, giảm số lượt đọc chạm tới database.",
+          "apply": "Khi thiết kế partition key theo (entity_id, bucket thời gian), ước lượng partition nóng nhất chứ không chỉ partition trung bình; request coalescing ở tầng service thường rẻ hơn scale cụm.",
+          "source": {
+            "title": "How Discord Stores Trillions of Messages",
+            "url": "https://discord.com/blog/how-discord-stores-trillions-of-messages"
+          },
+          "published": "2023-03",
+          "kind": "bài đọc"
+        },
+        {
+          "title": "The Tail at Scale (Jeff Dean và Luiz André Barroso, CACM 2013)",
+          "summary": "Bài báo giải thích vì sao trong hệ thống fan-out lớn, độ trễ p99 của từng node trở thành độ trễ thường gặp của cả request, và đưa ra các kỹ thuật chịu được biến động thay vì cố loại bỏ nó: hedged request, tied request, micro-partition, đưa replica chậm ra khỏi vòng phục vụ.",
+          "apply": "Khi một API gọi song song N dịch vụ con, theo dõi p99 của từng dịch vụ con và tính xác suất request gặp ít nhất một phản hồi chậm; con số này thường làm đổi ưu tiên tối ưu.",
+          "source": {
+            "title": "The Tail at Scale",
+            "url": "https://cacm.acm.org/research/the-tail-at-scale/"
+          },
+          "published": "2013-02",
+          "kind": "bài đọc"
+        }
+      ]
+    },
+    {
+      "title": "Open Source & công cụ mới",
+      "items": [
+        {
+          "title": "Agent Substrate 1.0: chạy hàng triệu agent sandbox trên Kubernetes",
+          "summary": "Runtime cho agent có trạng thái: mỗi actor chạy trong sandbox gVisor hoặc microVM, nhận chứng chỉ SPIFFE ngắn hạn, không giữ API key (egress gateway tự chèn credential), mạng mặc định chặn. Actor rảnh được snapshot khỏi bộ nhớ và khôi phục khi có request. Bản 1.0 cam kết ổn định API nhưng có nhiều breaking change và không hỗ trợ nâng cấp từ 0.6, phải cài lại.",
+          "apply": "Nếu đang để agent chạy code trong container thường, đọc mô hình egress gateway của dự án: tách credential khỏi sandbox là ý tưởng áp dụng được kể cả khi không dùng Substrate.",
+          "source": {
+            "title": "agent-substrate/substrate releases",
+            "url": "https://github.com/agent-substrate/substrate/releases"
+          },
+          "published": "2026-11-05",
+          "kind": "tin"
+        },
+        {
+          "title": "tailscale/tailcat: netcat chạy trên data plane của Tailscale, không cần tài khoản",
+          "summary": "Công cụ dòng lệnh tạo đường hầm WireGuard điểm-điểm giữa hai máy qua relay DERP mà không cần control plane, tài khoản hay quyền root. Hỗ trợ pipe dữ liệu, expose và forward port, SSH, copy file và đo băng thông. Đang lên trending tuần này; bản mới nhất là v0.7.0.",
+          "apply": "Thử trên home lab: chạy 'tailcat serve 8080' trên máy chủ, rồi 'tailcat <địa chỉ> 8080' trên laptop để truy cập dịch vụ nội bộ mà không mở port. Coi địa chỉ tailcat như một secret.",
+          "source": {
+            "title": "tailscale/tailcat",
+            "url": "https://github.com/tailscale/tailcat"
+          },
+          "published": "2026-09-19",
+          "kind": "bài đọc"
+        }
+      ]
+    },
+    {
+      "title": "Career & kỹ năng mềm",
+      "items": [
+        {
+          "title": "On Being A Senior Engineer của John Allspaw",
+          "summary": "Allspaw cho rằng 'senior' là độ trưởng thành chứ không phải số năm hay độ giỏi kỹ thuật: chủ động xin phản biện cho thiết kế của mình, hiểu cảm xúc của người khác, biết ước lượng, biết nói không, và giúp người xung quanh làm tốt hơn. Bài viết từ 2012 nhưng vẫn là thước đo dùng được cho đánh giá năng lực.",
+          "apply": "Lấy danh sách đặc điểm trong bài, tự chấm mình và chọn ra một điểm yếu để làm trong quý tới, rồi nhờ tech lead hoặc manager nhận xét lại.",
+          "source": {
+            "title": "On Being A Senior Engineer",
+            "url": "https://kitchensoap.com/2012/10/25/on-being-a-senior-engineer/"
+          },
+          "published": "2012-10-25",
+          "kind": "bài đọc"
+        },
+        {
+          "title": "How to write code review comments (Google Engineering Practices)",
+          "summary": "Hướng dẫn ngắn của Google về cách viết comment review: nhận xét về code chứ không về người, giải thích lý do, cân nhắc giữa chỉ ra vấn đề và đưa sẵn lời giải, và gắn nhãn rõ cho các góp ý không bắt buộc (Nit, Optional, FYI).",
+          "apply": "Thống nhất trong team các tiền tố Nit/Optional/FYI để tác giả PR biết comment nào chặn merge, comment nào không; giảm hẳn vòng qua lại không cần thiết.",
+          "source": {
+            "title": "How to write code review comments",
+            "url": "https://google.github.io/eng-practices/review/reviewer/comments.html"
+          },
+          "published": "2019-09",
+          "kind": "bài đọc"
+        }
+      ]
+    }
+  ],
+  "knowledge": {
+    "title": "Dead letter queue: cách ly poison message để consumer không kẹt mãi",
+    "body": "Poison message là message mà consumer xử lý lần nào cũng lỗi, ví dụ payload sai schema hoặc tham chiếu bản ghi đã bị xoá. Nếu chỉ retry vô hạn, nó chặn cả partition (Kafka) hoặc quay vòng mãi trong queue, đốt CPU và làm trễ mọi message phía sau.\n\nDead letter queue (DLQ) là nơi chuyển message sang sau một số lần thử nhất định, kèm metadata: lỗi cuối cùng, số lần thử, thời điểm, topic hoặc queue gốc. Consumer chính tiếp tục chạy; DLQ được giám sát riêng (alert khi có message mới) và có công cụ replay sau khi đã sửa lỗi.\n\nCần phân biệt lỗi tạm thời (timeout, 503) với lỗi vĩnh viễn (validation): lỗi tạm thời nên retry có backoff, lỗi vĩnh viễn nên đẩy thẳng vào DLQ. Consumer phải idempotent, vì replay từ DLQ sẽ xử lý lại message.",
+    "example": "# SQS: redrive sang DLQ sau 5 lần nhận thất bại\naws sqs set-queue-attributes --queue-url $ORDERS_Q --attributes '{\"RedrivePolicy\":\"{\\\"deadLetterTargetArn\\\":\\\"arn:aws:sqs:ap-southeast-1:123456789012:orders-dlq\\\",\\\"maxReceiveCount\\\":\\\"5\\\"}\"}'\n\n# Kafka (pseudo): tự chuyển sang topic DLQ\ntry:\n    handle(msg)\nexcept PermanentError as e:\n    producer.send('orders.dlq', msg.value, headers={'error': str(e), 'src': 'orders'})\nconsumer.commit(msg)"
+  },
+  "sources": [
+    {
+      "title": "graphql/graphql-spec releases",
+      "url": "https://github.com/graphql/graphql-spec/releases"
+    },
+    {
+      "title": "valkey-io/valkey releases",
+      "url": "https://github.com/valkey-io/valkey/releases"
+    },
+    {
+      "title": "spring-projects/spring-framework releases",
+      "url": "https://github.com/spring-projects/spring-framework/releases"
+    },
+    {
+      "title": "Argo CD v3.6.0 release",
+      "url": "https://github.com/argoproj/argo-cd/releases/tag/v3.6.0"
+    },
+    {
+      "title": "Grafana v13.3.1 release",
+      "url": "https://github.com/grafana/grafana/releases/tag/v13.3.1"
+    },
+    {
+      "title": "kubernetes/kubernetes releases",
+      "url": "https://github.com/kubernetes/kubernetes/releases"
+    },
+    {
+      "title": "Claude Platform release notes",
+      "url": "https://platform.claude.com/docs/en/release-notes/api"
+    },
+    {
+      "title": "How Discord Stores Trillions of Messages",
+      "url": "https://discord.com/blog/how-discord-stores-trillions-of-messages"
+    },
+    {
+      "title": "The Tail at Scale",
+      "url": "https://cacm.acm.org/research/the-tail-at-scale/"
+    },
+    {
+      "title": "agent-substrate/substrate releases",
+      "url": "https://github.com/agent-substrate/substrate/releases"
+    },
+    {
+      "title": "tailscale/tailcat",
+      "url": "https://github.com/tailscale/tailcat"
+    },
+    {
+      "title": "GitHub Trending (Go, Rust, weekly)",
+      "url": "https://github.com/trending?since=weekly"
+    },
+    {
+      "title": "On Being A Senior Engineer",
+      "url": "https://kitchensoap.com/2012/10/25/on-being-a-senior-engineer/"
+    },
+    {
+      "title": "How to write code review comments",
+      "url": "https://google.github.io/eng-practices/review/reviewer/comments.html"
+    }
+  ],
+  "generated_at": "2026-11-18T01:24:44Z"
+}
