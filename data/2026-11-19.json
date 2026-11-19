@@ -1,0 +1,191 @@
+{
+  "date": "2026-11-19",
+  "summary": "Hono vá 4 lỗ hổng làm validator và bodyLimit bị vượt qua; GitHub tách ref khỏi object để chịu hàng nghìn push mỗi giây; Google ra A2UI 1.0; KubeVirt tốt nghiệp CNCF.",
+  "sections": [
+    {
+      "title": "Backend",
+      "items": [
+        {
+          "title": "Hono 4.13.18: bốn bản vá bảo mật cho validator, bodyLimit, mount và serveStatic",
+          "summary": "validator() cho json/form bỏ qua kiểm tra khi Content-Type có khoảng trắng lạ hoặc dấu ; ở cuối, trong khi handler vẫn đọc được dữ liệu; bodyLimit() có thể bị làm cạn bộ nhớ bằng request gửi thành rất nhiều chunk nhỏ. Hai lỗi còn lại cho phép đi vòng middleware qua mount() với getPath tuỳ biến và qua serveStatic() khi bật allowPercentInPath.",
+          "apply": "Nếu dùng Hono trên Node, Bun hay Cloudflare Workers, nâng lên 4.13.18 trở lên (bản 4.13.19 ngày 16/11 thêm sửa lỗi JSX) và rà lại route nào dựa vào validator() làm lớp kiểm tra duy nhất.",
+          "source": {
+            "title": "Hono releases v4.13.18",
+            "url": "https://github.com/honojs/hono/releases"
+          },
+          "published": "2026-11-11",
+          "kind": "tin"
+        },
+        {
+          "title": "Fiber v3.7.0: static middleware mặc định từ chối symlink ra ngoài thư mục gốc",
+          "summary": "Bản này nâng fasthttp lên 1.78.0 với nhiều chỗ siết chặt việc phân tích request, multipart và redirect, thêm binding cho trường map[string]T, và tuỳ chọn RedirectSensitiveHeaders để bỏ header như X-Api-Key khi redirect sang host khác. Thay đổi hành vi đáng chú ý: symlink trỏ ra ngoài root bị coi như file không tồn tại, trừ khi bật AllowSymlinksOutsideRoot.",
+          "apply": "Trước khi nâng cấp, kiểm tra thư mục static có dùng symlink (thường gặp khi deploy kiểu releases/current) không; nhánh v2 nay đã bị đánh dấu deprecated, nên lên kế hoạch chuyển sang v3.",
+          "source": {
+            "title": "gofiber/fiber releases v3.7.0",
+            "url": "https://github.com/gofiber/fiber/releases"
+          },
+          "published": "2026-11-09",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "DevOps / Cloud",
+      "items": [
+        {
+          "title": "KubeVirt tốt nghiệp CNCF tại KubeCon NA 2026",
+          "summary": "Dự án chạy máy ảo cạnh container trên Kubernetes đạt mức Graduated sau khi hoàn thành audit bảo mật độc lập và lập ban điều hành chính thức; nó vào Sandbox từ 2019 và Incubating từ 2022. Đây là tín hiệu rằng việc gom VM và container về một control plane đã đủ chín cho môi trường production, đúng lúc nhiều đội đang tìm đường rời khỏi VMware.",
+          "apply": "Nếu home lab hoặc công ty còn vài VM legacy không container hoá được, thử KubeVirt trên một cluster nhỏ để quản lý chúng bằng cùng GitOps, RBAC và monitoring với workload còn lại.",
+          "source": {
+            "title": "Cloud Native Computing Foundation Announces KubeVirt Graduation",
+            "url": "https://www.cncf.io/announcements/2026/11/10/cloud-native-computing-foundation-announces-kubevirt-graduation/"
+          },
+          "published": "2026-11-10",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "AI Engineering thực chiến",
+      "items": [
+        {
+          "title": "Google ra A2UI 1.0: agent trả về giao diện dưới dạng dữ liệu, không phải code",
+          "summary": "A2UI là giao thức để agent mô tả form, bảng, biểu đồ bằng JSON tham chiếu tới danh mục component mà ứng dụng cho phép, rồi ứng dụng tự render bằng widget gốc (React, Angular, Lit, Flutter, SwiftUI...). Bản 1.0 thêm gọi hàm hai chiều để component hỏi lại backend ngay trên giao diện, và binding dữ liệu phía server để giá trị nhạy cảm không đi qua model.",
+          "apply": "Nếu đang cho agent sinh HTML hoặc markdown để hiển thị, cân nhắc chuyển sang mô hình danh mục component đã kiểm duyệt; lưu ý số phiên bản package vẫn là 0.x dù spec đã 1.0.",
+          "source": {
+            "title": "A2UI 1.0: Build delightful, fast, reliable, agentic experiences",
+            "url": "https://developers.googleblog.com/a2ui-10-build-delightful-fast-reliable-agentic-experiences/"
+          },
+          "published": "2026-11-11",
+          "kind": "tin"
+        },
+        {
+          "title": "LiteLLM 1.108.11 LTS và 1.110.0: siết quyền team admin, sửa OOM khi client retry 429",
+          "summary": "Bản LTS 1.108.11 chỉ cho proxy admin đặt giá trị os.environ/ khi ghi model của team (team admin nhận 403), sửa lỗi pod proxy hết bộ nhớ khi client retry 429 với body lớn, và sửa lỗi stream Bedrock bị huỷ vẫn tiếp tục sinh token tính tiền. Bản 1.110.0 có vài thay đổi breaking như Bedrock dùng max_tokens mặc định của từng model.",
+          "apply": "Nếu tự host LiteLLM làm gateway, ưu tiên nhánh LTS, và kiểm tra xem có script nào của team admin đang dựa vào os.environ/ trước khi nâng cấp.",
+          "source": {
+            "title": "BerriAI/litellm releases",
+            "url": "https://github.com/BerriAI/litellm/releases"
+          },
+          "published": "2026-11-17",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "System Design & Architecture",
+      "items": [
+        {
+          "title": "GitHub viết lại tầng lưu trữ Git: tách ref có thể thay đổi khỏi object bất biến",
+          "summary": "Kiến trúc mới đặt Git object vào Azure Blob Storage (object định danh theo nội dung nên lưu không cần điều phối), còn việc cập nhật ref đi qua một dịch vụ log nhân bản riêng làm compare-and-swap; pack luôn được upload xong trước khi ref trỏ tới. Thiết kế cũ dùng three-phase commit với quorum replica nên mỗi push bị giới hạn bởi replica chậm nhất; GitHub báo thử nội bộ được 5.000 agent đồng thời và khoảng 7.200 push mỗi giây trên một repo, compaction chạy trên node nền riêng.",
+          "apply": "Bài học dùng được ở chỗ khác: tách dữ liệu bất biến (lưu rẻ, không khoá) khỏi con trỏ có thể thay đổi (chỉ phần nhỏ này cần đồng thuận), và luôn ghi dữ liệu bền trước khi công bố con trỏ.",
+          "source": {
+            "title": "Inside GitHub's new Git storage architecture",
+            "url": "https://github.blog/engineering/architecture-optimization/inside-githubs-new-git-storage-architecture/"
+          },
+          "published": "2026-11-05",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "Open Source & công cụ mới",
+      "items": [
+        {
+          "title": "chrome-devtools-mcp v1.13.0: logpoint và mock network cho coding agent",
+          "summary": "MCP server của đội Chrome DevTools cho agent đặt logpoint (dựa trên BreakpointManager của DevTools) mà không cần sửa code, và mock response mạng theo từng trang; bản trước đó đã cho chạy song song các tool call độc lập và phân tích heap snapshot không cần kết nối trình duyệt. Repo đang nằm trong nhóm trending tuần này.",
+          "apply": "Khi để agent debug lỗi frontend gọi API backend, cho nó dùng network mock để tái hiện các response lỗi (500, timeout, payload lạ) thay vì phải dựng backend giả.",
+          "source": {
+            "title": "ChromeDevTools/chrome-devtools-mcp releases",
+            "url": "https://github.com/ChromeDevTools/chrome-devtools-mcp/releases"
+          },
+          "published": "2026-11-11",
+          "kind": "tin"
+        },
+        {
+          "title": "AG-UI: giao thức sự kiện chuẩn giữa agent backend và frontend",
+          "summary": "AG-UI (MIT, khoảng 20 nghìn sao) định nghĩa một luồng sự kiện có kiểu cho vòng đời run, text, tool call, state, reasoning và sub-agent, truyền qua SSE hoặc HTTP + Protobuf; spec 1.0 đã đóng băng kèm JSON Schema. Nhiều framework như LangChain, Pydantic AI, Google ADK, Microsoft Agent Framework và Claude Agent SDK đã có tích hợp.",
+          "apply": "Nếu backend của bạn đang tự chế định dạng stream cho chat agent, đọc spec AG-UI để xem có nên thay bằng chuẩn chung, đỡ phải viết lại client khi đổi framework agent.",
+          "source": {
+            "title": "ag-ui-protocol/ag-ui",
+            "url": "https://github.com/ag-ui-protocol/ag-ui"
+          },
+          "published": "2026-09",
+          "kind": "bài đọc"
+        }
+      ]
+    },
+    {
+      "title": "Career & kỹ năng mềm",
+      "items": [
+        {
+          "title": "Maker's Schedule, Manager's Schedule của Paul Graham",
+          "summary": "Bài ngắn giải thích vì sao một cuộc họp 30 phút giữa buổi chiều có thể phá hỏng cả nửa ngày của người làm việc cần tập trung, trong khi với người quản lý nó chỉ là một ô trống trên lịch. Với tech lead, người phải sống ở cả hai kiểu lịch, đây là khung để sắp xếp thời gian của mình và bảo vệ thời gian của đội.",
+          "apply": "Gom họp của đội vào một khung cố định (ví dụ đầu buổi sáng hoặc sau 16h) và giữ ít nhất hai buổi nửa ngày mỗi tuần không có lịch họp.",
+          "source": {
+            "title": "Maker's Schedule, Manager's Schedule",
+            "url": "https://paulgraham.com/makersschedule.html"
+          },
+          "published": "2009-07",
+          "kind": "bài đọc"
+        }
+      ]
+    }
+  ],
+  "knowledge": {
+    "title": "Định cỡ connection pool: nhỏ hơn bạn nghĩ",
+    "body": "Mỗi connection PostgreSQL là một process riêng, tốn bộ nhớ và gây tranh chấp lock, CPU, I/O khi quá nhiều query chạy cùng lúc. Vì vậy tăng pool từ 50 lên 200 thường làm throughput giảm và latency tăng, chứ không nhanh hơn: query chỉ chuyển từ xếp hàng ở ứng dụng sang xếp hàng bên trong database, nơi việc chen lấn tốn kém hơn.\n\nĐiểm khởi đầu hay dùng (từ tài liệu của HikariCP) là pool khoảng số_core × 2 + số_ổ_đĩa cho mỗi database, rồi đo và chỉnh. Điều quan trọng là tổng số connection của mọi instance: 20 pod × pool 20 = 400 connection, có thể vượt max_connections và làm DB chậm hẳn khi autoscale. Khi số pod lớn, đặt PgBouncer ở chế độ transaction pooling ở giữa để gom nhiều connection phía ứng dụng vào một số ít connection thật.\n\nĐặt thêm timeout lấy connection ngắn (vài trăm ms đến 1–2 giây) để khi pool cạn thì request lỗi nhanh thay vì treo dây chuyền, và theo dõi chỉ số thời gian chờ lấy connection chứ không chỉ số connection đang dùng.",
+    "example": "# DB 8 core, SSD: tổng khoảng 20 connection thật cho cả hệ thống\n# pgbouncer.ini\n[pgbouncer]\npool_mode = transaction\nmax_client_conn = 2000      ; connection từ các pod\ndefault_pool_size = 20      ; connection thật tới Postgres\n\n# HikariCP mỗi pod (nối vào PgBouncer)\nspring.datasource.hikari.maximum-pool-size=10\nspring.datasource.hikari.connection-timeout=1500"
+  },
+  "sources": [
+    {
+      "title": "Hono releases v4.13.18",
+      "url": "https://github.com/honojs/hono/releases"
+    },
+    {
+      "title": "gofiber/fiber releases v3.7.0",
+      "url": "https://github.com/gofiber/fiber/releases"
+    },
+    {
+      "title": "Cloud Native Computing Foundation Announces KubeVirt Graduation",
+      "url": "https://www.cncf.io/announcements/2026/11/10/cloud-native-computing-foundation-announces-kubevirt-graduation/"
+    },
+    {
+      "title": "A2UI 1.0: Build delightful, fast, reliable, agentic experiences",
+      "url": "https://developers.googleblog.com/a2ui-10-build-delightful-fast-reliable-agentic-experiences/"
+    },
+    {
+      "title": "google/A2UI",
+      "url": "https://github.com/google/A2UI"
+    },
+    {
+      "title": "BerriAI/litellm releases",
+      "url": "https://github.com/BerriAI/litellm/releases"
+    },
+    {
+      "title": "Inside GitHub's new Git storage architecture",
+      "url": "https://github.blog/engineering/architecture-optimization/inside-githubs-new-git-storage-architecture/"
+    },
+    {
+      "title": "So long, Spokes: GitHub rewrites storage (The Register)",
+      "url": "https://www.theregister.com/devops/2026/10/09/so-long-spokes-github-rewrites-storage-to-restore-reliability-just-in-time-for-agentic-hordes/5302148"
+    },
+    {
+      "title": "ChromeDevTools/chrome-devtools-mcp releases",
+      "url": "https://github.com/ChromeDevTools/chrome-devtools-mcp/releases"
+    },
+    {
+      "title": "ag-ui-protocol/ag-ui",
+      "url": "https://github.com/ag-ui-protocol/ag-ui"
+    },
+    {
+      "title": "Maker's Schedule, Manager's Schedule",
+      "url": "https://paulgraham.com/makersschedule.html"
+    },
+    {
+      "title": "HikariCP: About Pool Sizing",
+      "url": "https://github.com/brettwooldridge/HikariCP/wiki/About-Pool-Sizing"
+    }
+  ],
+  "generated_at": "2026-11-19T01:24:23Z"
+}
