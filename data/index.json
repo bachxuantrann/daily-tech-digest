@@ -1,5 +1,6 @@
 {
   "dates": [
+    "2026-11-20",
     "2026-11-19",
     "2026-11-18",
     "2026-11-17",
@@ -36,6 +37,7 @@
     "2026-10-17"
   ],
   "summaries": {
+    "2026-11-20": "Spring Boot 4.2.0 GA đi cùng Spring Framework 7.1, OpenAI Agents SDK 0.25 bỏ sandbox Runloop, Alloy 1.22 có breaking change ở enrich, Pulumi mở rộng Automation API.",
     "2026-11-19": "Hono vá 4 lỗ hổng làm validator và bodyLimit bị vượt qua; GitHub tách ref khỏi object để chịu hàng nghìn push mỗi giây; Google ra A2UI 1.0; KubeVirt tốt nghiệp CNCF.",
     "2026-11-18": "Spec GraphQL bản 2026 cho phép selection set rỗng, Valkey 9.2 RC2 có DELEX và đồng bộ replica không fork, Argo CD 3.6 đổi mặc định sang server-side diff, Agent Substrate lên 1.0, Claude API thêm IP allowlist.",
     "2026-11-17": "Quarkus 4.0 lên CR1 với Graceful Shutdown API, Vault 2.2.2 vá lỗi ACL deny phân biệt hoa thường, Anthropic cho tự host Managed Agents, và Alibaba mở mã công cụ review code bằng agent.",

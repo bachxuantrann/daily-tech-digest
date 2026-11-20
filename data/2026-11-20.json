@@ -1,0 +1,198 @@
+{
+  "date": "2026-11-20",
+  "summary": "Spring Boot 4.2.0 GA đi cùng Spring Framework 7.1, OpenAI Agents SDK 0.25 bỏ sandbox Runloop, Alloy 1.22 có breaking change ở enrich, Pulumi mở rộng Automation API.",
+  "sections": [
+    {
+      "title": "Backend",
+      "items": [
+        {
+          "title": "Spring Boot 4.2.0 GA, kèm 4.1.3 và 4.0.10",
+          "summary": "Bản minor mới kéo theo Spring Framework 7.1.0, Spring Security 7.2.0, Spring Batch 6.1.0 và Hibernate 7.4.15; hỗ trợ Apache Pulsar bị đánh dấu deprecated và xử lý forwarded header được làm lại. Hai nhánh 4.1 và 4.0 cùng ra bản vá, trong đó có sửa URL JDBC khi tên database PostgreSQL chứa ký tự đặc biệt trong Docker Compose và lỗi graceful shutdown sau khi Tomcat/Jetty restart.",
+          "apply": "Nếu đang dùng Pulsar qua starter của Boot, bắt đầu lên kế hoạch tự quản lý cấu hình; với dịch vụ chạy sau proxy/ingress, test lại các header X-Forwarded-* trước khi nâng lên 4.2.",
+          "source": {
+            "title": "spring-projects/spring-boot releases",
+            "url": "https://github.com/spring-projects/spring-boot/releases"
+          },
+          "published": "2026-11-19",
+          "kind": "tin"
+        },
+        {
+          "title": "NATS Server 2.15.3 và 2.14.10: kiểm tra trước khi reload cấu hình",
+          "summary": "Bản 2.15.3 thêm cờ -t/--test_reload cho biết thay đổi cấu hình có cần restart hay không, hỗ trợ verify: optional cho TLS client certificate và cho chỉnh ping_interval của leafnode/gateway. Cả hai nhánh đều tăng tốc quét subject trong JetStream filestore, hàng đợi redelivery của consumer, và sửa nhiều lỗi clustering như scale stream từ R1 hay health check của Raft.",
+          "apply": "Gắn lệnh nats-server -t --test_reload vào pipeline đổi cấu hình để biết trước thay đổi nào bắt buộc rolling restart.",
+          "source": {
+            "title": "nats-io/nats-server releases",
+            "url": "https://github.com/nats-io/nats-server/releases"
+          },
+          "published": "2026-11-11",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "DevOps / Cloud",
+      "items": [
+        {
+          "title": "Grafana Alloy 1.22.0: breaking change ở loki.enrich và otelcol.connector",
+          "summary": "loki.enrich và prometheus.enrich bỏ các tham số *_match_label, thay bằng target_to_log_match và target_to_metric_match (bắt buộc), đồng thời lên public preview. Connector OTel giờ xuất được nhiều loại tín hiệu nên một số cấu hình từng được chấp nhận ngầm sẽ báo lỗi; ngoài ra có component otelcol.connector.exceptions, collector mới cho SQL Server, timeout cho Kafka receiver/exporter và Helm chart có biến thể distroless.",
+          "apply": "Chạy alloy fmt/validate cấu hình hiện tại với binary 1.22 ở môi trường staging trước khi nâng, nhất là nếu có dùng enrich hoặc connector.",
+          "source": {
+            "title": "grafana/alloy releases",
+            "url": "https://github.com/grafana/alloy/releases"
+          },
+          "published": "2026-11-13",
+          "kind": "tin"
+        },
+        {
+          "title": "Pulumi 3.276 và 3.277: Automation API phủ gần hết CLI",
+          "summary": "Hai bản liên tiếp thêm destroy, template, insights rồi preview vào Automation API cho Node.js, Python và Go, cùng lệnh preview pulumi delivery register và cờ --parent cho pulumi state move. Bản 3.277 cũng sửa lỗi plan violation khi chốt stack output bị nuốt mất thay vì được báo ra. Lưu ý bản 3.275 có checksum upload bị hỏng do race trong job release.",
+          "apply": "Nếu đang gọi CLI pulumi từ script để làm platform nội bộ, cân nhắc chuyển sang Automation API để có kết quả có kiểu và xử lý lỗi rõ ràng hơn; tránh pin bản 3.275.",
+          "source": {
+            "title": "pulumi/pulumi releases",
+            "url": "https://github.com/pulumi/pulumi/releases"
+          },
+          "published": "2026-11-18",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "AI Engineering thực chiến",
+      "items": [
+        {
+          "title": "OpenAI Agents SDK (Python) 0.25.0: bỏ sandbox Runloop, MCP Streamable HTTP chạy song song",
+          "summary": "Bản ổn định mới gỡ provider sandbox Runloop (beta), đổi cách checkpoint run context với Pydantic (RunState schema 1.22), thêm failure_error_function để tự phục hồi khi handoff lỗi và cho phép request đồng thời qua MCP Streamable HTTP. Các bản alpha trước đó đã đưa vào RunBudget giới hạn token/request, CustomStorage cho lịch sử hội thoại và duyệt tool call trước khi chạy.",
+          "apply": "Nếu lưu checkpoint agent ra DB, kiểm tra tương thích schema RunState trước khi nâng; dùng RunBudget làm chốt chặn chi phí cho các run dài.",
+          "source": {
+            "title": "openai/openai-agents-python releases",
+            "url": "https://github.com/openai/openai-agents-python/releases"
+          },
+          "published": "2026-11-18",
+          "kind": "tin"
+        },
+        {
+          "title": "LlamaIndex 0.14.26: nâng requires-python để lấy bản vá bảo mật",
+          "summary": "Bản này sửa lỗi import cầu nối LangChain do langchain-community deprecate, relock toàn bộ uv.lock của integration và nâng requires-python trên các gói integration để kéo được các dependency đã vá. Đây là thay đổi có thể làm vỡ môi trường còn chạy Python cũ.",
+          "apply": "Kiểm tra phiên bản Python của các worker RAG trước khi nâng; nếu bị kẹt Python cũ thì pin 0.14.25 và theo dõi CVE của dependency.",
+          "source": {
+            "title": "run-llama/llama_index releases",
+            "url": "https://github.com/run-llama/llama_index/releases"
+          },
+          "published": "2026-11-13",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "System Design & Architecture",
+      "items": [
+        {
+          "title": "Colm MacCárthaigh về constant work (đăng lại trên All Things Distributed)",
+          "summary": "Bài giải thích vì sao các hệ thống như health check của Route 53 hay cấu hình của Hyperplane luôn làm cùng một lượng việc bất kể có thay đổi hay không: đẩy toàn bộ trạng thái mỗi chu kỳ thay vì chỉ đẩy delta. Đổi lại tốn tài nguyên hơn, hệ thống không có chế độ quá tải khi xảy ra sự cố hàng loạt, vì lúc bình thường nó đã chạy ở tải cao nhất.",
+          "apply": "Với control plane phát cấu hình xuống nhiều node, cân nhắc mô hình đẩy snapshot đầy đủ định kỳ thay vì hàng đợi sự kiện thay đổi, để tránh backlog đúng lúc hệ thống đang gặp sự cố.",
+          "source": {
+            "title": "Standing on the shoulders of giants: Colm on constant work",
+            "url": "https://www.allthingsdistributed.com/2023/11/standing-on-the-shoulders-of-giants-colm-on-constant-work.html"
+          },
+          "published": "2023-11",
+          "kind": "bài đọc"
+        }
+      ]
+    },
+    {
+      "title": "Open Source & công cụ mới",
+      "items": [
+        {
+          "title": "we-promise/sure: app quản lý tài chính cá nhân tự host, fork cộng đồng của Maybe Finance",
+          "summary": "Dự án đang lên trending tuần này, AGPLv3, chạy bằng Docker (có sẵn compose.example.yml và biến thể có AI). Bản alpha ngày 17/11 thêm import thuế và phí từ IBKR, tách gốc và lãi khoản vay, audit log cho thao tác nhạy cảm và lọc báo cáo theo tag.",
+          "apply": "Ứng viên tốt cho home lab: dựng bằng compose sau reverse proxy, đồng thời là codebase Rails thật để đọc cách họ mã hoá dữ liệu nhạy cảm và đồng bộ nhiều nguồn ngân hàng.",
+          "source": {
+            "title": "we-promise/sure",
+            "url": "https://github.com/we-promise/sure"
+          },
+          "published": "2026-11-17",
+          "kind": "tin"
+        },
+        {
+          "title": "dream-num/univer: SDK bảng tính và tài liệu nhúng vào sản phẩm, có lối vào cho agent",
+          "summary": "Phần lõi Sheets và Docs mở nguồn Apache-2.0, nhúng vào app web qua @univerjs/presets; có CLI cục bộ và bộ skill cho coding agent để tạo/sửa nội dung Office. Server SDK và một số plugin là thương mại, bản đánh giá có watermark.",
+          "apply": "Nếu sản phẩm nội bộ đang cần lưới nhập liệu kiểu Excel có công thức, thử bản core trước khi tự viết; xác định rõ ranh giới phần mở nguồn và phần trả phí trước khi cam kết.",
+          "source": {
+            "title": "dream-num/univer",
+            "url": "https://github.com/dream-num/univer"
+          },
+          "kind": "tin",
+          "published": "2026-11"
+        }
+      ]
+    },
+    {
+      "title": "Career & kỹ năng mềm",
+      "items": [
+        {
+          "title": "Get your work recognized: write a brag document (Julia Evans)",
+          "summary": "Đề xuất giữ một tài liệu liệt kê việc mình đã làm trong năm, kể cả việc vô hình như mentor, cải thiện quy trình, dọn tech debt, kèm tác động cụ thể. Đến kỳ đánh giá, cả bạn và manager đều có dữ liệu thay vì dựa vào trí nhớ về vài tuần gần nhất.",
+          "apply": "Mở một tệp ghi chú ngay hôm nay, mỗi tháng dành 15 phút cập nhật, và gửi manager trước kỳ review cuối năm sắp tới.",
+          "source": {
+            "title": "Get your work recognized: write a brag document",
+            "url": "https://jvns.ca/blog/brag-documents/"
+          },
+          "published": "2019-06",
+          "kind": "bài đọc"
+        }
+      ]
+    }
+  ],
+  "knowledge": {
+    "title": "Rate limiting bằng token bucket",
+    "body": "Token bucket cho mỗi client một xô có sức chứa B token, được nạp lại với tốc độ r token mỗi giây. Mỗi request lấy 1 token; hết token thì trả 429. Nhờ vậy client được phép burst tối đa B request, nhưng tốc độ trung bình dài hạn không vượt quá r, khác với fixed window vốn cho phép gấp đôi giới hạn ở ranh giới hai cửa sổ.\n\nKhông cần tiến trình nạp token chạy nền: chỉ lưu (số token, thời điểm cập nhật cuối) và tính lại lúc request đến: tokens = min(B, tokens + (now - last) * r). Khi nhiều instance dùng chung, đặt trạng thái trong Redis và thực hiện đọc-tính-ghi bằng một Lua script để tránh race.\n\nNên trả kèm header Retry-After để client biết chờ bao lâu, và chọn khoá giới hạn hợp lý (API key, user, tenant) thay vì IP khi đứng sau NAT hoặc proxy.",
+    "example": "-- KEYS[1]=bucket key, ARGV: rate, capacity, now_ms\nlocal r, cap, now = tonumber(ARGV[1]), tonumber(ARGV[2]), tonumber(ARGV[3])\nlocal s = redis.call('HMGET', KEYS[1], 'tokens', 'ts')\nlocal tokens = tonumber(s[1]) or cap\nlocal ts = tonumber(s[2]) or now\ntokens = math.min(cap, tokens + (now - ts) / 1000 * r)\nlocal ok = tokens >= 1\nif ok then tokens = tokens - 1 end\nredis.call('HSET', KEYS[1], 'tokens', tokens, 'ts', now)\nredis.call('PEXPIRE', KEYS[1], math.ceil(cap / r * 1000))\nreturn ok and 1 or 0"
+  },
+  "sources": [
+    {
+      "title": "spring-projects/spring-boot releases",
+      "url": "https://github.com/spring-projects/spring-boot/releases"
+    },
+    {
+      "title": "nats-io/nats-server releases",
+      "url": "https://github.com/nats-io/nats-server/releases"
+    },
+    {
+      "title": "grafana/alloy releases",
+      "url": "https://github.com/grafana/alloy/releases"
+    },
+    {
+      "title": "pulumi/pulumi releases",
+      "url": "https://github.com/pulumi/pulumi/releases"
+    },
+    {
+      "title": "openai/openai-agents-python releases",
+      "url": "https://github.com/openai/openai-agents-python/releases"
+    },
+    {
+      "title": "run-llama/llama_index releases",
+      "url": "https://github.com/run-llama/llama_index/releases"
+    },
+    {
+      "title": "GitHub Trending (weekly)",
+      "url": "https://github.com/trending?since=weekly"
+    },
+    {
+      "title": "we-promise/sure releases",
+      "url": "https://github.com/we-promise/sure/releases"
+    },
+    {
+      "title": "dream-num/univer",
+      "url": "https://github.com/dream-num/univer"
+    },
+    {
+      "title": "Get your work recognized: write a brag document",
+      "url": "https://jvns.ca/blog/brag-documents/"
+    },
+    {
+      "title": "Standing on the shoulders of giants: Colm on constant work",
+      "url": "https://www.allthingsdistributed.com/2023/11/standing-on-the-shoulders-of-giants-colm-on-constant-work.html"
+    }
+  ],
+  "generated_at": "2026-11-20T01:25:09Z"
+}
