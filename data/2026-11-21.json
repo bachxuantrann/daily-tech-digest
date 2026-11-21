@@ -1,0 +1,213 @@
+{
+  "date": "2026-11-21",
+  "summary": "Cloudflare chọn QuePaxa không cần leader cho dịch vụ đồng thuận toàn cầu; harness có thể làm chi phí coding agent chênh 5 lần; DuckDB 2.0.1, Flux 2.10.1 và Kyverno 1.20 ra bản mới.",
+  "sections": [
+    {
+      "title": "Backend",
+      "items": [
+        {
+          "title": "DuckDB 2.0.1: bản vá đầu tiên cho nhánh 2.0",
+          "summary": "Một tháng sau bản lớn 2.0.0, bản 2.0.1 sửa Parquet writer để giữ thống kê min/max khi row group chỉ có NULL, thêm cast từ TIMESTAMPTZ_NS sang TIMESTAMP và cập nhật httpfs để xử lý S3 throttling cùng credential theo từng tệp. Chế độ safe mode của secret giờ ẩn refresh_info.",
+          "apply": "Nếu đang dùng DuckDB để đọc Parquet trên S3 trong pipeline, nâng lên 2.0.1 thay vì dừng ở 2.0.0, nhất là khi bị lỗi 503 SlowDown từ S3.",
+          "source": {
+            "title": "DuckDB releases trên GitHub",
+            "url": "https://github.com/duckdb/duckdb/releases"
+          },
+          "published": "2026-11-20",
+          "kind": "tin"
+        },
+        {
+          "title": "Node.js 27.0.0 alpha: dns.lookup gộp request trùng, child_process có subprocess.timedOut",
+          "summary": "Bản alpha đầu của Node 27 cho dns.lookup() gộp các truy vấn giống nhau chạy đồng thời thành một, giảm tải lên resolver khi service mở nhiều kết nối tới cùng host. Ngoài ra có subprocess.timedOut để biết tiến trình con bị kill vì timeout, và hỗ trợ sinh chứng chỉ X.509 kèm CSR.",
+          "apply": "Chạy test suite của service trên 27 alpha trong một job CI không chặn merge để phát hiện sớm lỗi tương thích trước khi bản chính thức ra.",
+          "source": {
+            "title": "Node.js releases trên GitHub",
+            "url": "https://github.com/nodejs/node/releases"
+          },
+          "published": "2026-11-12",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "DevOps / Cloud",
+      "items": [
+        {
+          "title": "Flux 2.10.1: sửa cache credential và xác thực registry qua ORAS",
+          "summary": "Thay đổi annotation workload identity trên ServiceAccount giờ có hiệu lực ngay lần reconcile kế tiếp thay vì bị cache cũ giữ lại. ORAS lên v2.7.0, khôi phục xác thực với token service ở địa chỉ private và sau redirect HTTP sang HTTPS cùng host. Lưu ý bản 2.10.0 trước đó có breaking change: RBAC mặc định không còn cấp create trên serviceaccounts/token.",
+          "apply": "Nếu bỏ qua 2.10.0, đọc mục breaking change về RBAC và bind ClusterRole cần thiết trước khi nhảy thẳng lên 2.10.1.",
+          "source": {
+            "title": "Flux releases trên GitHub",
+            "url": "https://github.com/fluxcd/flux2/releases"
+          },
+          "published": "2026-11-20",
+          "kind": "tin"
+        },
+        {
+          "title": "Kyverno 1.20.0: bỏ kyverno-json, vá rò rỉ goroutine và loạt CVE",
+          "summary": "Kyverno gỡ hẳn kyverno-json khỏi test API và lệnh json scan, thêm lifecycle hook cấu hình được trong Helm chart cho mọi controller. Bản này cũng sửa nhiều chỗ rò rỉ goroutine, ticker, context trong controller và vá các CVE ở oras-go, x/net và miekg/dns.",
+          "apply": "Rà các pipeline CI đang gọi kyverno json scan và chuyển sang cách khác trước khi nâng cấp, nếu không job sẽ hỏng.",
+          "source": {
+            "title": "Kyverno releases trên GitHub",
+            "url": "https://github.com/kyverno/kyverno/releases"
+          },
+          "published": "2026-11-12",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "AI Engineering thực chiến",
+      "items": [
+        {
+          "title": "Cùng một model, chi phí coding agent chênh tới 5 lần tùy harness",
+          "summary": "Benchmark FrontierHarness của Runta chạy 22 cấu hình harness với 5 model open-weight trên 62 task terminal. Không có harness nào rẻ nhất cho mọi model, chi phí cao không đi kèm tỉ lệ pass cao hơn, và phần lớn tiền rơi vào các lần chạy thất bại hoặc timeout.",
+          "apply": "Khi đánh giá agent nội bộ, đo chi phí trên mỗi task pass (gồm cả lần fail) theo từng cặp model và harness, đừng chỉ so giá token.",
+          "source": {
+            "title": "Your AI coding agent could cost 5x more depending on the harness (The New Stack)",
+            "url": "https://thenewstack.io/coding-agent-harness-costs"
+          },
+          "published": "2026-11-17",
+          "kind": "tin"
+        },
+        {
+          "title": "Ollama 0.40.17 RC: phục vụ đồng thời trên Apple silicon, Inkling 2 Mini",
+          "summary": "Bản RC cho Apple silicon xử lý nhiều request cùng lúc thay vì xếp hàng, quan trọng khi dùng Ollama làm backend cho agent gọi song song. Bản này thêm Inkling 2 Mini (26B tổng, 5.4B active, chạy trong khoảng 20GB RAM) và sửa lỗi tắt thinking bị bỏ qua.",
+          "apply": "Nếu home lab chạy Ollama trên Mac, thử RC này với tải song song và so p95 latency với bản 0.40.16 trước khi chuyển hẳn.",
+          "source": {
+            "title": "Ollama releases trên GitHub",
+            "url": "https://github.com/ollama/ollama/releases"
+          },
+          "published": "2026-11-10",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "System Design & Architecture",
+      "items": [
+        {
+          "title": "Cloudflare chọn QuePaxa thay vì Raft cho dịch vụ đồng thuận toàn cầu Meerkat",
+          "summary": "Raft và Multi-Paxos phụ thuộc vào một leader và timeout để phát hiện lỗi, nên dễ chập chờn khi đường truyền liên lục địa chậm thất thường. QuePaxa (công bố năm 2023) vẫn đạt đồng thuận khi link bị chậm mà không cần chờ bầu lại leader; Cloudflare thừa nhận thuật toán chưa có lịch sử production và đang mở rộng nó sang mô hình crash-recovery, kiểm chứng bằng formal verification và fault injection.",
+          "apply": "Bài đáng đọc để hiểu vì sao timeout là điểm yếu cốt lõi của consensus dựa trên leader; với hệ thống nội bộ trong một region, Raft vẫn là lựa chọn an toàn.",
+          "source": {
+            "title": "Choosing QuePaxa, an unusual consensus algorithm (Cloudflare Blog)",
+            "url": "https://blog.cloudflare.com/choosing-quepaxa/"
+          },
+          "published": "2026-11",
+          "kind": "tin"
+        },
+        {
+          "title": "Notes on Distributed Systems for Young Bloods của Jeff Hodges",
+          "summary": "Danh sách các bài học thực tế khi làm hệ phân tán: lỗi là chuyện thường, độ trễ và băng thông không miễn phí, đo đạc ở percentile chứ không ở trung bình, backpressure và feature flag là bắt buộc. Viết cho kỹ sư mới nhưng vẫn là checklist tốt khi review thiết kế.",
+          "apply": "Dùng bài này làm checklist khi review design doc của một service mới: mỗi mục là một câu hỏi cần có câu trả lời.",
+          "source": {
+            "title": "Notes on Distributed Systems for Young Bloods",
+            "url": "https://www.somethingsimilar.com/2013/01/14/notes-on-distributed-systems-for-young-bloods/"
+          },
+          "published": "2013-01-14",
+          "kind": "bài đọc"
+        }
+      ]
+    },
+    {
+      "title": "Open Source & công cụ mới",
+      "items": [
+        {
+          "title": "last30days-skill: agent skill nghiên cứu một chủ đề trong 30 ngày qua",
+          "summary": "Skill tìm song song trên Reddit, Hacker News, GitHub, arXiv và nhiều nguồn khác, chấm điểm theo mức tương tác rồi tổng hợp có dẫn nguồn. Giấy phép MIT, cài được cho Claude Code, Codex, Cursor và nhiều agent khác; đang nằm trong top trending tuần này.",
+          "apply": "Thử dùng để khảo sát nhanh một thư viện hoặc công cụ trước khi đưa vào ADR, nhưng vẫn tự kiểm tra lại nguồn gốc.",
+          "source": {
+            "title": "mvanhorn/last30days-skill",
+            "url": "https://github.com/mvanhorn/last30days-skill"
+          },
+          "published": "2026-11",
+          "kind": "tin"
+        },
+        {
+          "title": "ffmpeg-skill: 42 công cụ FFmpeg có kiểu cho coding agent, chạy offline",
+          "summary": "Thay vì để agent tự ghép chuỗi lệnh FFmpeg, mỗi công cụ nhận tham số có kiểu, probe file đầu vào và đầu ra rồi trả JSON có cấu trúc; có kèm MCP server. Chỉ cần ffmpeg và Python thư viện chuẩn, giấy phép MIT.",
+          "apply": "Ngoài mục đích dựng video, đây là mẫu tốt để học cách bọc một CLI phức tạp thành tool an toàn cho agent: input có schema, output có cấu trúc, kiểm tra kết quả sau mỗi bước.",
+          "source": {
+            "title": "kajisho5/ffmpeg-skill",
+            "url": "https://github.com/kajisho5/ffmpeg-skill"
+          },
+          "published": "2026-11",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "Career & kỹ năng mềm",
+      "items": [
+        {
+          "title": "Things You Should Never Do, Part I của Joel Spolsky",
+          "summary": "Bài kinh điển về sai lầm viết lại toàn bộ codebase từ đầu: code cũ trông xấu nhưng chứa hàng năm sửa lỗi và hiểu biết về edge case, còn bản viết lại khiến đội đứng yên trong khi đối thủ chạy tiếp. Lập luận vẫn đúng mỗi khi team đề xuất rewrite thay vì refactor dần.",
+          "apply": "Khi có đề xuất rewrite, yêu cầu viết rõ trong ADR những hành vi nào của hệ thống cũ phải giữ và cách chuyển dần (strangler fig) thay vì big bang.",
+          "source": {
+            "title": "Things You Should Never Do, Part I",
+            "url": "https://www.joelonsoftware.com/2000/04/06/things-you-should-never-do-part-i/"
+          },
+          "published": "2000-04-06",
+          "kind": "bài đọc"
+        }
+      ]
+    }
+  ],
+  "knowledge": {
+    "title": "Transactional outbox: ghi DB và phát event mà không mất hay lệch",
+    "body": "Khi một service vừa cập nhật database vừa phải gửi event lên Kafka hoặc RabbitMQ, làm hai việc riêng rẽ sẽ gặp dual write: DB commit xong nhưng gửi event lỗi (mất event), hoặc gửi event xong nhưng DB rollback (event ma). Không có transaction chung giữa DB và broker nên retry cũng không cứu được.\n\nOutbox giải quyết bằng cách ghi event vào một bảng outbox trong cùng transaction với dữ liệu nghiệp vụ. Một tiến trình relay riêng (polling hoặc CDC như Debezium đọc WAL) đọc bảng này và đẩy lên broker, đánh dấu đã gửi sau khi broker xác nhận.\n\nRelay có thể gửi trùng khi crash giữa chừng, nên đây là at-least-once: consumer phải idempotent, ví dụ lưu event_id đã xử lý. Nhớ dọn bảng outbox định kỳ và giữ thứ tự theo aggregate_id nếu consumer cần thứ tự.",
+    "example": "BEGIN;\nUPDATE orders SET status = 'PAID' WHERE id = 42;\nINSERT INTO outbox (id, aggregate_id, type, payload)\nVALUES (gen_random_uuid(), 42, 'OrderPaid', '{\"order_id\":42}');\nCOMMIT;\n\n-- relay (polling), chạy lặp:\nSELECT * FROM outbox WHERE sent_at IS NULL\nORDER BY created_at LIMIT 100 FOR UPDATE SKIP LOCKED;\n-- publish từng dòng, broker ack xong thì:\nUPDATE outbox SET sent_at = now() WHERE id = ANY($1);"
+  },
+  "sources": [
+    {
+      "title": "DuckDB releases",
+      "url": "https://github.com/duckdb/duckdb/releases"
+    },
+    {
+      "title": "Node.js releases",
+      "url": "https://github.com/nodejs/node/releases"
+    },
+    {
+      "title": "Flux releases",
+      "url": "https://github.com/fluxcd/flux2/releases"
+    },
+    {
+      "title": "Kyverno releases",
+      "url": "https://github.com/kyverno/kyverno/releases"
+    },
+    {
+      "title": "Your AI coding agent could cost 5x more depending on the harness",
+      "url": "https://thenewstack.io/coding-agent-harness-costs"
+    },
+    {
+      "title": "Ollama releases",
+      "url": "https://github.com/ollama/ollama/releases"
+    },
+    {
+      "title": "Choosing QuePaxa, an unusual consensus algorithm",
+      "url": "https://blog.cloudflare.com/choosing-quepaxa/"
+    },
+    {
+      "title": "Notes on Distributed Systems for Young Bloods",
+      "url": "https://www.somethingsimilar.com/2013/01/14/notes-on-distributed-systems-for-young-bloods/"
+    },
+    {
+      "title": "mvanhorn/last30days-skill",
+      "url": "https://github.com/mvanhorn/last30days-skill"
+    },
+    {
+      "title": "kajisho5/ffmpeg-skill",
+      "url": "https://github.com/kajisho5/ffmpeg-skill"
+    },
+    {
+      "title": "GitHub Trending (weekly)",
+      "url": "https://github.com/trending?since=weekly"
+    },
+    {
+      "title": "Things You Should Never Do, Part I",
+      "url": "https://www.joelonsoftware.com/2000/04/06/things-you-should-never-do-part-i/"
+    }
+  ],
+  "generated_at": "2026-11-21T01:25:50Z"
+}
