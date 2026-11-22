@@ -1,0 +1,260 @@
+{
+  "date": "2026-11-22",
+  "summary": "PostgreSQL 19 và Valkey 9.2 lên GA, Java4Shell (CVE-2026-114938) đe dọa JVM chạy trên CPU AVX-512, Gemini API thêm Tool Retrieval, vLLM 0.34 bỏ hẳn Model Runner V1.",
+  "sections": [
+    {
+      "title": "Backend",
+      "items": [
+        {
+          "title": "PostgreSQL 19 GA: pg_plan_advice, REPACK CONCURRENTLY, JIT tắt mặc định",
+          "summary": "Bản major mới ra ngày 19/11 với extension pg_plan_advice (kèm pg_stash_advice) để ghim lựa chọn của planner theo query id, lệnh REPACK (CONCURRENTLY) dọn bloat mà không khoá đọc ghi, logical replication cho sequence và SNI phía server. Cần lưu ý JIT giờ tắt mặc định, xác thực RADIUS bị gỡ, và một số tính năng ở beta đã bị rút trước GA.",
+          "apply": "Trước khi nâng cấp, chạy bộ query nặng của bạn trên bản 19 với JIT tắt để so plan và độ trễ; nếu đang dùng pg_repack, thử REPACK (CONCURRENTLY) trên bảng staging trước.",
+          "source": {
+            "title": "PostgreSQL 19 Released!",
+            "url": "https://www.postgresql.org/about/news/postgresql-19-released-3449/"
+          },
+          "published": "2026-11-19",
+          "kind": "tin"
+        },
+        {
+          "title": "Valkey 9.2.0 GA: snapshot không fork, sorted set dùng B+ tree, nén RDB bằng Zstd",
+          "summary": "Bản ổn định đầu tiên của nhánh 9.2 (18/11) cho phép snapshot RDB và full sync sang replica mà không cần fork, nén RDB bằng Zstd hoặc LZ4, sorted set lớn chuyển sang B+ tree để giảm bộ nhớ, thêm ACL role, SET IFNE và EXEC có điều kiện. Có vài thay đổi hành vi: cấu hình bgsave-default-method đổi tên thành forkless-policy, ZRANGEBYSCORE từ chối biên '(' rỗng, OBJECT ENCODING trả btree thay vì skiplist.",
+          "apply": "Grep cấu hình và script giám sát xem có dùng bgsave-default-method hoặc kiểm tra encoding skiplist không trước khi nâng cấp; với instance bộ nhớ sát trần, forkless snapshot đáng thử vì tránh được copy-on-write khi BGSAVE.",
+          "source": {
+            "title": "Valkey 9.2.0 release notes",
+            "url": "https://github.com/valkey-io/valkey/releases/tag/9.2.0"
+          },
+          "published": "2026-11-18",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "DevOps / Cloud",
+      "items": [
+        {
+          "title": "Lambda Managed Instances chạy được GPU và scale về 0",
+          "summary": "AWS cho Event Functions trên Lambda Managed Instances dùng instance GPU dòng G (G5, G6, G6e...), triển khai bằng container image, timeout tối đa 90 phút cho gọi bất đồng bộ; một ngày trước đó AWS cũng cho phép đặt MinExecutionEnvironments=0 để scale về 0 khi rảnh. Đổi lại, cold start từ 0 trên GPU có thể rất lâu: một bài thử với vLLM đo được khoảng 4 phút 20 giây.",
+          "apply": "Hợp với job suy luận hoặc xử lý media theo lô chịu được độ trễ khởi động; với API cần phản hồi nhanh thì giữ tối thiểu 1 môi trường thực thi.",
+          "source": {
+            "title": "GPU Instances Can Now Be Used with Lambda Managed Instances (Classmethod)",
+            "url": "https://dev.classmethod.jp/en/articles/lambda-managed-instances-gpu-acceleratorconfig/"
+          },
+          "published": "2026-11-18",
+          "kind": "tin"
+        },
+        {
+          "title": "GitHub Actions: runner RHEL 9 và RHEL 10 lên GA",
+          "summary": "Image Red Hat Enterprise Linux 9 và 10 cho larger hosted runner chính thức GA sau đợt preview từ tháng 6. Đội build gói RPM hoặc phải test trên đúng hệ điều hành của môi trường production không cần tự duy trì self-hosted runner nữa.",
+          "apply": "Nếu đang giữ self-hosted runner chỉ để build trên RHEL, so chi phí và công vận hành với larger runner RHEL rồi cân nhắc chuyển.",
+          "source": {
+            "title": "Red Hat Enterprise Linux runner images now generally available",
+            "url": "https://github.blog/changelog/2026-11-19-red-hat-enterprise-linux-runner-images-now-generally-available/"
+          },
+          "published": "2026-11-19",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "AI Engineering thực chiến",
+      "items": [
+        {
+          "title": "Gemini API thêm Tool Retrieval: chỉ nạp schema của tool khi cần",
+          "summary": "Ở Interactions API (preview, v1beta), bạn thêm một tool tool_search và đặt defer_loading: true cho các tool ít dùng; model chỉ thấy tên và mô tả, khi cần mới lấy đầy đủ schema. Áp dụng được cho cả MCP server, không tính phí riêng, hỗ trợ từ Gemini 3.6 trở lên. Lưu ý: bước search phía server tốn thêm một lượt gọi model, nên với bộ tool nhỏ có thể không có lợi.",
+          "apply": "Nếu agent của bạn gắn hàng chục tool hoặc vài MCP server, đo lượng input token mỗi request trước và sau khi defer các tool ít dùng; giữ nguyên tool hay dùng ở dạng nạp sẵn.",
+          "source": {
+            "title": "Introducing Tool Retrieval in the Gemini API",
+            "url": "https://blog.google/innovation-and-ai/technology/developers-tools/gemini-api-tool-retrieval/"
+          },
+          "published": "2026-11-19",
+          "kind": "tin"
+        },
+        {
+          "title": "vLLM 0.34.0: gỡ Model Runner V1, block size mặc định lên 64",
+          "summary": "KV cache mở rộng được bật mặc định và tự tính dung lượng từ bộ nhớ còn trống sau warmup, nên phần lớn trường hợp không cần chỉnh gpu_memory_utilization. Breaking change: Model Runner V1 bị xoá (đặt VLLM_USE_V2_MODEL_RUNNER=0 sẽ lỗi khi khởi động), --block-size mặc định đổi từ 16 sang 64, cần huggingface_hub 2.0 trở lên.",
+          "apply": "Rà lại manifest triển khai để bỏ biến VLLM_USE_V2_MODEL_RUNNER và gpu_memory_utilization cũ, rồi benchmark lại throughput và độ trễ vì block size thay đổi ảnh hưởng tới prefix cache.",
+          "source": {
+            "title": "vLLM releases",
+            "url": "https://github.com/vllm-project/vllm/releases"
+          },
+          "published": "2026-11-16",
+          "kind": "tin"
+        },
+        {
+          "title": "Langfuse 4.83: hạn mức chi tiêu theo key cho AI Gateway, hỗ trợ MCP 2026-07-28",
+          "summary": "Langfuse thêm giới hạn chi tiêu theo từng API key và ngân sách theo từng user cho AI Gateway, xác thực Bedrock bằng IAM role, và hỗ trợ bản MCP 2026-07-28. Bản 4.82 ngay trước đó vá một lỗi SSRF trong cấu hình SSO GitHub Enterprise và cho eval tạm dừng connection khi provider trả lỗi rate limit thay vì retry liên tục.",
+          "apply": "Nếu đang tự host Langfuse, nâng lên ít nhất 4.82 để có bản vá SSRF, và đặt spend limit cho key dùng trong môi trường thử nghiệm.",
+          "source": {
+            "title": "Langfuse releases",
+            "url": "https://github.com/langfuse/langfuse/releases"
+          },
+          "published": "2026-11-19",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "System Design & Architecture",
+      "items": [
+        {
+          "title": "Yelp chuyển cả fleet Cassandra sang EKS bằng cách gắn lại volume EBS",
+          "summary": "Thay vì stream dữ liệu sang node mới (phải gấp đôi compute và trả phí truyền dữ liệu), Yelp cho pod mới trên EKS dùng lại chính volume EBS của node cũ, dựa vào replication của Cassandra để chịu vài phút mỗi node offline. Hai operator cùng quản lý một ring trong lúc chuyển nên phải tắt reconcile bằng cờ skipReconciliation; sự cố đáng nhớ là backup lỗi do lệch IAM role trong vòng 48 giờ đầu.",
+          "apply": "Khi di chuyển workload stateful gắn với một AZ giữa các cluster Kubernetes, cân nhắc chuyển volume thay vì chuyển dữ liệu, và đưa kiểm tra IAM của backup vào checklist trước khi cutover.",
+          "source": {
+            "title": "Zero-Copy Migration: How Yelp Moved Its Cassandra Fleet Between Kubernetes Clusters",
+            "url": "https://engineeringblog.yelp.com/2026/11/zero-copy-cassandra-kubernetes-migration.html"
+          },
+          "published": "2026-11-09",
+          "kind": "tin"
+        },
+        {
+          "title": "Online migrations at scale (Stripe)",
+          "summary": "Bài kinh điển mô tả quy trình bốn bước để đổi mô hình dữ liệu trên hệ thống đang chạy: ghi kép vào cả hai nơi, chuyển đường đọc sang nơi mới, chuyển đường ghi, rồi xoá dữ liệu cũ. Ví dụ là việc tách hàng trăm triệu subscription ra khỏi bảng customer mà không downtime, kèm cách dùng so sánh song song để kiểm chứng.",
+          "apply": "Dùng bốn bước này làm khung cho kế hoạch migration tiếp theo, mỗi bước có cờ bật tắt và chỉ số đối chiếu riêng để có thể rollback.",
+          "source": {
+            "title": "Online migrations at scale",
+            "url": "https://stripe.com/blog/online-migrations"
+          },
+          "published": "2017-02",
+          "kind": "bài đọc"
+        }
+      ]
+    },
+    {
+      "title": "Open Source & công cụ mới",
+      "items": [
+        {
+          "title": "Arcane 3.1: giao diện web quản lý Docker, Compose, Podman, có LDAP",
+          "summary": "Arcane lên 3.0 ngày 14/11 với dashboard mới, GitOps và backup mở rộng (có breaking change với giao thức và cấu hình cũ). Bản 3.1 thêm đăng nhập LDAP kèm đồng bộ user, sao chép và di chuyển project giữa các môi trường, còn 3.1.1 sửa lỗi backup chồng lịch bị bỏ qua. Repo đang nằm trong nhóm trending Go tuần này.",
+          "apply": "Hợp để quản lý vài host Docker trên home lab thay cho Portainer; nếu đã chạy bản 2.x, đọc phần breaking change của 3.0 trước khi nâng.",
+          "source": {
+            "title": "getarcaneapp/arcane releases",
+            "url": "https://github.com/getarcaneapp/arcane/releases"
+          },
+          "published": "2026-11-19",
+          "kind": "tin"
+        },
+        {
+          "title": "Rustrak 0.30: thay thế Sentry tự host, một container, dùng SQLite",
+          "summary": "Error tracker viết bằng Rust, tương thích SDK của Sentry (chỉ đổi DSN), có performance theo p95, log, release health và trang riêng cho trace của AI agent. Bản 0.30 (20/11) thu gọn cách lưu span; endpoint ingest ghi envelope xuống đĩa rồi trả 200 trước khi xử lý DB để không bị nghẽn lúc tải tăng đột biến. Giấy phép AGPL-3.0; mặc định gửi telemetry ẩn danh, tắt bằng RUSTRAK_TELEMETRY=off.",
+          "apply": "Thử cho side project hoặc môi trường staging trên home lab, trỏ DSN của app hiện có sang để so với Sentry trước khi tính chuyện dùng thật.",
+          "source": {
+            "title": "rustrak/rustrak",
+            "url": "https://github.com/rustrak/rustrak"
+          },
+          "published": "2026-11-20",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "Career & kỹ năng mềm",
+      "items": [
+        {
+          "title": "One-way and two-way doors (James Stanier)",
+          "summary": "Stanier cho rằng nhiều tổ chức gán nhãn quyết định không thể đảo ngược cho mọi thứ, khiến mỗi thay đổi đều cần đồng thuận và người dưới quen chờ cấp trên quyết, và tốc độ ra quyết định trở thành nút thắt. Ông cũng nhắc rằng một quyết định đảo ngược được với team có thể là quyết định một chiều với cả tổ chức, và người chịu trách nhiệm chính (DRI) nên là IC trực tiếp làm việc đó chứ không phải quản lý.",
+          "apply": "Ở buổi review kiến trúc tới, phân loại rõ từng quyết định là một chiều hay hai chiều; quyết định hai chiều thì để người làm tự chốt và chỉ ghi lại, quyết định một chiều mới viết ADR và cần duyệt.",
+          "source": {
+            "title": "One-way and two-way doors",
+            "url": "https://www.theengineeringmanager.com/growth/one-way-and-two-way-doors/"
+          },
+          "published": "2026-11-13",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "Đáng chú ý khác",
+      "items": [
+        {
+          "title": "Java4Shell (CVE-2026-114938): tràn heap trong bộ giải mã Base64 AVX-512 của OpenJDK",
+          "summary": "Công bố ngày 17/11, CVSS 4.0 được báo là 9.2: một chuỗi Base64 ngắn bị cố ý làm sai có thể khiến intrinsic AVX-512 VBMI ghi vượt buffer, có khả năng dẫn tới RCE không cần xác thực ở dịch vụ giải mã input từ client. Chỉ ảnh hưởng máy x86-64 có VBMI (Intel Ice Lake trở về sau, AMD Zen 4 trở về sau) với OpenJDK 17.0.6 trở lên; ARM64 như Graviton không bị. Một số hãng bảo mật chưa xác nhận CVE này khớp với bản vá upstream, nên hãy theo advisory của nhà cung cấp JDK bạn dùng.",
+          "apply": "Ưu tiên cập nhật JDK; nếu chưa vá được, chạy JVM với -XX:-UseBASE64Intrinsics (hoặc -XX:UseAVX=2, ảnh hưởng hiệu năng rộng hơn) và giới hạn kích thước input Base64 ở biên API.",
+          "source": {
+            "title": "CVE-2026-114938 OpenJDK RCE (Java4Shell): Everything You Need to Know (Wiz)",
+            "url": "https://www.wiz.io/blog/cve-2026-114938-rce-java4shell-openjdk"
+          },
+          "published": "2026-11-17",
+          "kind": "tin"
+        }
+      ]
+    }
+  ],
+  "knowledge": {
+    "title": "Deadline propagation: truyền ngân sách thời gian xuyên suốt chuỗi gọi dịch vụ",
+    "body": "Khi request đi qua A rồi B rồi C, nếu mỗi tầng có timeout cố định riêng (ví dụ đều 5 giây), C có thể vẫn đang làm việc trong khi A đã trả lỗi cho client từ lâu. Đó là công sức bị phí, và lúc hệ thống quá tải nó còn khiến tình hình tệ hơn.\n\nDeadline propagation nghĩa là tầng ngoài cùng đặt một mốc thời gian tuyệt đối (deadline), rồi mỗi lần gọi xuống dưới thì truyền theo phần thời gian còn lại, sau khi trừ đi thời gian đã dùng và một khoảng dự phòng nhỏ. Tầng dưới kiểm tra: nếu thời gian còn lại không đủ cho công việc, nó trả lỗi ngay thay vì bắt đầu xử lý.\n\ngRPC làm sẵn việc này qua header grpc-timeout; với HTTP, bạn tự truyền qua một header như X-Request-Deadline và gắn nó vào context của ngôn ngữ. Hai nguyên tắc cần nhớ: dùng thời điểm tuyệt đối hoặc thời gian còn lại chứ không dùng timeout cố định, và retry phải nằm gọn trong deadline gốc chứ không được mỗi lần retry lại có ngân sách mới.",
+    "example": "// Go: tầng ngoài đặt deadline, các tầng dưới dùng lại cùng ctx\nctx, cancel := context.WithTimeout(r.Context(), 800*time.Millisecond)\ndefer cancel()\n\n// trước khi làm việc nặng, kiểm tra thời gian còn lại\nif dl, ok := ctx.Deadline(); ok && time.Until(dl) < 50*time.Millisecond {\n    return errors.New(\"không đủ thời gian, fail fast\")\n}\n\n// gRPC tự gửi phần thời gian còn lại xuống server qua grpc-timeout\nresp, err := inventoryClient.Reserve(ctx, req)"
+  },
+  "sources": [
+    {
+      "title": "PostgreSQL 19 Released!",
+      "url": "https://www.postgresql.org/about/news/postgresql-19-released-3449/"
+    },
+    {
+      "title": "Valkey 9.2.0 release notes",
+      "url": "https://github.com/valkey-io/valkey/releases/tag/9.2.0"
+    },
+    {
+      "title": "GPU Instances Can Now Be Used with Lambda Managed Instances (Classmethod)",
+      "url": "https://dev.classmethod.jp/en/articles/lambda-managed-instances-gpu-acceleratorconfig/"
+    },
+    {
+      "title": "Lambda Managed Instances với GPU và scale về 0: đo cold start (Classmethod)",
+      "url": "https://dev.classmethod.jp/articles/lambda-managed-instances-gpu-vllm-scale-to-zero/"
+    },
+    {
+      "title": "Red Hat Enterprise Linux runner images now generally available",
+      "url": "https://github.blog/changelog/2026-11-19-red-hat-enterprise-linux-runner-images-now-generally-available/"
+    },
+    {
+      "title": "Introducing Tool Retrieval in the Gemini API",
+      "url": "https://blog.google/innovation-and-ai/technology/developers-tools/gemini-api-tool-retrieval/"
+    },
+    {
+      "title": "vLLM releases",
+      "url": "https://github.com/vllm-project/vllm/releases"
+    },
+    {
+      "title": "Langfuse releases",
+      "url": "https://github.com/langfuse/langfuse/releases"
+    },
+    {
+      "title": "Zero-Copy Migration: How Yelp Moved Its Cassandra Fleet Between Kubernetes Clusters",
+      "url": "https://engineeringblog.yelp.com/2026/11/zero-copy-cassandra-kubernetes-migration.html"
+    },
+    {
+      "title": "Yelp Migrates Cassandra to EKS by Moving EBS Volumes (InfoQ)",
+      "url": "https://www.infoq.com/news/2026/11/kubernetes-cassandra-eks/"
+    },
+    {
+      "title": "Online migrations at scale",
+      "url": "https://stripe.com/blog/online-migrations"
+    },
+    {
+      "title": "getarcaneapp/arcane releases",
+      "url": "https://github.com/getarcaneapp/arcane/releases"
+    },
+    {
+      "title": "rustrak/rustrak",
+      "url": "https://github.com/rustrak/rustrak"
+    },
+    {
+      "title": "One-way and two-way doors",
+      "url": "https://www.theengineeringmanager.com/growth/one-way-and-two-way-doors/"
+    },
+    {
+      "title": "CVE-2026-114938 OpenJDK RCE (Java4Shell) (Wiz)",
+      "url": "https://www.wiz.io/blog/cve-2026-114938-rce-java4shell-openjdk"
+    },
+    {
+      "title": "How to Find, Mitigate, and Patch the Critical Java4Shell Flaw (Qualys)",
+      "url": "https://blog.qualys.com/vulnerabilities-threat-research/2026/11/17/how-to-find-mitigate-and-patch-the-critical-java4shell-flaw-cve-2026-114938-now"
+    },
+    {
+      "title": "Advisory: OpenJDK Base64 Vulnerability - Java4Shell (Sophos)",
+      "url": "https://www.sophos.com/en-us/security-advisories/sophos-sa-20261118-java4shell"
+    }
+  ],
+  "generated_at": "2026-11-22T01:27:05Z"
+}

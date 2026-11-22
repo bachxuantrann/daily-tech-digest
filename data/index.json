@@ -1,5 +1,6 @@
 {
   "dates": [
+    "2026-11-22",
     "2026-11-21",
     "2026-11-20",
     "2026-11-19",
@@ -38,6 +39,7 @@
     "2026-10-17"
   ],
   "summaries": {
+    "2026-11-22": "PostgreSQL 19 và Valkey 9.2 lên GA, Java4Shell (CVE-2026-114938) đe dọa JVM chạy trên CPU AVX-512, Gemini API thêm Tool Retrieval, vLLM 0.34 bỏ hẳn Model Runner V1.",
     "2026-11-21": "Cloudflare chọn QuePaxa không cần leader cho dịch vụ đồng thuận toàn cầu; harness có thể làm chi phí coding agent chênh 5 lần; DuckDB 2.0.1, Flux 2.10.1 và Kyverno 1.20 ra bản mới.",
     "2026-11-20": "Spring Boot 4.2.0 GA đi cùng Spring Framework 7.1, OpenAI Agents SDK 0.25 bỏ sandbox Runloop, Alloy 1.22 có breaking change ở enrich, Pulumi mở rộng Automation API.",
     "2026-11-19": "Hono vá 4 lỗ hổng làm validator và bodyLimit bị vượt qua; GitHub tách ref khỏi object để chịu hàng nghìn push mỗi giây; Google ra A2UI 1.0; KubeVirt tốt nghiệp CNCF.",
