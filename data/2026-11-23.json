@@ -1,0 +1,212 @@
+{
+  "date": "2026-11-23",
+  "summary": "Spring Framework 7.1 GA, GPT-6.2 Astra giảm giá API 20%, Docker Engine 29.10 đổi cách xử lý registry localhost và Podman 6.2 vá ba CVE.",
+  "sections": [
+    {
+      "title": "Backend",
+      "items": [
+        {
+          "title": "Spring Framework 7.1.0 GA cùng bản vá 7.0.11",
+          "summary": "Bản 7.1 chính thức hạ giới hạn độ sâu lồng nhau mặc định của SpEL xuống 200, báo lỗi chỉ số list/array trong property path nhất quán hơn và sửa lỗi server span không bị đánh dấu thất bại khi exception đã được handler xử lý. Đi kèm Micrometer 1.18 và Reactor 2026.0; nhánh 7.1 trước đó đã bỏ các API deprecated-for-removal, thêm batch update cho JdbcClient và hỗ trợ phương thức HTTP QUERY.",
+          "apply": "Trước khi nâng, grep các biểu thức SpEL lồng sâu và cấu hình ForwardedHeaderFilter (giờ phải chọn rõ Forwarded hay X-Forwarded), rồi kiểm tra lại trace lỗi trên dashboard.",
+          "source": {
+            "title": "spring-projects/spring-framework releases",
+            "url": "https://github.com/spring-projects/spring-framework/releases"
+          },
+          "published": "2026-11-19",
+          "kind": "tin"
+        },
+        {
+          "title": "Prisma 8.0.0-rc.24: isolation level cho transaction và timeout cho callback",
+          "summary": "RC mới nhất của Prisma 8 cho phép đặt transaction isolation level và timeout của callback ở client SQL, hỗ trợ create()/update() lồng nhau, thêm kiểu ngày giờ cho MongoDB (Date nay là ngày lịch thuần). Lệnh CLI kiểu Prisma 7 sẽ báo lỗi CLI.V7_COMMAND, dấu hiệu bản 8 là một đợt đổi lớn chứ không phải nâng cấp nhỏ.",
+          "apply": "Nếu đang dùng Prisma 7 trong production, hãy dựng một nhánh thử với rc.24 để đo khối lượng migrate (đổi ngữ nghĩa @default, kiểu DateTime) trước khi GA rơi vào lịch sprint.",
+          "source": {
+            "title": "prisma/prisma releases",
+            "url": "https://github.com/prisma/prisma/releases"
+          },
+          "published": "2026-11-16",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "DevOps / Cloud",
+      "items": [
+        {
+          "title": "Docker Engine 29.10.0: localhost không còn mặc nhiên là insecure registry",
+          "summary": "Khi daemon có cấu hình insecure-registries tường minh, dải loopback (127.0.0.0/8, ::1) không còn được tự coi là insecure, nên registry HTTP cục bộ như localhost:5000 có thể bắt đầu lỗi kéo/đẩy image. Bản này cũng thêm Jobs thử nghiệm (tác vụ chạy một lần và theo lịch cron), cho tuỳ biến containerd nhúng qua /etc/docker/containerd.d/, và cho Swarm chạy trên backend nftables (thử nghiệm).",
+          "apply": "Kiểm tra daemon.json trên runner CI và máy dev; nếu có insecure-registries thì thêm localhost:5000 (hoặc registry nội bộ) vào danh sách trước khi nâng cấp.",
+          "source": {
+            "title": "moby/moby releases: docker-v29.10.0",
+            "url": "https://github.com/moby/moby/releases"
+          },
+          "published": "2026-11-16",
+          "kind": "tin"
+        },
+        {
+          "title": "Podman 6.2.0 (và 5.8.10) vá ba CVE, Quadlet thêm Umask",
+          "summary": "Ba lỗ hổng được vá: label image độc hại khiến podman auto-update khởi động lại nhầm systemd unit, image độc hại vượt qua kiểm tra digest/chữ ký, và container vượt luật chặn socket trong seccomp mặc định. Về tính năng: podman push --platform đẩy riêng một manifest theo nền tảng, kube play có --validate và --multiple-pods, auto-update có --filter.",
+          "apply": "Ai chạy Podman + Quadlet trên home lab với auto-update bật nên nâng ngay; nhánh 5.8 có bản 5.8.10 chỉ chứa bản vá bảo mật.",
+          "source": {
+            "title": "containers/podman v6.2.0",
+            "url": "https://github.com/containers/podman/releases/tag/v6.2.0"
+          },
+          "published": "2026-11-10",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "AI Engineering thực chiến",
+      "items": [
+        {
+          "title": "OpenAI ra GPT-6.2 Astra và Sol, giá API của Astra giảm 20%",
+          "summary": "gpt-6.2-astra có giá 8 USD/40 USD cho mỗi triệu token vào/ra (cached input 0,40 USD), rẻ hơn GPT-6 Astra; gpt-6.2-sol giữ giá của GPT-6.1 Sol. Cả hai có trên Responses và Chat Completions, có tier Ultrafast từ ngày đầu; OpenAI cũng siết safeguard cho các yêu cầu an ninh mạng rủi ro cao.",
+          "apply": "Chạy lại bộ eval nội bộ với cả hai model và tính chi phí theo token thực tế của workload, vì OpenAI nói Astra dùng ít output token hơn; đừng đổi model chỉ dựa vào benchmark của nhà cung cấp.",
+          "source": {
+            "title": "Introducing GPT-6.2 Astra and Sol",
+            "url": "https://openai.com/index/introducing-gpt-6-2-astra-sol/"
+          },
+          "published": "2026-11-17",
+          "kind": "tin"
+        },
+        {
+          "title": "Building effective agents (Anthropic)",
+          "summary": "Bài phân biệt workflow (luồng cố định do code điều khiển) với agent (model tự quyết bước tiếp theo), rồi liệt kê các pattern như prompt chaining, routing, parallelization, orchestrator-workers, evaluator-optimizer. Thông điệp chính: bắt đầu từ cách đơn giản nhất, chỉ thêm tự chủ khi đo được là cần.",
+          "apply": "Trước khi dựng agent cho một tính năng, thử giải nó bằng một workflow routing hoặc chaining có eval; nếu đạt chất lượng thì bạn tiết kiệm được độ trễ, chi phí và độ khó debug.",
+          "source": {
+            "title": "Building effective agents",
+            "url": "https://www.anthropic.com/research/building-effective-agents"
+          },
+          "published": "2024-12-19",
+          "kind": "bài đọc"
+        }
+      ]
+    },
+    {
+      "title": "System Design & Architecture",
+      "items": [
+        {
+          "title": "The Log của Jay Kreps (LinkedIn)",
+          "summary": "Bài nền tảng giải thích vì sao một log chỉ-ghi-thêm, có thứ tự là lõi chung của database, replication và tích hợp dữ liệu giữa các hệ thống, và là ý tưởng dẫn tới Kafka. Đọc để hiểu vì sao CDC, event sourcing và stream processing thực chất là các cách dùng khác nhau của cùng một khái niệm.",
+          "apply": "Khi thiết kế đồng bộ dữ liệu giữa dịch vụ, hãy hỏi đâu là log nguồn sự thật (binlog/WAL hay topic) thay vì để mỗi dịch vụ gọi API ghi chéo vào nhau.",
+          "source": {
+            "title": "The Log: What every software engineer should know about real-time data's unifying abstraction",
+            "url": "https://engineering.linkedin.com/distributed-systems/log-what-every-software-engineer-should-know-about-real-time-datas-unifying"
+          },
+          "published": "2013-12-16",
+          "kind": "bài đọc"
+        },
+        {
+          "title": "Slack chuyển sang kiến trúc cell để khoanh vùng sự cố theo AZ",
+          "summary": "Sau một sự cố gray failure, Slack mất khoảng 1,5 năm để chuyển các dịch vụ quan trọng sang mô hình cell theo availability zone, sao cho lỗi ở một AZ bị giữ trong AZ đó và có thể rút toàn bộ traffic khỏi AZ hỏng trong vài phút. Bài nói rõ trade-off: chấp nhận dư thừa và giới hạn gọi chéo giữa cell để đổi lấy blast radius nhỏ.",
+          "apply": "Kiểm tra xem dịch vụ của bạn có nút 'drain một AZ' chưa; nếu chưa, bắt đầu bằng việc giữ traffic nội-AZ cho đường gọi nóng nhất.",
+          "source": {
+            "title": "Slack's Migration to a Cellular Architecture",
+            "url": "https://slack.engineering/slacks-migration-to-a-cellular-architecture/"
+          },
+          "published": "2023-08-22",
+          "kind": "bài đọc"
+        }
+      ]
+    },
+    {
+      "title": "Open Source & công cụ mới",
+      "items": [
+        {
+          "title": "Tencent/LoopForge: workspace tự host điều phối coding agent kèm cổng duyệt của người",
+          "summary": "LoopForge nhận yêu cầu qua chat, mở sandbox Docker, checkout repo, giao việc cho các vai trò rồi mở pull request; quy trình lặp lại được lưu thành SOP trên canvas với node Agent, Script và Human-gate. Hỗ trợ nhiều CLI agent (Claude Code, Codex, OpenCode, Cursor CLI...), có trace, log và thống kê chi phí token; giấy phép MIT, đang là repo Go tăng sao nhanh nhất tuần.",
+          "apply": "Thử trên home lab bằng ./start.sh (cần Docker Compose), chạy SOP demo không cần API key để xem mô hình duyệt từng bước có hợp với quy trình review của team không.",
+          "source": {
+            "title": "Tencent/LoopForge",
+            "url": "https://github.com/Tencent/LoopForge"
+          },
+          "kind": "tin"
+        },
+        {
+          "title": "RustFS: object storage tương thích S3 viết bằng Rust, thay thế MinIO",
+          "summary": "RustFS lên 1.0 GA từ tháng 9/2026, giấy phép Apache 2.0, có S3 Tables với Iceberg REST Catalog tích hợp; được nhắc nhiều khi MinIO ngừng bảo trì bản mã nguồn mở. Tuần này repo vẫn nằm trong nhóm Rust trending.",
+          "apply": "Dựng một node RustFS bằng Docker làm backend S3 cho backup, Loki hoặc thử Iceberg trên home lab; tự benchmark với object nhỏ thay vì tin số liệu quảng bá.",
+          "source": {
+            "title": "RustFS 1.0 S3-Compatible Object Storage Reaches GA (Linuxiac)",
+            "url": "https://linuxiac.com/rustfs-1-0-s3-compatible-object-storage-reaches-ga/"
+          },
+          "published": "2026-09",
+          "kind": "bài đọc"
+        }
+      ]
+    },
+    {
+      "title": "Career & kỹ năng mềm",
+      "items": [
+        {
+          "title": "Is High Quality Software Worth the Cost? (Martin Fowler)",
+          "summary": "Fowler lập luận rằng chất lượng bên trong (code dễ hiểu, ít cruft) không phải thứ đánh đổi với tốc độ: sau vài tuần, codebase sạch giúp team ra tính năng nhanh hơn, còn cruft làm mỗi thay đổi đắt dần. Bài đưa ra cách nói chuyện này với người không làm kỹ thuật bằng ngôn ngữ tốc độ giao hàng thay vì 'code đẹp'.",
+          "apply": "Lần tới khi xin thời gian trả nợ kỹ thuật, trình bày bằng số liệu lead time hoặc số lỗi hồi quy của module đó, không bằng lý lẽ thẩm mỹ.",
+          "source": {
+            "title": "Is High Quality Software Worth the Cost?",
+            "url": "https://martinfowler.com/articles/is-quality-worth-cost.html"
+          },
+          "published": "2019-05-29",
+          "kind": "bài đọc"
+        }
+      ]
+    }
+  ],
+  "knowledge": {
+    "title": "Chống cache stampede: gộp request trùng và TTL có jitter",
+    "body": "Cache stampede (thundering herd) xảy ra khi một key nóng hết hạn và hàng trăm request cùng lúc cache miss, đồng loạt đổ xuống database với cùng một truy vấn đắt. Kết quả thường là DB quá tải đúng lúc cache trống, request chậm, timeout rồi retry làm tình hình tệ hơn.\n\nCó ba lớp phòng thủ bổ sung cho nhau. Thứ nhất, gộp request trùng (request coalescing): trong một tiến trình chỉ cho một goroutine/thread đi nạp key, các request khác chờ chung kết quả. Thứ hai, thêm jitter vào TTL để các key được ghi cùng lúc không hết hạn cùng lúc. Thứ ba, với key cực nóng, làm mới sớm (refresh-ahead hoặc stale-while-revalidate): trả giá trị cũ trong khi một worker nền nạp giá trị mới.\n\nNếu nhiều instance cùng nạp, coalescing trong tiến trình chỉ giảm tải từ N request xuống còn số instance; khi cần chặt hơn, dùng lock ngắn trên Redis (SET NX PX) và cho bên không giữ lock trả giá trị cũ.",
+    "example": "var g singleflight.Group\n\nfunc GetUser(ctx context.Context, id string) (*User, error) {\n    if u, ok := cache.Get(id); ok {\n        return u, nil\n    }\n    v, err, _ := g.Do(id, func() (any, error) {\n        u, err := db.LoadUser(ctx, id)\n        if err != nil {\n            return nil, err\n        }\n        ttl := 5*time.Minute + time.Duration(rand.Int63n(int64(time.Minute)))\n        cache.Set(id, u, ttl)\n        return u, nil\n    })\n    if err != nil {\n        return nil, err\n    }\n    return v.(*User), nil\n}"
+  },
+  "sources": [
+    {
+      "title": "spring-projects/spring-framework releases",
+      "url": "https://github.com/spring-projects/spring-framework/releases"
+    },
+    {
+      "title": "prisma/prisma releases",
+      "url": "https://github.com/prisma/prisma/releases"
+    },
+    {
+      "title": "moby/moby releases",
+      "url": "https://github.com/moby/moby/releases"
+    },
+    {
+      "title": "containers/podman v6.2.0",
+      "url": "https://github.com/containers/podman/releases/tag/v6.2.0"
+    },
+    {
+      "title": "Introducing GPT-6.2 Astra and Sol",
+      "url": "https://openai.com/index/introducing-gpt-6-2-astra-sol/"
+    },
+    {
+      "title": "Building effective agents",
+      "url": "https://www.anthropic.com/research/building-effective-agents"
+    },
+    {
+      "title": "The Log (Jay Kreps)",
+      "url": "https://engineering.linkedin.com/distributed-systems/log-what-every-software-engineer-should-know-about-real-time-datas-unifying"
+    },
+    {
+      "title": "Slack's Migration to a Cellular Architecture",
+      "url": "https://slack.engineering/slacks-migration-to-a-cellular-architecture/"
+    },
+    {
+      "title": "Tencent/LoopForge",
+      "url": "https://github.com/Tencent/LoopForge"
+    },
+    {
+      "title": "GitHub Trending (Go, weekly)",
+      "url": "https://github.com/trending/go?since=weekly"
+    },
+    {
+      "title": "RustFS 1.0 reaches GA (Linuxiac)",
+      "url": "https://linuxiac.com/rustfs-1-0-s3-compatible-object-storage-reaches-ga/"
+    },
+    {
+      "title": "Is High Quality Software Worth the Cost?",
+      "url": "https://martinfowler.com/articles/is-quality-worth-cost.html"
+    }
+  ],
+  "generated_at": "2026-11-23T01:26:04Z"
+}
