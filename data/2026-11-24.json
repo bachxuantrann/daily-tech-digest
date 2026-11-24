@@ -1,0 +1,213 @@
+{
+  "date": "2026-11-24",
+  "summary": "Redis 8.12 GA với BLESS và hết hạn theo phần tử set, Claude API khai tử Opus 4.5, Cilium vá lỗi egress policy mở toang khi Service thiếu backend, Uptime Kuma 3.0 beta.",
+  "sections": [
+    {
+      "title": "Backend",
+      "items": [
+        {
+          "title": "Redis 8.12.0 GA: bitmap nén, sorted set dùng B+ tree, BLESS chống eviction",
+          "summary": "Bản GA gộp redis-roaring vào lõi để bitmap tốn ít bộ nhớ hơn, thêm encoding B+ tree cho sorted set lớn, lệnh BLESS giữ key khỏi bị eviction, họ lệnh ZMOVE và nhóm lệnh hết hạn theo từng phần tử set (SEXPIRE, STTL, SETPERSIST). Bản RC3 trước đó còn vá lỗi TLS session có thể resume sang listener khác mà không kiểm tra cấu hình mới.",
+          "apply": "Nếu đang tự dọn phần tử set hết hạn bằng sorted set phụ hoặc cron, thử thay bằng SEXPIRE trên staging và đo lại bộ nhớ của các key bitmap, sorted set lớn trước khi nâng cấp.",
+          "source": {
+            "title": "redis/redis releases",
+            "url": "https://github.com/redis/redis/releases"
+          },
+          "published": "2026-11-22",
+          "kind": "tin"
+        },
+        {
+          "title": "NestJS 12.6.0: graceful shutdown cho gRPC và WebSocket, tự suy kiểu app từ adapter",
+          "summary": "NestFactory.create() giờ tự suy kiểu ứng dụng từ adapter; WsAdapter có tuỳ chọn gracefulShutdown và gracePeriod; gRPC server có grace period, quá hạn thì call đang chạy bị huỷ. Bản 12.5.1 ngay trước đó đã thêm graceful shutdown cho RabbitMQ, TCP, MQTT, Redis, NATS transport.",
+          "apply": "Nếu có stream gRPC chạy lâu, đặt gracePeriod lớn hơn thời gian stream điển hình và khớp với terminationGracePeriodSeconds của pod, nếu không stream sẽ bị cắt khi deploy.",
+          "source": {
+            "title": "nestjs/nest releases",
+            "url": "https://github.com/nestjs/nest/releases"
+          },
+          "published": "2026-11-20",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "DevOps / Cloud",
+      "items": [
+        {
+          "title": "Cilium 1.20.5, 1.19.11, 1.18.17: sửa egress policy cho đi mọi đích khi Service không có backend",
+          "summary": "Rule egress kết hợp toServices với toPorts trước đây cho phép traffic tới bất kỳ đích nào nếu Service bị thiếu hoặc không có backend, tức policy mở rộng thay vì đóng. Cùng đợt có sửa rò rỉ entry BPF map cho NodePort, Hubble không còn giữ series của pod đã xoá, và operator mặc định chờ 30 phút thay vì 3 phút trước khi thu hồi IP.",
+          "apply": "Rà các CiliumNetworkPolicy dùng toServices kèm toPorts; đây là lỗi fail-open nên nên nâng cấp sớm thay vì đợi chu kỳ bảo trì.",
+          "source": {
+            "title": "cilium/cilium releases",
+            "url": "https://github.com/cilium/cilium/releases"
+          },
+          "published": "2026-11-17",
+          "kind": "tin"
+        },
+        {
+          "title": "OpenTofu 1.13.10: build bằng Go 1.27.4 để vá lỗi crash HTTP/1 server",
+          "summary": "Bản vá nâng toolchain lên Go 1.27.4 để xử lý GO-2026-6859 (race giữa MaxBytesReader và header làm crash HTTP/1 server), đồng thời sửa override resource cho module có index trong tofu test và lỗi symbol library chặn plan khi dùng trong module.",
+          "apply": "Pin phiên bản tofu trong CI (ví dụ qua .opentofu-version hoặc setup action) và nâng lên 1.13.10; nếu dùng tofu test với module count/for_each, đây là bản nên lấy.",
+          "source": {
+            "title": "opentofu/opentofu releases",
+            "url": "https://github.com/opentofu/opentofu/releases"
+          },
+          "published": "2026-11-23",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "AI Engineering thực chiến",
+      "items": [
+        {
+          "title": "Claude API: Opus 4.5 bị khai tử, nghỉ hưu ngày 22/01/2027; ra mắt Enterprise Frontier Safeguards",
+          "summary": "claude-opus-4-5 và claude-opus-4-5-20251101 chuyển sang deprecated, Anthropic khuyến nghị chuyển sang Opus 5.5. Cùng ngày có Enterprise Frontier Safeguards (beta): Zero Data Retention cho tổ chức đủ điều kiện, bản sao mã hoá lưu trong bucket của chính khách hàng, kèm webhook external_storage.failed và recovered để báo khi bucket không qua kiểm tra hằng ngày.",
+          "apply": "Grep model ID opus-4-5 trong config và code ngay hôm nay, chạy bộ eval hiện có với Opus 5.5 theo migration guide để còn gần hai tháng xử lý khác biệt hành vi.",
+          "source": {
+            "title": "Claude API release notes",
+            "url": "https://platform.claude.com/docs/en/release-notes/api"
+          },
+          "published": "2026-11-23",
+          "kind": "tin"
+        },
+        {
+          "title": "LangSmith Tool Gateway (public beta): lớp quản lý danh tính và policy cho tool call của agent",
+          "summary": "Gateway đứng giữa agent và các MCP server, gom credential, chính sách truy cập và trace cho từng tool call (tool nào, trên server nào, chạy với danh nghĩa ai, kết thúc ra sao). Dùng được với các MCP client như LangChain, Deep Agents, Claude Code, Cursor; giới hạn 100 request/giây, burst 1.000; chỉ có ở gói Plus và Enterprise.",
+          "apply": "Dù không dùng LangSmith, đây là mô hình đáng học: đừng để từng agent tự giữ token của SaaS, hãy đặt một gateway tập trung để cấp quyền theo người dùng và có audit log.",
+          "source": {
+            "title": "LangSmith Tool Gateway (LangChain blog)",
+            "url": "https://langchain.com/blog/langsmith-tool-gateway"
+          },
+          "published": "2026-11-19",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "System Design & Architecture",
+      "items": [
+        {
+          "title": "Shuffle sharding trong Cortex: thu nhỏ bán kính ảnh hưởng của tenant gây hại",
+          "summary": "Grafana giải thích cách áp dụng shuffle sharding (ý tưởng phổ biến từ Amazon Builders' Library) cho Cortex: mỗi tenant được gán một tổ hợp ngẫu nhiên nhỏ các instance, nên một tenant gửi tải bất thường chỉ làm hỏng phần rất nhỏ tenant khác có chung đúng tổ hợp đó. Đây là bước tiếp theo sau cell architecture khi số cell không đủ nhiều.",
+          "apply": "Với hệ multi-tenant (queue worker, ingest pipeline), thử gán mỗi tenant 2–4 worker theo hash ổn định thay vì cho mọi tenant dùng chung mọi worker.",
+          "source": {
+            "title": "How shuffle sharding in Cortex leads to better scalability and more isolation for Prometheus",
+            "url": "https://grafana.com/blog/2021/05/11/how-shuffle-sharding-in-cortex-leads-to-better-scalability-and-more-isolation-for-prometheus"
+          },
+          "published": "2021-05-11",
+          "kind": "bài đọc"
+        },
+        {
+          "title": "Cockroach Labs: xây vector search C-SPANN trên kiến trúc phân vùng theo range",
+          "summary": "Bài kể cách đội CockroachDB chuyển thể thuật toán SPANN của Microsoft để chạy trên dữ liệu phân tán theo range, cùng kinh nghiệm làm cost-based optimizer mà không làm vỡ workload sẵn có của khách hàng. Đáng đọc để hiểu vì sao index vector kiểu HNSW đơn máy khó nhân rộng trong DB phân tán.",
+          "apply": "Khi chọn vector store cho RAG ở quy mô lớn, hỏi rõ index được phân vùng và cập nhật thế nào khi dữ liệu ghi liên tục, không chỉ nhìn benchmark recall.",
+          "source": {
+            "title": "Building Distributed Systems at Scale (Cockroach Labs)",
+            "url": "https://www.cockroachlabs.com/blog/building-distributed-systems-for-scale-becca-taft/"
+          },
+          "published": "2026-04-16",
+          "kind": "bài đọc"
+        }
+      ]
+    },
+    {
+      "title": "Open Source & công cụ mới",
+      "items": [
+        {
+          "title": "Uptime Kuma 3.0.0 beta: Node.js 26, Better Auth, monitor SFTP, khung API và MCP",
+          "summary": "Bản beta major có breaking change cho cài đặt không dùng Docker (phải chạy node --run start), chuyển sang better-sqlite, bỏ SDK AWS/Azure, thêm tạo admin ban đầu bằng biến môi trường, monitor SFTP và khung API/MCP bản alpha. Về bảo mật: bỏ qua X-Forwarded-For từ client khi Trust Proxy tắt và cookie session có Secure trên HTTPS. Beta.2 ra ngày 22/11 sửa thêm lỗi Better Auth với MySQL.",
+          "apply": "Trên home lab, dựng một container 3.0 beta song song với bản 2.5.12 đang chạy (dữ liệu tách riêng) để thử API và biến môi trường tạo admin, chưa nâng cấp tại chỗ.",
+          "source": {
+            "title": "louislam/uptime-kuma releases",
+            "url": "https://github.com/louislam/uptime-kuma/releases"
+          },
+          "published": "2026-11-17",
+          "kind": "tin"
+        },
+        {
+          "title": "Coolify 4.7.6: bản bảo mật, PHP-FPM chỉ nghe loopback, nginx chặn file nhạy cảm",
+          "summary": "PaaS tự host thay Heroku/Vercel này ra bản vá các CVE nghiêm trọng ở dependency upstream: PHP-FPM trong container coolify bind vào loopback, cập nhật PHP 8.4.28, nginx 1.31.9, Node.js 24.22.3, và nginx mặc định chặn dotfile cùng các file backup, config, log, SQL, shell.",
+          "apply": "Nếu chạy Coolify trên VPS hay home lab, cập nhật ngay và kiểm tra xem có từng để lộ file .env hoặc dump SQL qua đường dẫn tĩnh không.",
+          "source": {
+            "title": "coollabsio/coolify releases",
+            "url": "https://github.com/coollabsio/coolify/releases"
+          },
+          "published": "2026-11-19",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "Career & kỹ năng mềm",
+      "items": [
+        {
+          "title": "An incomplete list of skills senior engineers need, beyond coding (Camille Fournier)",
+          "summary": "Danh sách 23 kỹ năng ngoài code cho senior, staff trở lên: điều phối họp, viết và đẩy design doc tới quyết định, mentor theo từng giai đoạn sự nghiệp, dẫn dự án mà không quản lý người, báo cáo tiến độ cho stakeholder, buông dự án mình xây, thuyết phục quản lý cấp ngân sách cho việc kỹ thuật, biết chọn trận để đánh.",
+          "apply": "Tự chấm 23 mục theo thang 1–3, chọn hai mục yếu nhất làm mục tiêu quý tới và mang vào buổi 1:1 với manager.",
+          "source": {
+            "title": "An incomplete list of skills senior engineers need, beyond coding",
+            "url": "https://skamille.medium.com/an-incomplete-list-of-skills-senior-engineers-need-beyond-coding-8ed4a521b29f"
+          },
+          "published": "2021-06-06",
+          "kind": "bài đọc"
+        }
+      ]
+    }
+  ],
+  "knowledge": {
+    "title": "Consistent hashing với virtual node: thêm bớt node mà chỉ dời một phần nhỏ key",
+    "body": "Chia key bằng hash(key) % N có nhược điểm lớn: đổi N từ 4 lên 5 làm gần 80% key đổi chỗ, cache lạnh hàng loạt hoặc phải di chuyển gần hết dữ liệu. Consistent hashing đặt cả node và key lên một vòng hash; mỗi key thuộc về node đầu tiên gặp được khi đi theo chiều kim đồng hồ, nên thêm một node chỉ lấy key từ các láng giềng của nó, khoảng 1/N tổng số key.\n\nVới ít node, vòng chia rất lệch, vì vậy mỗi node vật lý được đặt nhiều điểm ảo (virtual node, thường 100–200 điểm). Virtual node còn cho phép gán trọng số: máy mạnh gấp đôi thì có gấp đôi số điểm. Đây là nền tảng của Dynamo, Cassandra, phân phối key trong client Memcached, và cân bằng tải có tính bám (sticky) như ring hash hoặc Maglev ở Envoy.\n\nLưu ý khi tự cài: dùng hàm hash ổn định giữa các tiến trình và ngôn ngữ (xxHash, murmur3, không dùng hash() mặc định có random seed của Python), và tra cứu bằng tìm kiếm nhị phân trên danh sách điểm đã sắp xếp. Nếu chỉ cần ánh xạ key vào N bucket đánh số liên tiếp mà không cần vòng, jump consistent hash của Google gọn và đều hơn.",
+    "example": "import bisect, hashlib\n\ndef h(s):\n    return int.from_bytes(hashlib.md5(s.encode()).digest()[:8], 'big')\n\nclass Ring:\n    def __init__(self, nodes, vnodes=150):\n        self.points = sorted((h(f'{n}#{i}'), n) for n in nodes for i in range(vnodes))\n        self.keys = [p for p, _ in self.points]\n\n    def node_for(self, key):\n        i = bisect.bisect(self.keys, h(key)) % len(self.keys)\n        return self.points[i][1]\n\nring = Ring(['cache-a', 'cache-b', 'cache-c'])\nprint(ring.node_for('user:42'))"
+  },
+  "sources": [
+    {
+      "title": "redis/redis releases",
+      "url": "https://github.com/redis/redis/releases"
+    },
+    {
+      "title": "nestjs/nest releases",
+      "url": "https://github.com/nestjs/nest/releases"
+    },
+    {
+      "title": "cilium/cilium releases",
+      "url": "https://github.com/cilium/cilium/releases"
+    },
+    {
+      "title": "opentofu/opentofu releases",
+      "url": "https://github.com/opentofu/opentofu/releases"
+    },
+    {
+      "title": "Claude API release notes",
+      "url": "https://platform.claude.com/docs/en/release-notes/api"
+    },
+    {
+      "title": "LangSmith Tool Gateway (LangChain blog)",
+      "url": "https://langchain.com/blog/langsmith-tool-gateway"
+    },
+    {
+      "title": "LangSmith Tool Gateway docs",
+      "url": "https://docs.langchain.com/langsmith/tool-gateway"
+    },
+    {
+      "title": "How shuffle sharding in Cortex leads to better scalability and more isolation for Prometheus",
+      "url": "https://grafana.com/blog/2021/05/11/how-shuffle-sharding-in-cortex-leads-to-better-scalability-and-more-isolation-for-prometheus"
+    },
+    {
+      "title": "Building Distributed Systems at Scale (Cockroach Labs)",
+      "url": "https://www.cockroachlabs.com/blog/building-distributed-systems-for-scale-becca-taft/"
+    },
+    {
+      "title": "louislam/uptime-kuma releases",
+      "url": "https://github.com/louislam/uptime-kuma/releases"
+    },
+    {
+      "title": "coollabsio/coolify releases",
+      "url": "https://github.com/coollabsio/coolify/releases"
+    },
+    {
+      "title": "An incomplete list of skills senior engineers need, beyond coding",
+      "url": "https://skamille.medium.com/an-incomplete-list-of-skills-senior-engineers-need-beyond-coding-8ed4a521b29f"
+    }
+  ],
+  "generated_at": "2026-11-24T01:25:56Z"
+}
