@@ -1,5 +1,6 @@
 {
   "dates": [
+    "2026-11-25",
     "2026-11-24",
     "2026-11-23",
     "2026-11-22",
@@ -41,6 +42,7 @@
     "2026-10-17"
   ],
   "summaries": {
+    "2026-11-25": "ClickHouse 26.11 bật kiểm tra hostname TLS mặc định, Argo CD vá lỗi crash API server không cần xác thực, OpenAI Agents SDK lên 1.0 alpha với session resume được trên worker khác.",
     "2026-11-24": "Redis 8.12 GA với BLESS và hết hạn theo phần tử set, Claude API khai tử Opus 4.5, Cilium vá lỗi egress policy mở toang khi Service thiếu backend, Uptime Kuma 3.0 beta.",
     "2026-11-23": "Spring Framework 7.1 GA, GPT-6.2 Astra giảm giá API 20%, Docker Engine 29.10 đổi cách xử lý registry localhost và Podman 6.2 vá ba CVE.",
     "2026-11-22": "PostgreSQL 19 và Valkey 9.2 lên GA, Java4Shell (CVE-2026-114938) đe dọa JVM chạy trên CPU AVX-512, Gemini API thêm Tool Retrieval, vLLM 0.34 bỏ hẳn Model Runner V1.",

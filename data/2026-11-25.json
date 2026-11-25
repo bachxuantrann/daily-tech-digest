@@ -1,0 +1,245 @@
+{
+  "date": "2026-11-25",
+  "summary": "ClickHouse 26.11 bật kiểm tra hostname TLS mặc định, Argo CD vá lỗi crash API server không cần xác thực, OpenAI Agents SDK lên 1.0 alpha với session resume được trên worker khác.",
+  "sections": [
+    {
+      "title": "Backend",
+      "items": [
+        {
+          "title": "ClickHouse 26.11: kết nối TLS ra ngoài giờ kiểm tra hostname, thêm INSERT ... RETURNING",
+          "summary": "Từ 26.11, mọi kết nối TLS đi ra (remoteSecure, Distributed, Keeper, s3, url, dictionary HTTP) đều kiểm tra chứng chỉ có đúng tên host không; endpoint dùng chứng chỉ không khớp sẽ lỗi Unacceptable certificate. Bản này cũng đổi KILL QUERY/KILL MUTATION thành báo lỗi khi WHERE không khớp gì, siết quyền đọc DDL qua system.tables, và thêm INSERT ... RETURNING (SELECT ...), định dạng Vortex, quota theo profile event bất kỳ.",
+          "apply": "Trước khi nâng cấp, rà các kết nối S3/MinIO nội bộ, Keeper và cluster secure dùng IP hoặc chứng chỉ tự ký; script tự động gọi KILL QUERY cần set kill_throw_if_noop = 0 nếu không muốn bị lỗi.",
+          "source": {
+            "title": "ClickHouse CHANGELOG: release 26.11",
+            "url": "https://github.com/ClickHouse/ClickHouse/blob/master/CHANGELOG.md"
+          },
+          "published": "2026-11-24",
+          "kind": "tin"
+        },
+        {
+          "title": "uv 0.13.10: uv lock kiểm tra lockfile chặt hơn, kèm một bản vá bảo mật",
+          "summary": "uv lock giờ đối chiếu yêu cầu phụ thuộc với phiên bản đã khoá, giải thích lý do khi --locked từ chối lockfile và báo các dependency bị thiếu entry. Bản này vá GHSA-vjvj-3m3f-fgmm, từ chối wheel có metadata ZIP mâu thuẫn về kích thước nén, và có chế độ preview cho phép dùng proxy index mà lockfile vẫn trỏ được về index gốc.",
+          "apply": "Nếu CI chạy uv sync --locked, nâng lên 0.13.10 để thông báo lỗi lockfile dễ đọc hơn; team dùng Artifactory/Nexus làm proxy có thể thử tính năng proxy index để lockfile không bị dính URL nội bộ.",
+          "source": {
+            "title": "astral-sh/uv releases",
+            "url": "https://github.com/astral-sh/uv/releases"
+          },
+          "published": "2026-11-24",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "DevOps / Cloud",
+      "items": [
+        {
+          "title": "Argo CD 3.6.3, 3.5.9, 3.4.15: vá bảy advisory, có lỗi crash API server không cần đăng nhập",
+          "summary": "Một request gRPC/gRPC-Web rỗng gửi tới bốn method của RepositoryService làm argocd-server panic và thoát, kẻ tấn công không cần credential và có thể lặp lại để giữ UI/CLI sập (GHSA-w7rw-fg89-2cjf, CVSS 7.5). Một lỗi khác cho phép user chỉ có quyền create ghi đè repository có sẵn qua upsert, đổi proxy hay credential để phục vụ manifest độc (GHSA-mfgm-4p7x-3ccr, CVSS 7.7). Bản vá còn kèm breaking change: tên Helm release phải hợp lệ theo quy tắc của Helm.",
+          "apply": "Nâng cấp ngay; trong lúc chờ, chặn đường dẫn gRPC của các method bị ảnh hưởng ở ingress và rà RBAC xem role nào có repositories, create mà không có update.",
+          "source": {
+            "title": "Argo CD security advisories",
+            "url": "https://github.com/argoproj/argo-cd/security/advisories"
+          },
+          "published": "2026-11-24",
+          "kind": "tin"
+        },
+        {
+          "title": "OpenTelemetry Collector 1.72.0: xử lý UTF-8 không hợp lệ ở OTLP receiver và loạt hardening",
+          "summary": "Hai feature gate mới cho OTLP receiver: sanitizeInvalidUTF8 thay ký tự lỗi bằng U+FFFD, rejectInvalidUTF8 thì từ chối hẳn item (ưu tiên nếu bật cả hai). Exporter và receiver HTTP/OTLP được giới hạn kích thước response, header và cookie jar; log khởi động báo có bật chế độ FIPS 140-3 hay không; gRPC client có tuỳ chọn xáo trộn danh sách địa chỉ cho pick_first.",
+          "apply": "Nếu backend phía sau (Loki, Elasticsearch, ClickHouse) từng từ chối batch vì UTF-8 lỗi từ một vài service, bật sanitizeInvalidUTF8 ở collector thay vì vá từng SDK.",
+          "source": {
+            "title": "opentelemetry-collector releases",
+            "url": "https://github.com/open-telemetry/opentelemetry-collector/releases"
+          },
+          "published": "2026-11-23",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "AI Engineering thực chiến",
+      "items": [
+        {
+          "title": "OpenAI Agents SDK 1.0.0 alpha: ResumableSession và hook trước/sau tool call",
+          "summary": "Bản preview 1.0 (chỉ phát hành qua GitHub, chưa lên PyPI) thêm ResumableSession để hội thoại và các yêu cầu phê duyệt đang chờ có thể tiếp tục trên một worker khác, thêm hook prepare_tool_input/prepare_tool_output và tuỳ chọn che dữ liệu nhạy cảm trong output. RunState được ghi theo schema 1.24 mà alpha.1 không đọc được. Song song, bản ổn định 0.26.0 đổi cách mount storage cho sandbox Docker và cho guardrail đầu vào dừng cả các tool đang xếp hàng.",
+          "apply": "Nếu đang chạy agent có bước human-in-the-loop sau load balancer, đây là pattern đáng thử: lưu state ra ngoài process để worker nào cũng resume được; khi nâng schema, cập nhật bên đọc trước bên ghi.",
+          "source": {
+            "title": "openai/openai-agents-python releases",
+            "url": "https://github.com/openai/openai-agents-python/releases"
+          },
+          "published": "2026-11-23",
+          "kind": "tin"
+        },
+        {
+          "title": "Pydantic AI 2.74.0: sáu bản vá bảo mật, trong đó có chặn egress cho trình duyệt của agent",
+          "summary": "Bản này sửa nhiều lỗ hổng trong cơ chế chặn địa chỉ private và egress của PlaywrightBrowser, lỗi telemetry ghi lại biến bí mật, và lỗi OpenTelemetry baggage làm sai kết quả online evaluation (lỗi cuối được backport sang pydantic-evals 1.107.11). Khi bật chính sách egress, trang web trong PlaywrightBrowser sẽ mất WebRTC, WebTransport, WebSocketStream và FedCM.",
+          "apply": "Agent có công cụ duyệt web là bề mặt SSRF điển hình; nếu tự viết tool tương tự, hãy chặn dải IP nội bộ ở tầng mạng (egress proxy hoặc NetworkPolicy) chứ không chỉ kiểm tra URL trong code.",
+          "source": {
+            "title": "pydantic/pydantic-ai releases",
+            "url": "https://github.com/pydantic/pydantic-ai/releases"
+          },
+          "published": "2026-11-24",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "System Design & Architecture",
+      "items": [
+        {
+          "title": "Pinterest dựng lại Guardian, nền tảng phát hiện lạm dụng thời gian thực",
+          "summary": "Pinterest thay kiến trúc nguyên khối của Guardian bằng ba lớp: StarRocks cho truy vấn phân tích thời gian thực qua một giao diện GSQL thống nhất, FlinkSQL xử lý liên tục tín hiệu và hành động, và Iceberg để replay dữ liệu lịch sử khi kiểm thử rule mới. Đây là ví dụ rõ về việc tách đường nóng (stream) khỏi đường lạnh (replay) nhưng giữ chung một ngôn ngữ rule.",
+          "apply": "Khi xây rule engine hay hệ thống fraud, thiết kế sẵn khả năng chạy lại rule trên dữ liệu lịch sử trước khi bật ở production; đó là cách duy nhất ước lượng tỉ lệ chặn nhầm.",
+          "source": {
+            "title": "How Pinterest modernized Guardian for scalable Trust & Safety operations",
+            "url": "https://community.pinterest.biz/t/how-pinterest-modernized-guardian-for-scalable-trust-safety-operations/53454"
+          },
+          "published": "2026-11",
+          "kind": "tin"
+        },
+        {
+          "title": "Herding elephants: bài học khi shard Postgres ở Notion",
+          "summary": "Notion tách một cụm Postgres đơn thành 480 shard logic trên 32 máy vật lý, chọn workspace làm khoá phân vùng vì gần như mọi truy vấn đều nằm trong một workspace. Quy trình gồm ghi kép, backfill, kiểm tra dữ liệu rồi mới chuyển đổi; bài học lớn nhất là thông lượng ghi kép trở thành nút cổ chai lúc cutover và nên shard sớm hơn lúc bị ép.",
+          "apply": "Trước khi shard, đo xem bao nhiêu phần trăm truy vấn đi qua được một khoá phân vùng; nếu chưa tới gần 100%, sharding sẽ biến các truy vấn còn lại thành fan-out đắt đỏ.",
+          "source": {
+            "title": "Herding elephants: lessons learned from sharding Postgres at Notion",
+            "url": "https://www.notion.com/blog/sharding-postgres-at-notion"
+          },
+          "published": "2021-10",
+          "kind": "bài đọc"
+        }
+      ]
+    },
+    {
+      "title": "Open Source & công cụ mới",
+      "items": [
+        {
+          "title": "Dokploy 0.31.x: PaaS tự host thêm export/import project và bảo vệ preview bằng SSO",
+          "summary": "Ba bản trong tuần qua cho phép xuất và nhập project giữa các instance Dokploy, kết nối server mới bằng một lệnh, bảo vệ preview deployment bằng SSO forward auth và thêm tính năng Sandboxes. Bản 0.31.3 bổ sung kiểm tra tổ chức và role cho các endpoint domain, schedule, registry và nâng Traefik lên 3.7.19.",
+          "apply": "Trên home lab, Dokploy là lựa chọn gọn để chạy app từ Git kèm preview theo PR; nếu đang ở bản cũ hơn 0.31.3 thì nâng cấp vì có sửa lỗi phân quyền.",
+          "source": {
+            "title": "Dokploy releases",
+            "url": "https://github.com/Dokploy/dokploy/releases"
+          },
+          "published": "2026-11-17",
+          "kind": "tin"
+        },
+        {
+          "title": "Beszel 0.21.2: giám sát server nhẹ, thêm build tag tắt tự cập nhật",
+          "summary": "Beszel là cặp hub và agent viết bằng Go để theo dõi CPU, RAM, disk, container và cảnh báo, nhẹ hơn nhiều so với một stack Prometheus đầy đủ. Bản 0.21.2 thêm menu cấu hình cảnh báo trên trang chi tiết, email cảnh báo dạng HTML, build tag no_self_update, giới hạn 10 lần đăng nhập mỗi phút mỗi địa chỉ và sửa thiếu kiểm tra quyền ở network monitor.",
+          "apply": "Phù hợp cho home lab vài máy: một container hub, mỗi node một agent; dùng bản build no_self_update nếu bạn muốn mọi nâng cấp đi qua pipeline của mình.",
+          "source": {
+            "title": "henrygd/beszel releases",
+            "url": "https://github.com/henrygd/beszel/releases"
+          },
+          "published": "2026-11-12",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "Career & kỹ năng mềm",
+      "items": [
+        {
+          "title": "The Product-Minded Software Engineer của Gergely Orosz",
+          "summary": "Bài mô tả kiểu kỹ sư quan tâm thật sự đến sản phẩm: chủ động đề xuất ý tưởng, hỏi vì sao trước khi làm, hiểu business và người dùng, cân trade-off giữa sản phẩm và kỹ thuật, và biết khi nào nên ship bản đủ tốt. Đây là kỹ năng phân biệt rõ giữa người code giỏi và người được giao bài toán quan trọng.",
+          "apply": "Ở ticket tiếp theo, trước khi code hãy viết một câu về chỉ số nào sẽ thay đổi nếu tính năng này thành công, và hỏi PM nếu bạn không trả lời được.",
+          "source": {
+            "title": "The Product-Minded Software Engineer",
+            "url": "https://blog.pragmaticengineer.com/the-product-minded-engineer/"
+          },
+          "published": "2019-02",
+          "kind": "bài đọc"
+        }
+      ]
+    },
+    {
+      "title": "Đáng chú ý khác",
+      "items": [
+        {
+          "title": "CVE-2026-134814: chèn mã JavaScript trong thư viện npm binary-parser",
+          "summary": "binary-parser trước 2.3.1 ghép thẳng các option dạng chuỗi (length, key, tag, offset...) vào code JavaScript sinh ra khi compile parser, nên ai kiểm soát định nghĩa parser có thể chạy mã tuỳ ý trong process Node.js (CVSS 4.0: 9.2). Rủi ro chỉ thực sự cao khi định nghĩa parser lấy từ dữ liệu bên ngoài, nhưng thư viện này nằm sâu trong nhiều cây dependency.",
+          "apply": "Chạy npm ls binary-parser để xem có dính gián tiếp không và nâng lên 2.3.1.",
+          "source": {
+            "title": "GHSA-hhq6-2gpv-hrf4",
+            "url": "https://github.com/advisories/GHSA-hhq6-2gpv-hrf4"
+          },
+          "published": "2026-11-23",
+          "kind": "tin"
+        }
+      ]
+    }
+  ],
+  "knowledge": {
+    "title": "Backpressure: dùng hàng đợi có giới hạn để quá tải lộ ra sớm",
+    "body": "Backpressure là cơ chế để bên nhận báo cho bên gửi rằng nó không kịp xử lý, thay vì âm thầm nhận hết vào bộ nhớ. Hàng đợi không giới hạn chỉ che giấu quá tải: độ trễ tăng dần, RAM phình ra rồi process bị OOM kill, và lúc đó mọi request trong hàng đều mất.\n\nCách làm cơ bản là đặt giới hạn cho mọi buffer (channel, thread pool queue, Kafka consumer in-flight, connection pool) và quyết định trước điều gì xảy ra khi đầy: chặn bên gửi (block), từ chối ngay (trả 429/503 để client retry có backoff), hoặc bỏ bớt việc ít quan trọng (load shedding). Từ chối nhanh thường tốt hơn để request chờ đến timeout, vì client có thể chuyển sang instance khác.\n\nKích thước hàng đợi nên tính từ độ trễ chấp nhận được: nếu xử lý 200 việc/giây và chấp nhận chờ tối đa 1 giây thì hàng đợi khoảng 200 là đủ, lớn hơn chỉ làm request cũ chờ vô ích. Đo độ dài hàng đợi và tỉ lệ bị từ chối như một metric chính, vì đó là tín hiệu sớm nhất cho thấy cần scale.",
+    "example": "// Go: worker pool với hàng đợi có giới hạn, từ chối khi đầy\njobs := make(chan Job, 200) // giới hạn = throughput x độ trễ chấp nhận\n\nfunc handle(w http.ResponseWriter, r *http.Request) {\n    select {\n    case jobs <- newJob(r):\n        w.WriteHeader(http.StatusAccepted)\n    default: // hàng đợi đầy: báo quá tải thay vì giữ request\n        w.Header().Set(\"Retry-After\", \"1\")\n        http.Error(w, \"overloaded\", http.StatusServiceUnavailable)\n    }\n}"
+  },
+  "sources": [
+    {
+      "title": "ClickHouse CHANGELOG: release 26.11",
+      "url": "https://github.com/ClickHouse/ClickHouse/blob/master/CHANGELOG.md"
+    },
+    {
+      "title": "astral-sh/uv releases",
+      "url": "https://github.com/astral-sh/uv/releases"
+    },
+    {
+      "title": "Argo CD security advisories",
+      "url": "https://github.com/argoproj/argo-cd/security/advisories"
+    },
+    {
+      "title": "GHSA-w7rw-fg89-2cjf: unauthenticated request crashes the API server",
+      "url": "https://github.com/argoproj/argo-cd/security/advisories/GHSA-w7rw-fg89-2cjf"
+    },
+    {
+      "title": "GHSA-mfgm-4p7x-3ccr: repository upsert without update permission",
+      "url": "https://github.com/argoproj/argo-cd/security/advisories/GHSA-mfgm-4p7x-3ccr"
+    },
+    {
+      "title": "Argo CD releases",
+      "url": "https://github.com/argoproj/argo-cd/releases"
+    },
+    {
+      "title": "opentelemetry-collector releases",
+      "url": "https://github.com/open-telemetry/opentelemetry-collector/releases"
+    },
+    {
+      "title": "openai/openai-agents-python releases",
+      "url": "https://github.com/openai/openai-agents-python/releases"
+    },
+    {
+      "title": "pydantic/pydantic-ai releases",
+      "url": "https://github.com/pydantic/pydantic-ai/releases"
+    },
+    {
+      "title": "How Pinterest modernized Guardian for scalable Trust & Safety operations",
+      "url": "https://community.pinterest.biz/t/how-pinterest-modernized-guardian-for-scalable-trust-safety-operations/53454"
+    },
+    {
+      "title": "FlinkSQL Powered Asynchronous Data Processing in Pinterest's Rule Engine Platform",
+      "url": "https://current.confluent.io/post-conference-videos-2025/flinksql-powered-asynchronous-data-processing-in-pinterests-rule-engine-platform-lnd25"
+    },
+    {
+      "title": "Herding elephants: lessons learned from sharding Postgres at Notion",
+      "url": "https://www.notion.com/blog/sharding-postgres-at-notion"
+    },
+    {
+      "title": "Dokploy releases",
+      "url": "https://github.com/Dokploy/dokploy/releases"
+    },
+    {
+      "title": "henrygd/beszel releases",
+      "url": "https://github.com/henrygd/beszel/releases"
+    },
+    {
+      "title": "The Product-Minded Software Engineer",
+      "url": "https://blog.pragmaticengineer.com/the-product-minded-engineer/"
+    },
+    {
+      "title": "GHSA-hhq6-2gpv-hrf4 (CVE-2026-134814)",
+      "url": "https://github.com/advisories/GHSA-hhq6-2gpv-hrf4"
+    }
+  ],
+  "generated_at": "2026-11-25T01:27:09Z"
+}
