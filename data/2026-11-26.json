@@ -1,0 +1,206 @@
+{
+  "date": "2026-11-26",
+  "summary": "FastAPI thêm giới hạn concurrency cho dependency và body size; Kubernetes 1.37.3 có ghi chú nâng cấp khẩn cho user namespace; Anthropic SDK Python đổi cách xử lý proxy.",
+  "sections": [
+    {
+      "title": "Backend",
+      "items": [
+        {
+          "title": "FastAPI 0.163 đến 0.165: Depends(max_concurrency=...) và giới hạn kích thước body, form",
+          "summary": "Bản 0.163.0 cho phép giới hạn số request chạy đồng thời qua một dependency bằng Depends(max_concurrency=...). Hai bản 0.164.0 và 0.165.0 ra cùng ngày 18/11 thêm giới hạn cấu hình được cho kích thước request body và cho việc parse form, còn 0.162.6 đã bỏ hỗ trợ Python 3.10.",
+          "apply": "Bọc dependency gọi tài nguyên đắt (client DB, model, API bên thứ ba) bằng max_concurrency và đặt giới hạn body ngay ở app thay vì chỉ trông vào reverse proxy.",
+          "source": {
+            "title": "FastAPI releases",
+            "url": "https://github.com/fastapi/fastapi/releases"
+          },
+          "published": "2026-11-18",
+          "kind": "tin"
+        },
+        {
+          "title": "Pydantic 2.14.4: nâng jiter để sửa lỗi bộ nhớ của bản jiter trước",
+          "summary": "Bản vá ngày 19/11 cập nhật jiter (parser JSON mà Pydantic dùng) để sửa các vấn đề bộ nhớ do bản jiter trước gây ra, đồng thời loại field InitVar khỏi JSON schema khi serialize và không còn đánh dấu lớp con của lớp @deprecated là deprecated. Nhắc lại: 2.14.2 cuối tháng 10 là bản bảo mật, và 1.10.27 là bản V1 cuối cùng.",
+          "apply": "Service FastAPI hoặc worker parse nhiều JSON thì nên lên 2.14.4 và theo dõi RSS sau khi deploy; ai còn dùng pydantic.v1 cần lên kế hoạch gỡ.",
+          "source": {
+            "title": "Pydantic releases",
+            "url": "https://github.com/pydantic/pydantic/releases"
+          },
+          "published": "2026-11-19",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "DevOps / Cloud",
+      "items": [
+        {
+          "title": "Kubernetes 1.37.3, 1.36.7, 1.35.11: ghi chú nâng cấp khẩn cho pod dùng hostUsers: false",
+          "summary": "Bản vá ngày 25/11 sửa dải ID mặc định của user namespace vốn kết thúc ở 4294967295, giá trị kernel từ chối; kubelet mới sẽ không khởi động nếu dải subuid/subgid của user kubelet chạm tới giá trị này, và pod đã nhận dải sai sẽ chặn kubelet. Ngoài ra còn sửa regression NativeHistograms làm mất bucket mặc định, crash scheduler khi pod bị xoá rồi tạo lại cùng tên, và kube-proxy bỏ sót zone ban đầu của node.",
+          "apply": "Trước khi nâng node có dùng user namespace: kiểm tra /etc/subuid và /etc/subgid, thu nhỏ dải ít nhất 65536 nếu cần, rồi drain node hoặc xoá pod kẹt ContainerCreating.",
+          "source": {
+            "title": "CHANGELOG-1.37.md",
+            "url": "https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.37.md"
+          },
+          "published": "2026-11-25",
+          "kind": "tin"
+        },
+        {
+          "title": "cert-manager v1.22.0-alpha.0: nameserver riêng cho từng DNS01 solver, ARI theo từng issuer",
+          "summary": "Bản alpha đầu của nhánh 1.22 cho phép đặt nameservers riêng trên từng DNS01 solver, đặt runtimeClassName cho pod HTTP01 solver, bật ACME Renewal Information theo từng issuer (enableARI), thêm metric cho serving certificate động và giới hạn kích thước DNS cache. Đây là bản chỉ để thử nghiệm.",
+          "apply": "Nếu cụm của bạn phải dùng DNS nội bộ khác nhau cho các zone, dựng thử 1.22 alpha trên cụm staging để xem có bỏ được workaround hiện tại không.",
+          "source": {
+            "title": "cert-manager releases",
+            "url": "https://github.com/cert-manager/cert-manager/releases"
+          },
+          "published": "2026-11-24",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "AI Engineering thực chiến",
+      "items": [
+        {
+          "title": "Anthropic SDK Python 2.14.0: proxy= không còn đọc biến môi trường proxy",
+          "summary": "DefaultHttpxClient và bản async giờ tôn trọng tham số proxy= và trust_env=False thay vì tự đọc HTTP_PROXY, HTTPS_PROXY, ALL_PROXY, NO_PROXY. Hệ quả: khi đã truyền proxy=, host nằm trong NO_PROXY vẫn đi qua proxy. Các bản 2.9 đến 2.13 trong tuần cũng đánh dấu deprecated nhiều giá trị beta header cũ và đổi tên các model lỗi.",
+          "apply": "Sau khi nâng SDK, rà các service chạy sau proxy công ty; host cần đi thẳng thì khai báo mounts={\"all://that.host\": None}, và gỡ dần các beta header cũ như prompt-caching-2024-07-31.",
+          "source": {
+            "title": "anthropic-sdk-python releases",
+            "url": "https://github.com/anthropics/anthropic-sdk-python/releases"
+          },
+          "published": "2026-11-24",
+          "kind": "tin"
+        },
+        {
+          "title": "Qdrant 1.20.2: batch search cùng filter nhanh hơn nhiều, HNSW quay về thuật toán cổ điển làm mặc định",
+          "summary": "Bản vá ngày 16/11 tăng tốc đáng kể các batch search dùng cùng một filter trên cùng vector, đưa việc build HNSW về thuật toán cổ điển làm mặc định, và sửa lỗi peer mới không join được cluster ngay sau bầu leader. Bản 1.20.1 trước đó đã sửa regression build HNSW chậm gấp 3 lần trên máy nhiều nhân.",
+          "apply": "Pipeline RAG chạy nhiều truy vấn song song theo tenant (cùng filter tenant_id) nên gom thành batch search sau khi lên 1.20.2 và đo lại p95.",
+          "source": {
+            "title": "Qdrant releases",
+            "url": "https://github.com/qdrant/qdrant/releases"
+          },
+          "published": "2026-11-16",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "System Design & Architecture",
+      "items": [
+        {
+          "title": "How to do distributed locking của Martin Kleppmann",
+          "summary": "Bài phân biệt khoá để tiết kiệm công (chạy trùng thì chỉ tốn tài nguyên) với khoá để bảo đảm đúng đắn (chạy trùng thì hỏng dữ liệu), và chỉ ra Redlock dựa vào giả định về thời gian: client bị GC pause hay mạng trễ có thể vẫn ghi sau khi lease đã hết. Cách sửa là fencing token tăng đơn điệu, để tầng lưu trữ từ chối lệnh ghi mang token cũ. Nên đọc kèm phản hồi của antirez để thấy cả hai phía.",
+          "apply": "Rà các chỗ đang dùng Redis lock cho nghiệp vụ tiền hoặc tồn kho: nếu tài nguyên đích không kiểm tra token hoặc version, hãy thêm điều kiện ghi theo version hoặc chuyển sang ràng buộc của chính database.",
+          "source": {
+            "title": "How to do distributed locking",
+            "url": "https://martin.kleppmann.com/2016/02/08/how-to-do-distributed-locking.html"
+          },
+          "published": "2016-02-08",
+          "kind": "bài đọc"
+        }
+      ]
+    },
+    {
+      "title": "Open Source & công cụ mới",
+      "items": [
+        {
+          "title": "n8n-io/nod: personal agent tự host, chạy tác vụ trong container sandbox",
+          "summary": "Nod là agent cá nhân mã nguồn mở (Apache 2.0) của đội n8n, ra liên tục các bản 0.9.x từ 19/11. Tác vụ chạy trong một container workspace Linux và một container Chromium, dữ liệu lưu PostgreSQL; key của nhà cung cấp model không đi vào workspace hay trình duyệt, policy kiểm tra ở server và kết quả từ web được coi là dữ liệu không tin cậy. Bạn tự chọn provider (Anthropic, OpenAI, Gemini, Bedrock hoặc server riêng).",
+          "apply": "Đáng mổ xẻ kiến trúc tách key khỏi sandbox nếu bạn đang tự xây agent; muốn thử thì chạy trên máy home lab riêng vì bản Linux vẫn là preview.",
+          "source": {
+            "title": "n8n-io/nod",
+            "url": "https://github.com/n8n-io/nod"
+          },
+          "published": "2026-11-19",
+          "kind": "tin"
+        },
+        {
+          "title": "meta/astryx: design system React mà agent đọc được, đang lên trending",
+          "summary": "Astryx là design system mã nguồn mở (MIT, đang beta) của Meta, xây trên React 19 và StyleX, với hơn 150 component và theme bằng CSS custom property. Điểm đáng chú ý với dân backend làm tool nội bộ: lệnh init ghi hướng dẫn vào AGENTS.md hoặc CLAUDE.md để coding agent dựng UI theo đúng component, và swizzle chép mã nguồn component về project thay vì khoá cứng.",
+          "apply": "Thử cho dashboard admin nội bộ do agent sinh ra, để UI nhất quán mà không phải review CSS từng màn.",
+          "source": {
+            "title": "meta/astryx",
+            "url": "https://github.com/meta/astryx"
+          },
+          "published": "2026-11",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "Career & kỹ năng mềm",
+      "items": [
+        {
+          "title": "Write five, then synthesize: good engineering strategy is boring (Will Larson)",
+          "summary": "Larson cho rằng strategy kỹ thuật tốt không đến từ một tài liệu tầm nhìn viết từ đầu, mà từ việc viết năm design doc cho các quyết định thật, rồi rút ra điểm chung giữa chúng thành chiến lược. Chiến lược vì thế thường nhàm, nhưng bám vào thực tế và được đội chấp nhận.",
+          "apply": "Khi được giao viết tech strategy, gom 5 ADR hoặc design doc gần nhất của team, liệt kê các lựa chọn lặp lại, và viết chúng thành nguyên tắc trước khi đề xuất hướng mới.",
+          "source": {
+            "title": "Write five, then synthesize: good engineering strategy is boring",
+            "url": "https://lethain.com/good-engineering-strategy-is-boring/"
+          },
+          "published": "2020-12",
+          "kind": "bài đọc"
+        }
+      ]
+    }
+  ],
+  "knowledge": {
+    "title": "Hàng đợi job trên Postgres với SELECT ... FOR UPDATE SKIP LOCKED",
+    "body": "Khi nhiều worker cùng lấy job từ một bảng, SELECT ... FOR UPDATE thông thường làm các worker xếp hàng chờ cùng một dòng bị khoá. Thêm SKIP LOCKED thì mỗi worker bỏ qua các dòng đang bị worker khác khoá và lấy ngay dòng kế tiếp, nên chạy song song mà không giành nhau.\n\nMẫu chuẩn là lấy job, xử lý và đánh dấu xong trong cùng một transaction: nếu worker chết giữa chừng, transaction rollback và khoá tự nhả, job quay về hàng đợi. Cần index phù hợp với điều kiện lọc và thứ tự, giữ transaction ngắn, và nếu xử lý lâu thì chuyển sang mô hình lease (cột locked_until) để không giữ connection quá lâu.\n\nCách này hợp với khối lượng vừa phải và khi bạn muốn enqueue job chung transaction với dữ liệu nghiệp vụ; khi throughput lên rất cao hoặc cần fan-out nhiều consumer thì nên cân nhắc broker chuyên dụng.",
+    "example": "BEGIN;\nSELECT id, payload FROM jobs\nWHERE status = 'queued' AND run_at <= now()\nORDER BY run_at\nLIMIT 10\nFOR UPDATE SKIP LOCKED;\n-- xử lý các job vừa lấy ...\nUPDATE jobs SET status = 'done' WHERE id = ANY($1);\nCOMMIT;\n\nCREATE INDEX jobs_queued_idx ON jobs (run_at) WHERE status = 'queued';"
+  },
+  "sources": [
+    {
+      "title": "FastAPI releases",
+      "url": "https://github.com/fastapi/fastapi/releases"
+    },
+    {
+      "title": "Pydantic releases",
+      "url": "https://github.com/pydantic/pydantic/releases"
+    },
+    {
+      "title": "CHANGELOG-1.37.md",
+      "url": "https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.37.md"
+    },
+    {
+      "title": "Kubernetes releases",
+      "url": "https://github.com/kubernetes/kubernetes/releases"
+    },
+    {
+      "title": "cert-manager releases",
+      "url": "https://github.com/cert-manager/cert-manager/releases"
+    },
+    {
+      "title": "anthropic-sdk-python releases",
+      "url": "https://github.com/anthropics/anthropic-sdk-python/releases"
+    },
+    {
+      "title": "Qdrant releases",
+      "url": "https://github.com/qdrant/qdrant/releases"
+    },
+    {
+      "title": "How to do distributed locking",
+      "url": "https://martin.kleppmann.com/2016/02/08/how-to-do-distributed-locking.html"
+    },
+    {
+      "title": "Is Redlock safe? (antirez)",
+      "url": "https://www.antirez.com/news/101"
+    },
+    {
+      "title": "n8n-io/nod",
+      "url": "https://github.com/n8n-io/nod"
+    },
+    {
+      "title": "meta/astryx",
+      "url": "https://github.com/meta/astryx"
+    },
+    {
+      "title": "GitHub Trending (tuần)",
+      "url": "https://github.com/trending?since=weekly"
+    },
+    {
+      "title": "Write five, then synthesize: good engineering strategy is boring",
+      "url": "https://lethain.com/good-engineering-strategy-is-boring/"
+    }
+  ],
+  "generated_at": "2026-11-26T01:25:41Z"
+}
