@@ -1,5 +1,6 @@
 {
   "dates": [
+    "2026-11-27",
     "2026-11-26",
     "2026-11-25",
     "2026-11-24",
@@ -43,6 +44,7 @@
     "2026-10-17"
   ],
   "summaries": {
+    "2026-11-27": "Quarkus 4.0 GA có HTTP/3 và virtual thread mặc định cho REST; Traefik 3.8 vá ba advisory; Weaviate 1.41 thêm namespace cho cluster dùng chung; gói agent-framework của Microsoft trên PyPI bị cài mã đánh cắp credential.",
     "2026-11-26": "FastAPI thêm giới hạn concurrency cho dependency và body size; Kubernetes 1.37.3 có ghi chú nâng cấp khẩn cho user namespace; Anthropic SDK Python đổi cách xử lý proxy.",
     "2026-11-25": "ClickHouse 26.11 bật kiểm tra hostname TLS mặc định, Argo CD vá lỗi crash API server không cần xác thực, OpenAI Agents SDK lên 1.0 alpha với session resume được trên worker khác.",
     "2026-11-24": "Redis 8.12 GA với BLESS và hết hạn theo phần tử set, Claude API khai tử Opus 4.5, Cilium vá lỗi egress policy mở toang khi Service thiếu backend, Uptime Kuma 3.0 beta.",

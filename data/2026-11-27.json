@@ -1,0 +1,203 @@
+{
+  "date": "2026-11-27",
+  "summary": "Quarkus 4.0 GA có HTTP/3 và virtual thread mặc định cho REST; Traefik 3.8 vá ba advisory; Weaviate 1.41 thêm namespace cho cluster dùng chung; gói agent-framework của Microsoft trên PyPI bị cài mã đánh cắp credential.",
+  "sections": [
+    {
+      "title": "Backend",
+      "items": [
+        {
+          "title": "Quarkus 4.0.0 GA và 4.0.1: HTTP/3, virtual thread mặc định cho REST endpoint",
+          "summary": "Bản major mới hỗ trợ HTTP/3 và cho phép bật virtual thread làm mặc định cho REST endpoint thay vì đánh dấu từng method. Đi kèm là vài thay đổi phá vỡ: bỏ event bus Vert.x dạng cluster, đổi mặc định coi dấu chấm phẩy là ký tự phân tách query param. Bản 4.0.1 ra cùng ngày nâng Hibernate ORM lên 8.0.0.CR2 và đổi tên quarkus-test-spring thành quarkus-spring-test.",
+          "apply": "Nếu đang dùng clustered event bus hoặc có URL chứa dấu chấm phẩy trong query, rà lại trước khi nâng cấp; còn lại nên chờ một hai bản vá nữa trước khi đưa lên production.",
+          "source": {
+            "title": "Quarkus releases (GitHub)",
+            "url": "https://github.com/quarkusio/quarkus/releases"
+          },
+          "published": "2026-11-25",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "DevOps / Cloud",
+      "items": [
+        {
+          "title": "Traefik 3.8.0, 3.7.20 và 2.11.64: vá ba advisory, thêm ListenerSet của Gateway API",
+          "summary": "Cả ba nhánh ra cùng ngày với các bản vá bảo mật (GHSA-3rh5-223h-cpwr, GHSA-42x2-976f-ph52, GHSA-9657-c2gv-wjpj; nhánh 2.11 chỉ dính advisory cuối). Bản 3.8.0 thêm timeout phản hồi theo từng router, hỗ trợ ListenerSet của Gateway API, middleware tap, wildcard kép trong Host/HostSNI và Yaegi v2 làm runtime plugin thử nghiệm; 3.7.20 giới hạn bộ nhớ của Brotli writer và che cấu hình static provider trong log.",
+          "apply": "Nếu chưa sẵn sàng lên 3.8 (có migration guide cần đọc), ít nhất nâng lên 3.7.20 hoặc 2.11.64 để lấy bản vá; ai còn ở 2.x nên lên kế hoạch rời nhánh này.",
+          "source": {
+            "title": "Traefik releases (GitHub)",
+            "url": "https://github.com/traefik/traefik/releases"
+          },
+          "published": "2026-11-23",
+          "kind": "tin"
+        },
+        {
+          "title": "Elasticsearch 9.5.7, 9.4.10 và 8.19.26 phát hành cùng ngày",
+          "summary": "Elastic ra đồng loạt bản vá cho ba nhánh đang được hỗ trợ, trong đó 8.19 là nhánh cuối của dòng 8.x. Trang release chỉ dẫn sang release notes, nên cần đọc chi tiết ở đó trước khi nâng cấp.",
+          "apply": "Cụm còn ở 8.x nên lên 8.19.26 làm bàn đạp, đồng thời chạy Upgrade Assistant để chuẩn bị sang 9.x.",
+          "source": {
+            "title": "Elasticsearch releases (GitHub)",
+            "url": "https://github.com/elastic/elasticsearch/releases"
+          },
+          "published": "2026-11-23",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "AI Engineering thực chiến",
+      "items": [
+        {
+          "title": "Weaviate 1.41.0: namespace cách ly người dùng trên cluster dùng chung, rebalancing shard bán tự động",
+          "summary": "Namespace tách cả control plane lẫn dữ liệu giữa các nhóm dùng chung một cluster, hữu ích khi nhiều team hoặc nhiều sản phẩm RAG chia một hạ tầng vector DB. Bản này còn thêm TTL cho DB user, rebalancing shard bán tự động và đổi kiểu index của property bằng reindex (cả hai đang preview), cùng reranking bằng decision model; bản 1.40.7 trước đó sửa failover khi đọc từ replica đang phục hồi.",
+          "apply": "Nếu đang chạy mỗi team một cluster Weaviate chỉ để cách ly, thử gom lại bằng namespace trên môi trường staging và đo xem có tiết kiệm được tài nguyên không.",
+          "source": {
+            "title": "Weaviate releases (GitHub)",
+            "url": "https://github.com/weaviate/weaviate/releases"
+          },
+          "published": "2026-11-23",
+          "kind": "tin"
+        },
+        {
+          "title": "LangChain: langchain-core 1.8.5 sửa lỗi ID khi stream, các gói partner bỏ Python 3.10",
+          "summary": "langchain-core 1.8.5 sửa việc chunk stream về sau dùng lại message ID của provider, lỗi dễ làm hỏng logic gộp hoặc lưu message. langchain-anthropic 1.7.13 cho truyền HTTP client và SDK client tự tạo, còn loạt gói partner (qdrant, text-splitters, ollama, huggingface...) ra minor mới bỏ hỗ trợ Python 3.10; langchain-ollama yêu cầu Ollama từ 0.6.3.",
+          "apply": "Pin phiên bản trước khi CI tự kéo bản mới nếu service còn chạy Python 3.10, và dùng tùy chọn custom client để gắn proxy, timeout và tracing thống nhất với phần còn lại của hệ thống.",
+          "source": {
+            "title": "LangChain releases (GitHub)",
+            "url": "https://github.com/langchain-ai/langchain/releases"
+          },
+          "published": "2026-11-25",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "System Design & Architecture",
+      "items": [
+        {
+          "title": "Scaling Memcache at Facebook (NSDI 2013)",
+          "summary": "Bài báo kể cách Facebook dựng một lớp cache phân tán phục vụ hàng tỷ request mỗi giây: lease để chống thundering herd và stale set, gộp request theo batch, pool riêng cho các nhóm key, rồi mở rộng sang nhiều region với invalidation đi qua log của MySQL. Giá trị lớn nhất là cách họ chấp nhận eventual consistency có kiểm soát thay vì đòi cache luôn đúng.",
+          "apply": "Đọc phần lease và invalidation dựa trên commit log, rồi so với cách hệ thống của bạn đang xóa cache sau khi ghi DB: nếu xóa từ code ứng dụng, có khoảng nào cache bị ghi đè bằng dữ liệu cũ không?",
+          "source": {
+            "title": "Scaling Memcache at Facebook (USENIX NSDI 2013)",
+            "url": "https://www.usenix.org/conference/nsdi13/technical-sessions/presentation/nishtala"
+          },
+          "published": "2013-04",
+          "kind": "bài đọc"
+        }
+      ]
+    },
+    {
+      "title": "Open Source & công cụ mới",
+      "items": [
+        {
+          "title": "authentik 2026.8.7 và 2026.5.9: loạt bản vá bảo mật cho SSO tự host",
+          "summary": "Hai nhánh đang hỗ trợ nhận khoảng mười một bản backport bảo mật, gồm request smuggling, giới hạn kích thước khi giải nén SAML, policy engine fail-open, allowlist của forward auth và so khớp user khi federation bằng JWT. Bản 2026.11.0-rc2 cũng đã ra cho ai muốn thử nhánh mới.",
+          "apply": "Nếu home lab dùng authentik làm forward auth cho Traefik hoặc nginx, nâng cấp sớm vì đây là cửa ngõ đăng nhập của mọi dịch vụ phía sau.",
+          "source": {
+            "title": "authentik releases (GitHub)",
+            "url": "https://github.com/goauthentik/authentik/releases"
+          },
+          "published": "2026-11-25",
+          "kind": "tin"
+        },
+        {
+          "title": "Immich 3.4.2: tiếp tục ổn định nhánh 3.4 của app ảnh tự host",
+          "summary": "Bản vá sửa CSP cho style bên ngoài, tải báo cáo integrity, Prometheus exporter và tùy chọn VAAPI khi chuyển mã, đồng thời cập nhật FUTO Backups. Bản 3.4.1 trước đó sửa vấn đề hiệu năng khi mở shared link.",
+          "apply": "Ai còn ở 3.4.0 nên lên 3.4.2 để lấy bản sửa hiệu năng shared link; tận dụng Prometheus exporter để đưa số liệu job queue của Immich vào Grafana.",
+          "source": {
+            "title": "Immich releases (GitHub)",
+            "url": "https://github.com/immich-app/immich/releases"
+          },
+          "published": "2026-11-18",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "Career & kỹ năng mềm",
+      "items": [
+        {
+          "title": "The Joel Test: 12 Steps to Better Code của Joel Spolsky",
+          "summary": "Mười hai câu hỏi có hoặc không để đánh giá nhanh sức khỏe quy trình của một team: có source control không, build được bằng một bước không, có bug tracker, có sửa bug trước khi viết tính năng mới, có spec, có lịch trình cập nhật... Nhiều câu nay đã thành mặc định, nhưng tinh thần đo bằng câu hỏi cụ thể thay vì cảm giác vẫn rất đáng học.",
+          "apply": "Khi nhận team mới, viết bản Joel Test của riêng bạn cho bối cảnh hiện nay (deploy một lệnh, rollback dưới 10 phút, có runbook on-call, review trong một ngày...) rồi chấm điểm cùng team để chọn việc cải thiện đầu tiên.",
+          "source": {
+            "title": "The Joel Test: 12 Steps to Better Code",
+            "url": "https://www.joelonsoftware.com/2000/08/09/the-joel-test-12-steps-to-better-code/"
+          },
+          "published": "2000-08-09",
+          "kind": "bài đọc"
+        }
+      ]
+    },
+    {
+      "title": "Đáng chú ý khác",
+      "items": [
+        {
+          "title": "Gói agent-framework của Microsoft trên PyPI bị phát hành bản độc 1.26.1 và 1.26.2",
+          "summary": "Ngày 17/11 kẻ tấn công đẩy hai phiên bản chứa mã đánh cắp credential cloud và CI/CD lên tài khoản PyPI chính thức; mã cài hook dạng .pth nên chạy mỗi lần Python khởi động, kể cả khi không import gói. Hai bản bị gỡ trong khoảng một giờ, 1.26.0 được xác nhận là bản sạch gần nhất.",
+          "apply": "Kiểm tra lockfile và image build trong khoảng 17/11; máy hay runner nào đã cài 1.26.1 hoặc 1.26.2 thì coi như bị xâm nhập, xoay vòng secret và build lại môi trường, đồng thời pin 1.26.0.",
+          "source": {
+            "title": "Microsoft's agent-framework PyPI package compromised to steal credentials (BleepingComputer)",
+            "url": "https://bleepingcomputer.com/news/security/microsofts-agent-framework-pypi-package-compromised-to-steal-credentials"
+          },
+          "published": "2026-11-17",
+          "kind": "tin"
+        }
+      ]
+    }
+  ],
+  "knowledge": {
+    "title": "Graceful shutdown trên Kubernetes: SIGTERM, preStop và readiness",
+    "body": "Khi Kubernetes xóa pod, việc gửi SIGTERM cho container và việc gỡ pod khỏi Endpoints của Service diễn ra song song, nên trong vài giây đầu vẫn có request mới đổ vào. Nếu ứng dụng thoát ngay khi nhận SIGTERM, client sẽ thấy lỗi 502 hoặc connection reset mỗi lần deploy.\n\nCách làm chuẩn gồm ba bước: thêm preStop sleep ngắn để chờ load balancer cập nhật, khi nhận SIGTERM thì cho readiness trả lỗi, ngừng nhận kết nối mới nhưng xử lý nốt request đang chạy, rồi mới đóng connection pool và thoát. Tổng thời gian phải nhỏ hơn terminationGracePeriodSeconds (mặc định 30 giây), nếu không pod sẽ bị SIGKILL giữa chừng.\n\nVới consumer của hàng đợi, bước tương đương là ngừng poll message mới, commit offset hoặc ack những gì đã xong và để phần chưa xong được giao lại cho consumer khác.",
+    "example": "lifecycle:\n  preStop:\n    exec:\n      command: [\"sleep\", \"5\"]\nterminationGracePeriodSeconds: 40\n\n// Go\nctx, stop := signal.NotifyContext(context.Background(), syscall.SIGTERM)\ndefer stop()\n<-ctx.Done()\nready.Store(false)\nshutdownCtx, cancel := context.WithTimeout(context.Background(), 25*time.Second)\ndefer cancel()\nsrv.Shutdown(shutdownCtx) // chờ request đang chạy xong"
+  },
+  "sources": [
+    {
+      "title": "Quarkus releases (GitHub)",
+      "url": "https://github.com/quarkusio/quarkus/releases"
+    },
+    {
+      "title": "Traefik releases (GitHub)",
+      "url": "https://github.com/traefik/traefik/releases"
+    },
+    {
+      "title": "Elasticsearch releases (GitHub)",
+      "url": "https://github.com/elastic/elasticsearch/releases"
+    },
+    {
+      "title": "Weaviate releases (GitHub)",
+      "url": "https://github.com/weaviate/weaviate/releases"
+    },
+    {
+      "title": "LangChain releases (GitHub)",
+      "url": "https://github.com/langchain-ai/langchain/releases"
+    },
+    {
+      "title": "Scaling Memcache at Facebook (USENIX NSDI 2013)",
+      "url": "https://www.usenix.org/conference/nsdi13/technical-sessions/presentation/nishtala"
+    },
+    {
+      "title": "authentik releases (GitHub)",
+      "url": "https://github.com/goauthentik/authentik/releases"
+    },
+    {
+      "title": "Immich releases (GitHub)",
+      "url": "https://github.com/immich-app/immich/releases"
+    },
+    {
+      "title": "Microsoft's agent-framework PyPI package compromised to steal credentials (BleepingComputer)",
+      "url": "https://bleepingcomputer.com/news/security/microsofts-agent-framework-pypi-package-compromised-to-steal-credentials"
+    },
+    {
+      "title": "Attackers hijack Microsoft's agent-framework package (CSO Online)",
+      "url": "https://www.csoonline.com/article/4250156/attackers-hijack-microsofts-agent-framework-package-to-steal-azure-and-ci-credentials.html"
+    },
+    {
+      "title": "The Joel Test: 12 Steps to Better Code",
+      "url": "https://www.joelonsoftware.com/2000/08/09/the-joel-test-12-steps-to-better-code/"
+    }
+  ],
+  "generated_at": "2026-11-27T01:25:53Z"
+}
