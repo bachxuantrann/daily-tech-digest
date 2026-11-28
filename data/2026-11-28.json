@@ -1,0 +1,243 @@
+{
+  "date": "2026-11-28",
+  "summary": "MCP reference servers vá thêm 8 lỗ hổng ở bản 2.6.0, Node.js 27 alpha đưa SQLite lên stable, Loki 3.7.11 sửa rò rỉ file descriptor, Headscale 0.29.8 cần cho client Tailscale 1.106.",
+  "sections": [
+    {
+      "title": "Backend",
+      "items": [
+        {
+          "title": "Node.js 27.0.0-alpha.0.2.0: module SQLite thành stable, util.TextDecoder bị deprecate",
+          "summary": "Bản alpha mới của nhánh 27 đánh dấu node:sqlite là stable và thêm getter statement.columnCount, đồng thời deprecate util.TextEncoder/TextDecoder (dùng bản global). TLS renegotiation bị deprecate ở mức tài liệu, cần opt-in allowRenegotiation, và cờ --process-timeout đã chính thức.",
+          "apply": "Nếu đang kéo better-sqlite3 chỉ để làm cache hay queue cục bộ, hãy thử node:sqlite trên nhánh 27 và tìm trong code các chỗ import TextDecoder từ util để chuyển sang global.",
+          "source": {
+            "title": "Node.js releases",
+            "url": "https://github.com/nodejs/node/releases"
+          },
+          "published": "2026-11-26",
+          "kind": "tin"
+        },
+        {
+          "title": "Kotlin 2.5.0-RC2: sửa Lombok @SuperBuilder và lỗi Compose, có một regression hiệu năng trên Wasm",
+          "summary": "RC thứ hai của Kotlin 2.5 sửa lỗi StackOverflow khi dùng Lombok @SuperBuilder với kế thừa vòng và lỗi NoSuchFieldError của Compose với lambda @JvmField chia sẻ giữa các module. Release notes ghi thẳng một regression: hàm cos trên Kotlin/Wasm chậm khoảng 47% so với 2.4.21.",
+          "apply": "Dự án Spring hay Kotlin dùng Lombok nên chạy thử build với 2.5.0-RC2 ngay bây giờ, vì RC1 đã tắt @Builder của Lombok trong code Kotlin, để biết trước phải sửa gì khi GA.",
+          "source": {
+            "title": "Kotlin releases",
+            "url": "https://github.com/JetBrains/kotlin/releases"
+          },
+          "published": "2026-11-25",
+          "kind": "tin"
+        },
+        {
+          "title": "Hibernate ORM 8.0.0.CR2 ra cùng lúc nhánh 7.4 lên 7.4.17",
+          "summary": "Hibernate 8.0 đã sang bản ứng viên thứ hai (CR1 ngày 12/11), nghĩa là API gần như chốt. Release notes chỉ trỏ tới hướng dẫn What's New và Migration Guide, nên phải đọc hai tài liệu này mới biết thay đổi cụ thể.",
+          "apply": "Đọc Migration Guide của 8.0 và chạy test suite với CR2 trên một nhánh riêng; vì 7.4.x vẫn được vá đều nên chưa cần vội lên production.",
+          "source": {
+            "title": "Hibernate ORM releases",
+            "url": "https://github.com/hibernate/hibernate-orm/releases"
+          },
+          "published": "2026-11-24",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "DevOps / Cloud",
+      "items": [
+        {
+          "title": "Loki 3.7.11 và 4.0.0-rc.6: sửa rò rỉ file descriptor ở compactor",
+          "summary": "Bản 3.7.11 sửa lỗi compactor để lại file descriptor mỗi khi partial compaction thất bại, chặn timestamp trước 1970 hoặc vượt giới hạn int64, và nâng containerd lên 2.2.10 vì lý do bảo mật. Nhánh 4.0 đã sang rc.6, rc.5 thêm hỗ trợ S3 storage class GLACIER_IR và INTELLIGENT_TIERING.",
+          "apply": "Nếu compactor của bạn tăng số fd dần hoặc thỉnh thoảng bị OOM/too many open files, nâng lên 3.7.11; còn muốn giảm chi phí lưu log lâu dài thì thử storage class mới trên 4.0 RC ở staging.",
+          "source": {
+            "title": "Grafana Loki releases",
+            "url": "https://github.com/grafana/loki/releases"
+          },
+          "published": "2026-11-27",
+          "kind": "tin"
+        },
+        {
+          "title": "etcd 3.7.4, 3.6.17, 3.5.36: sửa lỗi --force-new-cluster làm hỏng member",
+          "summary": "etcd 3.7.4 sửa lỗi --force-new-cluster có thể làm một member hỏng vĩnh viễn khi consistent index ở backend đi trước WAL, sửa race ở alarm store và panic khi replay WAL v2 cũ. Binary build bằng Go 1.26.11, image chuyển sang Debian 13, golang.org/x/net được nâng để vá hai CVE.",
+          "apply": "Ai tự vận hành etcd (cluster kubeadm, k3s dùng etcd ngoài) nên nâng bản vá trước khi cần đến --force-new-cluster để khôi phục thảm họa, vì đó đúng là lúc không muốn gặp lỗi này.",
+          "source": {
+            "title": "etcd CHANGELOG 3.7",
+            "url": "https://github.com/etcd-io/etcd/blob/main/CHANGELOG/CHANGELOG-3.7.md"
+          },
+          "published": "2026-11-18",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "AI Engineering thực chiến",
+      "items": [
+        {
+          "title": "MCP reference servers v2.6.0: thêm 8 bản vá, mcp-server-git bị siết mạnh nhất",
+          "summary": "Ba bản liên tiếp (11/11, 18/11, 27/11) đã vá tổng cộng 22 lỗ hổng. Bản 2.6.0 chặn Git LFS chạy chương trình khai báo trong config của repo, ngăn git_remote trả credential, ngăn mở rộng biến môi trường trong repo_path và từ chối merge ghi đè file bị ignore như .env.",
+          "apply": "Nếu agent nội bộ dùng mcp-server-git hoặc server-filesystem, ghim lên bản 2026.11.27 / 2.4.1, và coi mọi repo mà agent clone là đầu vào không tin cậy: chạy server trong container không có credential thật.",
+          "source": {
+            "title": "modelcontextprotocol/servers releases",
+            "url": "https://github.com/modelcontextprotocol/servers/releases"
+          },
+          "published": "2026-11-27",
+          "kind": "tin"
+        },
+        {
+          "title": "Milvus Go SDK v3.0.1: Row-Level Security và upsert một phần",
+          "summary": "SDK Go v3 cho Milvus 3.0 có đầy đủ API Row-Level Security (row policy, principal tag), trường Array lồng nhau, WithPathReplace cho partial upsert và nâng gRPC để vá CVE-2026-84304. Lưu ý SDK không đảm bảo tương thích server 2.6, và giá trị slice truyền vào WithTemplateParam không còn được copy.",
+          "apply": "Với RAG đa tenant, RLS ở tầng vector DB giúp không phải tự ghép filter tenant vào mọi truy vấn; nhưng phải nâng server lên 3.0 trước rồi mới đổi SDK.",
+          "source": {
+            "title": "Milvus releases",
+            "url": "https://github.com/milvus-io/milvus/releases"
+          },
+          "published": "2026-11-23",
+          "kind": "tin"
+        },
+        {
+          "title": "Ollama 0.40.18 và 0.40.19: decode và prefill nhanh hơn trên Metal",
+          "summary": "Hai bản cuối tháng tập trung vào Apple silicon: gộp residual mixing của Inkling trên Metal, tăng tốc decode, prefill và draft round cho inkling2, nén history buffer trong mlxrunner. Bản 0.40.18 bỏ hỗ trợ Jetpack 5.",
+          "apply": "Nếu chạy model cục bộ trên Mac để làm eval hay dev agent offline, nâng lên 0.40.19 rồi đo lại tokens/s; ai dùng Jetson đời Jetpack 5 thì ghim lại bản cũ.",
+          "source": {
+            "title": "Ollama releases",
+            "url": "https://github.com/ollama/ollama/releases"
+          },
+          "published": "2026-11-26",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "System Design & Architecture",
+      "items": [
+        {
+          "title": "DoorDash dựng lại nền tảng dispatch: tách coordinator có trạng thái khỏi worker tính toán không trạng thái",
+          "summary": "Thay vì giải một bài toán tối ưu toàn cục trong một engine nguyên khối, coordinator chia dữ liệu theo cụm địa lý và giao từng phần cho worker stateless, nên scale bằng cách thêm worker. Họ chuyển đổi bằng shadow traffic: mỗi trigger được gửi cho cả engine cũ lẫn mới để so kết quả. InfoQ đưa tin ngày 25/11, bài gốc đăng tháng 10.",
+          "apply": "Khi một job tối ưu hoặc tính toán nặng chạm trần scale dọc, hãy tìm cách chia dữ liệu theo khóa tự nhiên (vùng, tenant) để bài toán con độc lập, rồi kiểm chứng bằng shadow traffic trước khi cắt chuyển.",
+          "source": {
+            "title": "How DoorDash Built a Next-Generation Real-Time Dispatch Platform",
+            "url": "https://careersatdoordash.com/blog/how-doordash-built-a-next-generation-real-time-dispatch-platform/"
+          },
+          "published": "2026-10-20",
+          "kind": "bài đọc"
+        },
+        {
+          "title": "Amazon Aurora: design considerations for high throughput cloud-native relational databases (SIGMOD 2017)",
+          "summary": "Ý tưởng cốt lõi là 'log chính là database': instance chỉ gửi redo log xuống tầng lưu trữ phân tán, còn storage tự dựng page khi cần, nên lưu lượng mạng giảm hẳn. Dữ liệu có 6 bản sao trên 3 AZ với quorum ghi 4/6, đọc 3/6, chịu được mất cả một AZ cộng thêm một node.",
+          "apply": "Đọc để hiểu vì sao failover và tạo replica của Aurora nhanh, và vì sao nút thắt của database trên cloud thường là mạng chứ không phải CPU hay đĩa; rất có ích khi phải chọn giữa Aurora và RDS thường.",
+          "source": {
+            "title": "Amazon Aurora paper (PDF, MIT 6.824)",
+            "url": "https://pdos.csail.mit.edu/6.824/papers/aurora.pdf"
+          },
+          "published": "2017-05",
+          "kind": "bài đọc"
+        }
+      ]
+    },
+    {
+      "title": "Open Source & công cụ mới",
+      "items": [
+        {
+          "title": "Headscale 0.29.8: bắt buộc nâng nếu client Tailscale lên 1.106",
+          "summary": "Control server mã nguồn mở cho Tailscale giờ gửi capability version riêng cho từng peer, thứ Tailscale 1.106+ dùng để chọn tính năng như hybrid WireGuard handshake. Theo release notes, thiếu bản này thì client 1.106 có thể không kết nối được tới client cũ hơn.",
+          "apply": "Home lab dùng Headscale nên nâng server trước khi để client tự cập nhật lên Tailscale 1.106, nếu không mesh sẽ đứt lẻ tẻ giữa các máy khác phiên bản.",
+          "source": {
+            "title": "Headscale releases",
+            "url": "https://github.com/juanfont/headscale/releases"
+          },
+          "published": "2026-11-26",
+          "kind": "tin"
+        },
+        {
+          "title": "Paperless-ngx 3.5.0 và 3.5.1: bulk edit chạy bất đồng bộ, ghi chú Markdown, trigger workflow thủ công",
+          "summary": "Hệ thống quản lý tài liệu scan tự host chuyển mọi thao tác hàng loạt sang chạy nền, thêm ghi chú hiển thị Markdown, cho phép bấm chạy workflow thủ công, và đổi cấu trúc tag sang adjacency list để nhanh hơn. Bản 3.5.1 sửa streaming câu trả lời AI chat dưới ASGI.",
+          "apply": "Trước khi nâng, kiểm tra lại PAPERLESS_ALLOWED_HOSTS vì release notes cảnh báo một số cài đặt phải chỉnh biến này.",
+          "source": {
+            "title": "Paperless-ngx releases",
+            "url": "https://github.com/paperless-ngx/paperless-ngx/releases"
+          },
+          "published": "2026-11-17",
+          "kind": "tin"
+        }
+      ]
+    },
+    {
+      "title": "Career & kỹ năng mềm",
+      "items": [
+        {
+          "title": "When your manager isn't supporting you, build a Voltron (Lara Hogan)",
+          "summary": "Không một người quản lý nào cung cấp được mọi thứ bạn cần: coaching, mentoring kỹ thuật, sponsor, người để xả. Lara Hogan đề xuất tự dựng một 'Voltron', tức nhóm người trong và ngoài công ty mà mỗi người lấp một mảng.",
+          "apply": "Liệt kê 4 đến 5 nhu cầu phát triển của bạn (hoặc của từng người trong team nếu bạn là lead) và ghi tên ai đang lấp từng ô; ô trống chính là việc cần làm tháng này.",
+          "source": {
+            "title": "Manager Voltron (Lara Hogan)",
+            "url": "https://larahogan.me/blog/manager-voltron/"
+          },
+          "published": "2018-01",
+          "kind": "bài đọc"
+        }
+      ]
+    }
+  ],
+  "knowledge": {
+    "title": "Feature flag: tách deploy khỏi release",
+    "body": "Deploy là đưa code lên production, release là cho người dùng thấy tính năng; feature flag cho phép làm hai việc này ở hai thời điểm khác nhau. Code mới được merge và deploy ở trạng thái tắt, rồi bật dần theo phần trăm người dùng, theo tenant hoặc cho nhân viên nội bộ trước. Khi có sự cố, tắt flag nhanh hơn rollback cả bản deploy rất nhiều.\n\nĐiều kiện để flag không thành nợ kỹ thuật: mỗi flag có chủ sở hữu và hạn xoá, phép băm người dùng vào nhóm phải ổn định (cùng một user luôn rơi vào cùng nhóm), và đường code cũ phải được giữ chạy được cho tới khi flag bị xoá. Phân biệt flag release (sống vài tuần) với flag vận hành như kill switch (sống lâu, phải có test cho cả hai trạng thái).",
+    "example": "import hashlib\n\ndef enabled(flag: str, user_id: str, percent: int) -> bool:\n    # băm ổn định: cùng flag + user luôn ra cùng bucket 0..99\n    h = hashlib.sha256(f\"{flag}:{user_id}\".encode()).digest()\n    return int.from_bytes(h[:2], \"big\") % 100 < percent\n\nif enabled(\"new-checkout\", user.id, percent=config.get(\"new-checkout\", 0)):\n    return new_checkout(cart)\nreturn legacy_checkout(cart)"
+  },
+  "sources": [
+    {
+      "title": "Node.js releases",
+      "url": "https://github.com/nodejs/node/releases"
+    },
+    {
+      "title": "Kotlin releases",
+      "url": "https://github.com/JetBrains/kotlin/releases"
+    },
+    {
+      "title": "Hibernate ORM releases",
+      "url": "https://github.com/hibernate/hibernate-orm/releases"
+    },
+    {
+      "title": "Grafana Loki releases",
+      "url": "https://github.com/grafana/loki/releases"
+    },
+    {
+      "title": "etcd CHANGELOG 3.7",
+      "url": "https://github.com/etcd-io/etcd/blob/main/CHANGELOG/CHANGELOG-3.7.md"
+    },
+    {
+      "title": "modelcontextprotocol/servers releases",
+      "url": "https://github.com/modelcontextprotocol/servers/releases"
+    },
+    {
+      "title": "Milvus releases",
+      "url": "https://github.com/milvus-io/milvus/releases"
+    },
+    {
+      "title": "Ollama releases",
+      "url": "https://github.com/ollama/ollama/releases"
+    },
+    {
+      "title": "How DoorDash Built a Next-Generation Real-Time Dispatch Platform",
+      "url": "https://careersatdoordash.com/blog/how-doordash-built-a-next-generation-real-time-dispatch-platform/"
+    },
+    {
+      "title": "DoorDash Scales Dispatch 10x While Maintaining 99.99% Peak Availability (InfoQ)",
+      "url": "https://www.infoq.com/news/2026/11/doordash-dispatch-redesign/"
+    },
+    {
+      "title": "Amazon Aurora paper (PDF, MIT 6.824)",
+      "url": "https://pdos.csail.mit.edu/6.824/papers/aurora.pdf"
+    },
+    {
+      "title": "Headscale releases",
+      "url": "https://github.com/juanfont/headscale/releases"
+    },
+    {
+      "title": "Paperless-ngx releases",
+      "url": "https://github.com/paperless-ngx/paperless-ngx/releases"
+    },
+    {
+      "title": "Manager Voltron (Lara Hogan)",
+      "url": "https://larahogan.me/blog/manager-voltron/"
+    }
+  ],
+  "generated_at": "2026-11-28T01:25:33Z"
+}
